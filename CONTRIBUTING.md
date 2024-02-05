@@ -10,7 +10,7 @@ See getting started for more info about each command.
 ```bash
 nvm install
 nvm use
-npm install -g pnpm
+npm install -g pnpm@8.15.1
 pnpm install
 
 # most important commands:
@@ -40,7 +40,13 @@ nvm alias default SPECIFY_NODE_VERSION_HERE
 ```
 
 pnpm is used to manage the used packages in this project. \
-If you don't have pnpm, see: <https://pnpm.io/installation#using-npm>
+If you don't have pnpm, see: <https://pnpm.io/installation#using-npm>.
+
+Or run:
+
+```bash
+npm install -g pnpm@8.15.1
+```
 
 To install the required dependencies, run:
 

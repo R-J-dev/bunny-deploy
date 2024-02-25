@@ -3,7 +3,7 @@ name: PR validation
 on: pull_request
 
 jobs:
-  formatting:
+  format:
     runs-on: ubuntu-22.04
     timeout-minutes: 5
     steps:
@@ -13,7 +13,7 @@ jobs:
         uses: ./.github/actions/install-dependencies
       - name: Validate formatting
         run: pnpm format
-  linting:
+  lint:
     runs-on: ubuntu-22.04
     timeout-minutes: 5
     steps:
@@ -23,6 +23,16 @@ jobs:
         uses: ./.github/actions/install-dependencies
       - name: Validate linting rules
         run: pnpm lint
+  test:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+      - name: Install dependencies
+        uses: ./.github/actions/install-dependencies
+      - name: Test actions
+        run: pnpm test:ci
   build:
     runs-on: ubuntu-22.04
     timeout-minutes: 10

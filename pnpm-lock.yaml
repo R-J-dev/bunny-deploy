@@ -12,8 +12,8 @@ dependencies:
     specifier: 3.2.5
     version: 3.2.5
   got:
-    specifier: 14.0.0
-    version: 14.0.0
+    specifier: 14.2.0
+    version: 14.2.0
   http-status-codes:
     specifier: 2.3.0
     version: 2.3.0
@@ -1617,8 +1617,8 @@ packages:
       get-intrinsic: 1.2.4
     dev: true
 
-  /got@14.0.0:
-    resolution: {integrity: sha512-X01vTgaX9SwaMq5DfImvS+3GMQFFs5HtrrlS9CuzUSzkxAf/tWGEyynuI+Qy7BjciMczZGjyVSmawYbP4eYhYA==}
+  /got@14.2.0:
+    resolution: {integrity: sha512-dBq2KkHcQl3AwPoIWsLsQScCPpUgRulz1qZVthjPYKYOPmYfBnekR3vxecjZbm91Vc3JUGnV9mqFX7B+Fe2quw==}
     engines: {node: '>=20'}
     dependencies:
       '@sindresorhus/is': 6.1.0

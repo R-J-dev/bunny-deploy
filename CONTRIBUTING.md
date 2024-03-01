@@ -10,7 +10,7 @@ See getting started for more info about each command.
 ```bash
 nvm install
 nvm use
-npm install -g pnpm@8.15.1
+npm install -g pnpm@8.15.4
 pnpm install
 
 # most important commands:

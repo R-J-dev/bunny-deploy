@@ -9,10 +9,11 @@ const logRetry = (error: RequestError, retryCount: number) => {
 // TODO: add tests that check retry mechanism
 // should not retry on 400 status code
 // should retry on 408, 500, 502, 503, 504, 521, 522, 524
-export const getBunnyClient = (accessKey: string) => {
+export const getBunnyClient = (accessKey: string, baseUrl: string) => {
   if (!accessKey) throw new MissingAccessKeyError();
 
   const options = new Options({
+    prefixUrl: baseUrl,
     headers: {
       AccessKey: accessKey,
     },

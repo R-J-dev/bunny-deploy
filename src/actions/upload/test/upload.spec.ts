@@ -10,7 +10,7 @@ describe("uploadDirectoryToStorageZone", () => {
   const directoryToUpload = path.join(__dirname, "../test/test-dir-for-upload");
   const targetDirectory = `test/upload-with-stream/${testUploadResultDirectory}/upload-with-stream`;
   const storageZoneEndpoint = "http://localhost:8000";
-  const bunnyClient = getBunnyClient("test");
+  const bunnyClient = getBunnyClient("test", storageZoneEndpoint);
   const putSpy = vi.spyOn(bunnyClient.stream, "put");
   const setFailedSpy = vi.spyOn(actions, "setFailed");
 
@@ -23,7 +23,6 @@ describe("uploadDirectoryToStorageZone", () => {
       bunnyClient,
       directoryToUpload,
       targetDirectory,
-      storageZoneEndpoint,
     );
 
     // Assuming there are 3 files in the directory
@@ -49,7 +48,6 @@ describe("uploadDirectoryToStorageZone", () => {
         bunnyClient,
         directoryToUpload,
         "t" + targetDirectory,
-        storageZoneEndpoint,
       ),
     ).rejects.toThrow();
 

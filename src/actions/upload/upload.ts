@@ -13,7 +13,7 @@ const unknownUploadDirError =
 
 // TODO: convert relative input path to absolute path by using GITHUB_WORKSPACE before calling uploadDirectoryToStorageZone
 export const uploadDirectoryToStorageZone = async (
-  bunnyClient: Got,
+  client: Got,
   directoryToUpload: string,
   targetDirectory: string,
   storageZoneEndpoint: string,
@@ -38,7 +38,7 @@ export const uploadDirectoryToStorageZone = async (
       const uploadPath = targetDirectory
         ? `${targetDirectory}/${relativeFilePath}`
         : relativeFilePath;
-      uploadFile(bunnyClient, storageZoneEndpoint, uploadPath, filePath)
+      uploadFile(client, uploadPath, filePath)
         .then(() => done())
         .catch((error) => done(error));
     });
@@ -50,16 +50,14 @@ export const uploadDirectoryToStorageZone = async (
 };
 
 export const uploadFile = async (
-  bunnyClient: Got,
-  storageZoneEndpoint: string,
+  client: Got,
   uploadPath: string,
   filePath: string,
 ) => {
-  const uploadUrl = `${storageZoneEndpoint}/${uploadPath}`;
-  logInfo(`Uploading file: '${filePath}' to Bunny: ${uploadUrl}`);
+  logInfo(`Uploading file: '${filePath}' to Bunny: ${uploadPath}`);
   await streamPipeline(
     createReadStream(filePath),
-    bunnyClient.stream.put(uploadUrl, {
+    client.stream.put(uploadPath, {
       headers: { "Content-Type": "application/octet-stream" },
     }),
     new stream.PassThrough(),

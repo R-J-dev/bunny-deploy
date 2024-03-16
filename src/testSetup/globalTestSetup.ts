@@ -30,9 +30,10 @@ declare module "vitest" {
 }
 
 let testServer: ReturnType<typeof startTestServer> | undefined = undefined;
+const port = 8000;
+export const testServerUrl = `http://localhost:${port}`;
 
 export const setup = async () => {
-  const port = 8000;
   testServer = startTestServer(port);
 
   await waitUntilTestServerIsUp(port);

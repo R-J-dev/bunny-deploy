@@ -10,7 +10,7 @@ See getting started for more info about each command.
 ```bash
 nvm install
 nvm use
-npm install -g pnpm@8.15.4
+npm install -g pnpm@8.15.5
 pnpm install
 
 # most important commands:
@@ -45,7 +45,7 @@ If you don't have pnpm, see: <https://pnpm.io/installation#using-npm>.
 Or run:
 
 ```bash
-npm install -g pnpm@8.15.1
+npm install -g pnpm@8.15.5
 ```
 
 To install the required dependencies, run:

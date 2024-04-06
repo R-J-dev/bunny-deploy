@@ -5,7 +5,6 @@ import { normalize, join } from "path";
 import { getBunnyClient } from "@/bunnyClient.js";
 import { readdir } from "node:fs/promises";
 import { testUploadResultDirectory } from "@/testSetup/testServer.js";
-import * as actions from "@actions/core";
 import { removeSync } from "fs-extra";
 import { testServerUrl } from "@/testSetup/globalTestSetup.js";
 import { uploadFileHeaders } from "@/actions/upload/uploadFile.js";
@@ -94,9 +93,7 @@ describe("uploadDirectoryToStorageZone", () => {
       );
     });
 
-    it("should set action to failed when upload fails", async () => {
-      const setFailedSpy = vi.spyOn(actions, "setFailed");
-
+    it("should throw when upload fails", async () => {
       await expect(() =>
         uploadDirectoryToStorageZone({
           client: bunnyClient,
@@ -109,6 +106,7 @@ describe("uploadDirectoryToStorageZone", () => {
           },
         }),
       ).rejects.toThrow();
+    });
 
     describe("When there are unchanged files", () => {
       const unchangedFiles = new Set([

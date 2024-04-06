@@ -1,15 +1,10 @@
 import { Got } from "got";
-import { setFailed } from "@actions/core";
 import { join, relative } from "path";
 import { readdir } from "node:fs/promises";
 import { logError } from "@/logger.js";
 import { asyncForEach } from "modern-async";
 import { uploadFile } from "@/actions/upload/uploadFile.js";
 import { FileInfo } from "@/actions/fileInfo/fileInfo.js";
-
-
-const unknownUploadDirError =
-  "Unknown error occurred while uploading directory to storage zone";
 
 interface UploadDirectoryToStorageZoneProps {
   /*
@@ -72,7 +67,6 @@ export const uploadDirectoryToStorageZone = async ({
     );
   } catch (error) {
     logError(`Failed to upload: '${directoryToUpload}'`);
-    setFailed(error instanceof Error ? error : unknownUploadDirError);
     throw error;
   }
 };

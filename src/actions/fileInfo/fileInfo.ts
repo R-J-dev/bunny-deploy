@@ -6,7 +6,7 @@ import { NoReadAccessToFileError } from "@/actions/fileInfo/errors.js";
 import { asyncForEach } from "modern-async";
 import { getLocalFilePath } from "./utils.js";
 
-interface GetUnchangedFilePathsProps {
+interface GetFileInfoProps {
   /**
    * A configured Got client used for HTTP requests.
    * This client should be set up with necessary configurations such as authentication headers,
@@ -32,6 +32,11 @@ interface GetUnchangedFilePathsProps {
 // your storage zone to a specific backup through their API.
 // So when an upload or delete fails, they have to manually fix their storage zone :(
 
+export type FileInfo = {
+  unchangedFiles: Set<string>;
+  unknownRemoteFiles: Set<string>;
+};
+
 /**
  * Collects file info to determine which files are unchanged and which remote files are locally not found.
  *
@@ -43,7 +48,7 @@ export const getFileInfo = async ({
   storageZoneName,
   concurrency = 10,
   disableTypeValidation = false,
-}: GetUnchangedFilePathsProps) => {
+}: GetFileInfoProps): Promise<FileInfo> => {
   const unchangedFiles = new Set<string>();
   // contains remote paths that can directly be used in delete calls
   const unknownRemoteFiles = new Set<string>();

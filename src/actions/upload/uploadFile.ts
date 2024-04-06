@@ -4,6 +4,10 @@ import { createReadStream } from "node:fs";
 import stream from "node:stream";
 import { pipeline as streamPipeline } from "node:stream/promises";
 
+export const uploadFileHeaders = {
+  headers: { "Content-Type": "application/octet-stream" },
+};
+
 /**
  * Uploads a file to a storage zone using a PUT stream.
  * This method employs streaming to upload the file in chunks rather than loading the entire file into memory at once.
@@ -23,9 +27,7 @@ export const uploadFile = async (
   logInfo(`Uploading file: '${filePath}' to Bunny: ${uploadPath}`);
   await streamPipeline(
     createReadStream(filePath),
-    client.stream.put(uploadPath, {
-      headers: { "Content-Type": "application/octet-stream" },
-    }),
+    client.stream.put(uploadPath, uploadFileHeaders),
     new stream.PassThrough(),
   );
   logInfo(`File: '${uploadPath}' uploaded successfully to Bunny`);

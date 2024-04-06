@@ -5,39 +5,50 @@ import { readdir } from "node:fs/promises";
 import { logError } from "@/logger.js";
 import { asyncForEach } from "modern-async";
 import { uploadFile } from "@/actions/upload/uploadFile.js";
+import { FileInfo } from "@/actions/fileInfo/fileInfo.js";
+
 
 const unknownUploadDirError =
   "Unknown error occurred while uploading directory to storage zone";
+
+interface UploadDirectoryToStorageZoneProps {
+  /*
+   * A configured Got client used for HTTP requests.
+   * The client should have a storageZoneEndpoint defined as a prefixUrl.
+   */
+  client: Got;
+  /*
+   * The local filesystem path of the directory whose contents are to be uploaded.
+   * The function will recursively find and upload all files within this directory.
+   */
+  directoryToUpload: string;
+  /*
+   * The path within the storage zone where the files will be uploaded.
+   * This path will be prefixed to the relative paths of the files found in the directoryToUpload.
+   * If left empty, files will be uploaded to the root of the storage zone.
+   */
+  targetDirectory: string;
+  /*
+   * The maximum number of file upload operations to run concurrently.
+   * This parameter controls how many files are uploaded in parallel, allowing for efficient use of resources and faster upload times.
+   */
+  concurrency: number;
+  fileInfo: FileInfo;
+}
 
 // TODO: convert relative input path to absolute path by using GITHUB_WORKSPACE before calling uploadDirectoryToStorageZone
 /**
  * Uploads a directory to a storage zone with parallel requests.
  * This function recursively traverses the specified directory, uploading each file to the storage zone in parallel batches.
  * It is designed to efficiently handle large numbers of files by limiting the number of concurrent uploads.
- *
- * @param client -
- * A configured Got client used for HTTP requests.
- * The client should have a storageZoneEndpoint defined as a prefixUrl.
- * @param directoryToUpload -
- * The local filesystem path of the directory whose contents are to be uploaded.
- * The function will recursively find and upload all files within this directory.
- * @param targetDirectory -
- * The path within the storage zone where the files will be uploaded.
- * This path will be prefixed to the relative paths of the files found in the directoryToUpload.
- * If left empty, files will be uploaded to the root of the storage zone.
- * @param concurrency -
- * The maximum number of file upload operations to run concurrently.
- * This parameter controls how many files are uploaded in parallel, allowing for efficient use of resources and faster upload times.
- *
- * @throws Errors during the upload process are logged,
- * and the action is marked as failed using GitHub Actions' setFailed method.
  */
-export const uploadDirectoryToStorageZone = async (
-  client: Got,
-  directoryToUpload: string,
-  targetDirectory: string,
-  concurrency = 10,
-) => {
+export const uploadDirectoryToStorageZone = async ({
+  client,
+  directoryToUpload,
+  targetDirectory,
+  concurrency,
+  fileInfo,
+}: UploadDirectoryToStorageZoneProps) => {
   try {
     const files = await readdir(directoryToUpload, {
       encoding: "utf8",
@@ -49,6 +60,7 @@ export const uploadDirectoryToStorageZone = async (
       async (file) => {
         if (file.isDirectory()) return;
         const filePath = join(file.path, file.name);
+        if (fileInfo.unchangedFiles.has(filePath)) return;
         const uploadPath = getUploadPath(
           filePath,
           directoryToUpload,
@@ -84,7 +96,7 @@ const getUploadPath = (
     absoluteFilePath,
   ).replaceAll("\\", "/");
   return targetDirectory
-    ? `${targetDirectory}/${relativeFilePath}`
+    ? join(targetDirectory, relativeFilePath).replaceAll("\\", "/")
     : relativeFilePath;
 };
 

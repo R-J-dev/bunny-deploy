@@ -1,17 +1,18 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { uploadDirectoryToStorageZone } from "@/actions/upload/uploadDirectory.js";
 import * as upload from "@/actions/upload/uploadFile.js";
-import path, { normalize } from "path";
+import { normalize, join } from "path";
 import { getBunnyClient } from "@/bunnyClient.js";
 import { readdir } from "node:fs/promises";
 import { testUploadResultDirectory } from "@/testSetup/testServer.js";
 import * as actions from "@actions/core";
 import { removeSync } from "fs-extra";
 import { testServerUrl } from "@/testSetup/globalTestSetup.js";
+import { uploadFileHeaders } from "@/actions/upload/uploadFile.js";
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-const directoryToUpload = path.join(__dirname, "../test/test-dir-for-upload");
+const directoryToUpload = join(__dirname, "../test/test-dir-for-upload");
 const targetDirectory = `test/upload-with-stream/${testUploadResultDirectory}/upload-with-stream`;
 const storageZoneEndpoint = testServerUrl;
 const bunnyClient = getBunnyClient("test", storageZoneEndpoint);
@@ -21,7 +22,7 @@ let maxConcurrentUploads = 0;
 describe("uploadDirectoryToStorageZone", () => {
   afterEach(() => {
     vi.restoreAllMocks();
-    const dirToDelete = path.join(__dirname, "../../../testSetup/result");
+    const dirToDelete = join(__dirname, "../../../testSetup/result");
     removeSync(dirToDelete);
   });
 
@@ -45,32 +46,41 @@ describe("uploadDirectoryToStorageZone", () => {
         concurrentUploads--;
       });
 
-      await uploadDirectoryToStorageZone(
-        bunnyClient,
+      await uploadDirectoryToStorageZone({
+        client: bunnyClient,
         directoryToUpload,
         targetDirectory,
         concurrency,
-      );
+        fileInfo: {
+          unchangedFiles: new Set<string>(),
+          unknownRemoteFiles: new Set<string>(),
+        },
+      });
 
       expect(maxConcurrentUploads).toBeLessThanOrEqual(concurrency);
     });
   });
 
-  describe("Concurrency is set to 10 (default)", () => {
+  describe("Concurrency is set to 10", () => {
+    const concurrency = 10;
     it("should attempt to upload all files in the directory", async () => {
       const putSpy = vi.spyOn(bunnyClient.stream, "put");
 
-      await uploadDirectoryToStorageZone(
-        bunnyClient,
+      await uploadDirectoryToStorageZone({
+        client: bunnyClient,
         directoryToUpload,
         targetDirectory,
-        10,
-      );
+        concurrency,
+        fileInfo: {
+          unchangedFiles: new Set<string>(),
+          unknownRemoteFiles: new Set<string>(),
+        },
+      });
 
       // Assuming there are 3 files in the directory
       expect(putSpy).toHaveBeenCalledTimes(3);
       const files = await readdir(
-        path.join(__dirname, "../../../testSetup/result/upload-with-stream"),
+        join(__dirname, "../../../testSetup/result/upload-with-stream"),
         {
           encoding: "utf8",
           recursive: true,
@@ -88,15 +98,49 @@ describe("uploadDirectoryToStorageZone", () => {
       const setFailedSpy = vi.spyOn(actions, "setFailed");
 
       await expect(() =>
-        uploadDirectoryToStorageZone(
-          bunnyClient,
+        uploadDirectoryToStorageZone({
+          client: bunnyClient,
           directoryToUpload,
-          "t" + targetDirectory,
-          10,
-        ),
+          targetDirectory: "t" + targetDirectory,
+          concurrency,
+          fileInfo: {
+            unchangedFiles: new Set<string>(),
+            unknownRemoteFiles: new Set<string>(),
+          },
+        }),
       ).rejects.toThrow();
 
-      expect(setFailedSpy).toHaveBeenCalledTimes(1);
+    describe("When there are unchanged files", () => {
+      const unchangedFiles = new Set([
+        join(directoryToUpload, "test-file-for-upload.html"),
+        join(
+          directoryToUpload,
+          "nested-test-dir",
+          "second-nested-dir",
+          "second-nested-file.html",
+        ),
+      ]);
+      it("should upload only changed files", async () => {
+        const putSpy = vi.spyOn(bunnyClient.stream, "put");
+
+        await uploadDirectoryToStorageZone({
+          client: bunnyClient,
+          directoryToUpload,
+          targetDirectory,
+          concurrency,
+          fileInfo: {
+            unchangedFiles: unchangedFiles,
+            unknownRemoteFiles: new Set<string>(),
+          },
+        });
+
+        // There are in total 3 files in the directoryToUpload, 2 of those are unchanged.
+        expect(putSpy).toHaveBeenCalledTimes(1);
+        expect(putSpy).toHaveBeenCalledWith(
+          `${targetDirectory}/nested-test-dir/nested-file.html`,
+          uploadFileHeaders,
+        );
+      });
     });
   });
 });

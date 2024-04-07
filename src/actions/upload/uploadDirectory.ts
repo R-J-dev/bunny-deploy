@@ -1,7 +1,7 @@
 import { Got } from "got";
 import { join, relative } from "path";
 import { readdir } from "node:fs/promises";
-import { logError } from "@/logger.js";
+import { logError, logInfo } from "@/logger.js";
 import { asyncForEach } from "modern-async";
 import { uploadFile } from "@/actions/upload/uploadFile.js";
 import { FileInfo } from "@/actions/fileInfo/fileInfo.js";
@@ -55,7 +55,10 @@ export const uploadDirectoryToStorageZone = async ({
       async (file) => {
         if (file.isDirectory()) return;
         const filePath = join(file.path, file.name);
-        if (fileInfo.unchangedFiles.has(filePath)) return;
+        if (fileInfo.unchangedFiles.has(filePath)) {
+          logInfo(`Skipped uploading unchanged file: ${filePath}`);
+          return;
+        }
         const uploadPath = getUploadPath(
           filePath,
           directoryToUpload,

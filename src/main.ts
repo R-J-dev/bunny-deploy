@@ -1,5 +1,5 @@
 import { uploadDirectoryToStorageZone } from "@/actions/upload/uploadDirectory.js";
-import { getInput, setFailed } from "@actions/core";
+import { endGroup, getInput, setFailed, startGroup } from "@actions/core";
 import { getBunnyClient } from "@/bunnyClient.js";
 import { validateUrl } from "@/validators.js";
 import { getFileInfo } from "@/actions/fileInfo/fileInfo.js";
@@ -64,6 +64,7 @@ export const run = async () => {
     const isTypeValidationDisabled =
       getInput("disable-type-validation").toLowerCase() === "true";
     const targetDirectory = getInput("target-directory", { required: true });
+    startGroup("Retrieving file info");
     const fileInfo = await getFileInfo({
       client: bunnyClient,
       directoryToUpload,
@@ -71,6 +72,8 @@ export const run = async () => {
       concurrency,
       disableTypeValidation: isTypeValidationDisabled,
     });
+    endGroup();
+    startGroup("Uploading directory to storage zone");
     await uploadDirectoryToStorageZone({
       client: bunnyClient,
       directoryToUpload,
@@ -78,6 +81,7 @@ export const run = async () => {
       concurrency,
       fileInfo,
     });
+    endGroup();
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : "Unknown error";
     setFailed(errorMessage);

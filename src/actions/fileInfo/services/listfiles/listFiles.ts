@@ -1,3 +1,4 @@
+import { logDebug } from "@/logger.js";
 import { Got } from "got";
 import { z } from "zod";
 
@@ -37,6 +38,7 @@ export const listFiles = async ({
   path,
   disableTypeValidation = false,
 }: ListFiles) => {
+  logDebug(`Retrieving file info for: ${path}`);
   const response = await client.get(path, {
     headers: { "Content-Type": "application/json" },
     resolveBodyOnly: true,

@@ -32,6 +32,7 @@ export const run = async () => {
       inputName: "storage-endpoint",
       validator: (url: string) => validateUrl(url, "https"),
     });
+    const edgeStorageClient = getBunnyClient(accessKey, storageEndpoint);
     const directoryToUpload = getInput("directory-to-upload", {
       required: true,
     });
@@ -44,7 +45,7 @@ export const run = async () => {
 
     startGroup("Retrieving file info");
     const fileInfo = await getFileInfo({
-      client: bunnyClient,
+      client: edgeStorageClient,
       directoryToUpload,
       storageZoneName,
       concurrency,
@@ -55,7 +56,7 @@ export const run = async () => {
     if (isDeleteActionEnabled) {
       startGroup("Deleting unknown remote files");
       await deleteFiles({
-        client: bunnyClient,
+        client: edgeStorageClient,
         filesToDelete: fileInfo.unknownRemoteFiles,
         concurrency,
       });
@@ -64,7 +65,7 @@ export const run = async () => {
 
     startGroup("Uploading directory to storage zone");
     await uploadDirectoryToStorageZone({
-      client: bunnyClient,
+      client: edgeStorageClient,
       directoryToUpload,
       targetDirectory,
       concurrency,

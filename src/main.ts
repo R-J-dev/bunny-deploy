@@ -1,50 +1,18 @@
+import { getInputWrapper } from "@/inputWrapper.js";
 import { uploadDirectoryToStorageZone } from "@/actions/upload/uploadDirectory.js";
-import { endGroup, getInput, setFailed, startGroup } from "@actions/core";
+import {
+  endGroup,
+  getInput,
+  getBooleanInput,
+  setFailed,
+  startGroup,
+} from "@actions/core";
 import { getBunnyClient } from "@/bunnyClient.js";
-import { validateUrl } from "@/validators.js";
+import { validatePositiveInteger, validateUrl } from "@/validators.js";
 import { getFileInfo } from "@/actions/fileInfo/fileInfo.js";
 import { deleteFiles } from "@/actions/delete/delete.js";
-import { logError } from "@/logger.js";
 
 // TODO: document what todo when an deployment fails
-// TODO: Add purge files option
-
-// TODO: add tests for this:
-const getStorageEndpoint = () => {
-  const storageEndpoint = getInput("storage-endpoint", {
-    required: true,
-  });
-  try {
-    validateUrl(storageEndpoint, "https");
-    return storageEndpoint;
-  } catch (error) {
-    logError(
-      error instanceof Error
-        ? error.message
-        : "Unknown error occurred while retrieving the storage-endpoint",
-    );
-    setFailed(
-      `The provided storage-endpoint '${storageEndpoint}' isn't valid.`,
-    );
-    throw error;
-  }
-};
-
-// TODO: add tests for this:
-const getConcurrency = () => {
-  const concurrencyInput = getInput("concurrency", { required: true });
-  const concurrency = parseInt(concurrencyInput, 10);
-  if (
-    isNaN(concurrency) ||
-    concurrency <= 0 ||
-    !Number.isInteger(concurrency)
-  ) {
-    const errorMessage = `'concurrency' must be a positive integer. Received: ${concurrencyInput}`;
-    setFailed(errorMessage);
-    throw new Error(errorMessage);
-  }
-  return concurrency;
-};
 
 // TODO: add tests for this:
 /**
@@ -54,18 +22,25 @@ export const run = async () => {
   try {
     // TODO: test what happens when getInput doesn't have a required input
     const accessKey = getInput("access-key", { required: true });
-    const concurrency = getConcurrency();
-    const storageEndpoint = getStorageEndpoint();
-    const bunnyClient = getBunnyClient(accessKey, storageEndpoint);
+    const concurrency = getInputWrapper({
+      inputName: "concurrency",
+      inputOptions: { required: true },
+      transformInput: (input: string) => parseInt(input, 10),
+      validator: validatePositiveInteger,
+    });
+    const storageEndpoint = getInputWrapper({
+      inputName: "storage-endpoint",
+      validator: (url: string) => validateUrl(url, "https"),
+    });
     const directoryToUpload = getInput("directory-to-upload", {
       required: true,
     });
     const storageZoneName = getInput("storage-zone-name", { required: true });
     const targetDirectory = getInput("target-directory", { required: true });
-    const isTypeValidationDisabled =
-      getInput("disable-type-validation").toLowerCase() === "true";
-    const isDeleteActionEnabled =
-      getInput("enable-delete-action").toLowerCase() === "true";
+
+    // Toggles
+    const isTypeValidationDisabled = getBooleanInput("disable-type-validation");
+    const isDeleteActionEnabled = getBooleanInput("enable-delete-action");
 
     startGroup("Retrieving file info");
     const fileInfo = await getFileInfo({

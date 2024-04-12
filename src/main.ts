@@ -3,10 +3,10 @@ import { endGroup, getInput, setFailed, startGroup } from "@actions/core";
 import { getBunnyClient } from "@/bunnyClient.js";
 import { validateUrl } from "@/validators.js";
 import { getFileInfo } from "@/actions/fileInfo/fileInfo.js";
+import { deleteFiles } from "@/actions/delete/delete.js";
 import { logError } from "@/logger.js";
 
 // TODO: document what todo when an deployment fails
-// TODO: Add delete unknown files option
 // TODO: Add purge files option
 
 // TODO: add tests for this:
@@ -61,9 +61,12 @@ export const run = async () => {
       required: true,
     });
     const storageZoneName = getInput("storage-zone-name", { required: true });
+    const targetDirectory = getInput("target-directory", { required: true });
     const isTypeValidationDisabled =
       getInput("disable-type-validation").toLowerCase() === "true";
-    const targetDirectory = getInput("target-directory", { required: true });
+    const isDeleteActionEnabled =
+      getInput("enable-delete-action").toLowerCase() === "true";
+
     startGroup("Retrieving file info");
     const fileInfo = await getFileInfo({
       client: bunnyClient,
@@ -73,6 +76,17 @@ export const run = async () => {
       disableTypeValidation: isTypeValidationDisabled,
     });
     endGroup();
+
+    if (isDeleteActionEnabled) {
+      startGroup("Deleting unknown remote files");
+      await deleteFiles({
+        client: bunnyClient,
+        filesToDelete: fileInfo.unknownRemoteFiles,
+        concurrency,
+      });
+      endGroup();
+    }
+
     startGroup("Uploading directory to storage zone");
     await uploadDirectoryToStorageZone({
       client: bunnyClient,

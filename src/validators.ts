@@ -1,5 +1,7 @@
 import { InvalidUrlProtocolError } from "@/errors.js";
 
+// TODO: add tests for validators
+
 /**
  * Validates if a given string is a valid URL and has an expected protocol.
  * If the given url is not a valid url, it will throw an error.
@@ -15,5 +17,11 @@ export const validateUrl = (url: string, expectedProtocol: string) => {
       invalidProtocol: validUrl.protocol,
       expectedProtocol: expectedProtocol,
     });
+  }
+};
+
+export const validatePositiveInteger = (int: number) => {
+  if (!(Number.isInteger(int) && int > 0)) {
+    throw new Error(`Expected a positive integer, but received: ${int}`);
   }
 };

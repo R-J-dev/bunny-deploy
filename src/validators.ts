@@ -10,7 +10,7 @@ import { InvalidUrlProtocolError } from "@/errors.js";
  * @param url The URL string to be validated.
  * @param expectedProtocol The protocol that is expected.
  */
-export const validateUrl = (url: string, expectedProtocol: string) => {
+export const validateUrl = async (url: string, expectedProtocol: string) => {
   const validUrl = new URL(url);
   if (validUrl.protocol !== expectedProtocol) {
     throw new InvalidUrlProtocolError({
@@ -20,7 +20,7 @@ export const validateUrl = (url: string, expectedProtocol: string) => {
   }
 };
 
-export const validatePositiveInteger = (int: number) => {
+export const validatePositiveInteger = async (int: number) => {
   if (!(Number.isInteger(int) && int > 0)) {
     throw new Error(`Expected a positive integer, but received: ${int}`);
   }

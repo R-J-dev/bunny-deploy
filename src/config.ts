@@ -2,8 +2,9 @@ import { getBunnyClient } from "@/bunnyClient.js";
 import { validatePositiveInteger, validateUrl } from "@/validators.js";
 import { getInput, getBooleanInput } from "@actions/core";
 import { getInputWrapper } from "@/inputWrapper.js";
+import { readdir } from "node:fs/promises";
 
-export const getFeatureFlags = () => {
+export const getFeatureFlags = async () => {
   return {
     disableTypeValidation: getBooleanInput("disable-type-validation"),
     enableDeleteAction: getBooleanInput("enable-delete-action"),
@@ -12,7 +13,7 @@ export const getFeatureFlags = () => {
   };
 };
 
-export const getPullZoneConfig = () => {
+export const getPullZoneConfig = async () => {
   const accessKey = getInput("access-key", { required: true });
   const pullZoneId = getInput("pull-zone-id", { required: true });
   const pullZoneClient = getBunnyClient(
@@ -25,19 +26,20 @@ export const getPullZoneConfig = () => {
   };
 };
 
-export const getEdgeStorageConfig = () => {
+export const getEdgeStorageConfig = async () => {
   // TODO: test what happens when getInput doesn't have a required input
   const accessKey = getInput("access-key", { required: true });
-  const storageEndpoint = getInputWrapper({
+  const storageEndpoint = await getInputWrapper({
     inputName: "storage-endpoint",
+    inputOptions: { required: true },
     validator: (url: string) => validateUrl(url, "https"),
   });
 
   return {
-    concurrency: getInputWrapper({
+    concurrency: await getInputWrapper({
       inputName: "concurrency",
       inputOptions: { required: true },
-      transformInput: (input: string) => parseInt(input, 10),
+      transformInput: async (input: string) => parseInt(input, 10),
       validator: validatePositiveInteger,
     }),
     directoryToUpload: getInput("directory-to-upload", {

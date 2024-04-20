@@ -26,7 +26,6 @@ interface GetFileInfoProps {
   disableTypeValidation?: boolean;
 }
 
-// TODO: pass unchangedFiles to upload action and pass unknownRemoteFiles to a delete action
 // The delete action should have a feature flag to enable it.
 // We should also warn people in the readme that Bunny doesn't provide an option to reset
 // your storage zone to a specific backup through their API.

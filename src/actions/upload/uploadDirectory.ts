@@ -96,5 +96,3 @@ const getUploadPath = (
     ? join(targetDirectory, relativeFilePath).replaceAll("\\", "/")
     : relativeFilePath;
 };
-
-// TODO: purge files: https://support.bunny.net/hc/en-us/articles/360020401791-Does-BunnyCDN-automatically-detect-when-a-file-is-changed-

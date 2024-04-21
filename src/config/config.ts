@@ -60,9 +60,8 @@ export const getEdgeStorageConfig = async () => {
     directoryToUpload: await getInputWrapper({
       inputName: "directory-to-upload",
       inputOptions: { required: true },
-      transformInput: async (input: string) =>
-        transformDirectoryToUploadInput(input),
-      validator: async (path: string) => validateDirectory(path),
+      transformInput: transformDirectoryToUploadInput,
+      validator: validateDirectory,
       errorLogMessage:
         "The directory-to-upload path isn't a valid path to an existing directory or doesn't have read access.",
     }),

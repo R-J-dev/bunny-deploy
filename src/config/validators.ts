@@ -23,10 +23,15 @@ export const validateUrl = async (url: string, expectedProtocol: string) => {
   }
 };
 
+export const validateInteger = async (int: number) => {
+  if (!Number.isInteger(int)) {
+    throw new InvalidIntegerError({ invalidInt: int });
+  }
+};
+
 export const validatePositiveInteger = async (int: number) => {
   if (!(Number.isInteger(int) && int > 0)) {
     throw new InvalidIntegerError({
-      invalidInt: int,
       message: `Expected a positive integer, but received: ${int}`,
     });
   }

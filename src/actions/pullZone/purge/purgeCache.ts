@@ -1,4 +1,4 @@
-import { logError } from "@/logger.js";
+import { logError, logInfo } from "@/logger.js";
 import { Got, RequestError } from "got";
 
 interface PurgeCacheProps {
@@ -19,7 +19,9 @@ export const purgeCache = async ({ client, pullZoneId }: PurgeCacheProps) => {
   const whenDidTheErrorOccurred = "while trying to purge the pull zone cache";
   const unexpectedError = `${whenDidTheErrorOccurred}, an unexpected error occurred`;
   try {
+    logInfo("Purging the pull zone cache.");
     await client.post(`${pullZoneId}/purgeCache`);
+    logInfo("Purging completed.");
   } catch (error) {
     if (!(error instanceof RequestError)) {
       logError(unexpectedError);

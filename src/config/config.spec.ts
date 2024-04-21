@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import {
   getFeatureFlags,
   getPullZoneConfig,
@@ -9,6 +9,7 @@ import {
   InvalidPathError,
   InvalidUrlProtocolError,
 } from "@/errors.js";
+import { join } from "path";
 
 describe("config", () => {
   describe("getFeatureFlags", () => {
@@ -82,6 +83,7 @@ describe("config", () => {
         process.env[`INPUT_${key.toUpperCase()}`] = value;
       });
     });
+
     it("should return edge storage configuration without errors", async () => {
       const config = await getEdgeStorageConfig();
 
@@ -147,6 +149,28 @@ describe("config", () => {
         await expect(() => getEdgeStorageConfig()).rejects.toThrow(
           InvalidIntegerError,
         );
+      });
+    });
+
+    describe("Directory to upload is relative", () => {
+      const original_github_workspace = process.env.GITHUB_WORKSPACE;
+      afterEach(() => {
+        process.env.GITHUB_WORKSPACE = original_github_workspace;
+      });
+
+      it("should create an absolute path", async () => {
+        process.env.GITHUB_WORKSPACE = join(__dirname, "..");
+        process.env["INPUT_DIRECTORY-TO-UPLOAD"] = "config";
+        const config = await getEdgeStorageConfig();
+
+        expect(config.directoryToUpload).toBe(__dirname);
+      });
+
+      it("should throw when GITHUB_WORKSPACE is undefined", async () => {
+        delete process.env.GITHUB_WORKSPACE;
+        process.env["INPUT_DIRECTORY-TO-UPLOAD"] = `test`;
+
+        await expect(() => getEdgeStorageConfig()).rejects.toThrow(Error);
       });
     });
 

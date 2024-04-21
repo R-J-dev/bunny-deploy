@@ -1,11 +1,12 @@
+import { getInput, getBooleanInput, setSecret } from "@actions/core";
 import { getBunnyClient } from "@/bunnyClient.js";
 import {
   validateDirectory,
   validatePositiveInteger,
   validateUrl,
 } from "@/config/validators.js";
-import { getInput, getBooleanInput, setSecret } from "@actions/core";
 import { getInputWrapper } from "@/config/inputWrapper.js";
+import { transformDirectoryToUploadInput } from "@/config/transformers.js";
 import { logDebug } from "@/logger.js";
 
 export const getSecrets = async () => {
@@ -58,6 +59,8 @@ export const getEdgeStorageConfig = async () => {
     directoryToUpload: await getInputWrapper({
       inputName: "directory-to-upload",
       inputOptions: { required: true },
+      transformInput: async (input: string) =>
+        transformDirectoryToUploadInput(input),
       validator: async (path: string) => validateDirectory(path),
       errorLogMessage:
         "The directory-to-upload path isn't a valid path to an existing directory or doesn't have read access.",

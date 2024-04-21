@@ -31,7 +31,6 @@ interface UploadDirectoryToStorageZoneProps {
   fileInfo: FileInfo;
 }
 
-// TODO: convert relative input path to absolute path by using GITHUB_WORKSPACE before calling uploadDirectoryToStorageZone
 /**
  * Uploads a directory to a storage zone with parallel requests.
  * This function recursively traverses the specified directory, uploading each file to the storage zone in parallel batches.

@@ -7,7 +7,7 @@ import {
   getEdgeStorageConfig,
   getFeatureFlags,
   getPullZoneConfig,
-} from "@/config.js";
+} from "@/config/config.js";
 
 // TODO: document what todo when an deployment fails
 
@@ -22,10 +22,10 @@ export const run = async () => {
       enableDeleteAction,
       enablePurgePullZone,
       enablePurgeOnly,
-    } = getFeatureFlags();
+    } = await getFeatureFlags();
 
     if (enablePurgeOnly) {
-      const { pullZoneClient, pullZoneId } = getPullZoneConfig();
+      const { pullZoneClient, pullZoneId } = await getPullZoneConfig();
       return await purgeCache({ client: pullZoneClient, pullZoneId });
     }
 
@@ -35,7 +35,7 @@ export const run = async () => {
       edgeStorageClient,
       storageZoneName,
       targetDirectory,
-    } = getEdgeStorageConfig();
+    } = await getEdgeStorageConfig();
     startGroup("Retrieving file info");
     const fileInfo = await getFileInfo({
       client: edgeStorageClient,
@@ -67,7 +67,7 @@ export const run = async () => {
     endGroup();
 
     if (enablePurgePullZone) {
-      const { pullZoneClient, pullZoneId } = getPullZoneConfig();
+      const { pullZoneClient, pullZoneId } = await getPullZoneConfig();
       await purgeCache({ client: pullZoneClient, pullZoneId });
     }
   } catch (err) {

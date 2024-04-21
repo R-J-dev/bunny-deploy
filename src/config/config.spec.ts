@@ -77,6 +77,7 @@ describe("config", () => {
       "storage-endpoint": "https://example.com",
       concurrency: "5",
       "directory-to-upload": __dirname,
+      "replication-timeout": "0",
     };
     beforeEach(() => {
       Object.entries(testConfig).forEach(([key, value]) => {
@@ -90,18 +91,27 @@ describe("config", () => {
       expect(config).toEqual({
         concurrency: 5,
         directoryToUpload: __dirname,
+        replicationTimeout: 0,
         storageZoneName: "test-zone",
         targetDirectory: "test/target",
         edgeStorageClient: expect.anything(),
       });
     });
 
-    it("should format a concurrency number to an int", async () => {
+    it("should format a concurrency to an int", async () => {
       process.env["INPUT_CONCURRENCY"] = "3.6";
 
       const config = await getEdgeStorageConfig();
 
       expect(config.concurrency).toBe(3);
+    });
+
+    it("should format replication-timeout to an int", async () => {
+      process.env["INPUT_REPLICATION-TIMEOUT"] = "20.6";
+
+      const config = await getEdgeStorageConfig();
+
+      expect(config.replicationTimeout).toBe(20);
     });
 
     describe("Missing required config", () => {
@@ -112,6 +122,7 @@ describe("config", () => {
         ["directory-to-upload"],
         ["storage-zone-name"],
         ["target-directory"],
+        ["replication-timeout"],
       ])(
         "should throw when configParam '%s' is missing",
         async (configParam: string) => {
@@ -145,6 +156,16 @@ describe("config", () => {
 
       it("should throw when concurrency is not a positive integer", async () => {
         process.env["INPUT_CONCURRENCY"] = "-1";
+
+        await expect(() => getEdgeStorageConfig()).rejects.toThrow(
+          InvalidIntegerError,
+        );
+      });
+    });
+
+    describe("Invalid replication-timeout", () => {
+      it("should throw when replication-timeout is not a number", async () => {
+        process.env["INPUT_REPLICATION-TIMEOUT"] = "test";
 
         await expect(() => getEdgeStorageConfig()).rejects.toThrow(
           InvalidIntegerError,

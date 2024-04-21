@@ -7,7 +7,7 @@ import {
   getEdgeStorageConfig,
   getFeatureFlags,
   getPullZoneConfig,
-} from "@/config.js";
+} from "@/config/config.js";
 
 // TODO: document what todo when an deployment fails
 

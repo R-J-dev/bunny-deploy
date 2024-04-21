@@ -1,6 +1,9 @@
-import { InvalidUrlProtocolError } from "@/errors.js";
-
-// TODO: add tests for validators
+import {
+  InvalidIntegerError,
+  InvalidPathError,
+  InvalidUrlProtocolError,
+} from "@/errors.js";
+import { lstat } from "node:fs/promises";
 
 /**
  * Validates if a given string is a valid URL and has an expected protocol.
@@ -22,6 +25,21 @@ export const validateUrl = async (url: string, expectedProtocol: string) => {
 
 export const validatePositiveInteger = async (int: number) => {
   if (!(Number.isInteger(int) && int > 0)) {
-    throw new Error(`Expected a positive integer, but received: ${int}`);
+    throw new InvalidIntegerError({
+      invalidInt: int,
+      message: `Expected a positive integer, but received: ${int}`,
+    });
   }
+};
+
+/**
+ * Checks if a given path is a directory
+ *
+ * @param path - the absolute path to the directory
+ * @throws when the path doesn't exists or the file isn't a directory
+ */
+export const validateDirectory = async (path: string) => {
+  const fileStats = await lstat(path);
+  if (!fileStats.isDirectory())
+    throw new InvalidPathError({ invalidPath: path });
 };

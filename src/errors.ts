@@ -20,7 +20,27 @@ export class InvalidUrlProtocolError extends Error {
   }: InvalidUrlProtocolErrorParams) {
     super(
       message ??
-        `Invalid protocol ${invalidProtocol} provided, expected: ${expectedProtocol}`,
+        `Invalid protocol '${invalidProtocol}' provided, expected: '${expectedProtocol}'`,
     );
+  }
+}
+
+type InvalidNumberParams =
+  | { invalidInt: number; message?: string }
+  | { invalidInt?: number; message: string };
+
+export class InvalidIntegerError extends Error {
+  constructor({ invalidInt, message }: InvalidNumberParams) {
+    super(message ?? `Expected an integer, but received: ${invalidInt}`);
+  }
+}
+
+type InvalidPathParams =
+  | { invalidPath: string; message?: string }
+  | { invalidPath?: string; message: string };
+
+export class InvalidPathError extends Error {
+  constructor({ invalidPath, message }: InvalidPathParams) {
+    super(message ?? `The given path: '${invalidPath}' isn't valid.`);
   }
 }

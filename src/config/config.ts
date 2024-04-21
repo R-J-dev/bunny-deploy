@@ -1,10 +1,22 @@
 import { getBunnyClient } from "@/bunnyClient.js";
-import { validatePositiveInteger, validateUrl } from "@/validators.js";
-import { getInput, getBooleanInput } from "@actions/core";
-import { getInputWrapper } from "@/inputWrapper.js";
-import { readdir } from "node:fs/promises";
+import {
+  validateDirectory,
+  validatePositiveInteger,
+  validateUrl,
+} from "@/config/validators.js";
+import { getInput, getBooleanInput, setSecret } from "@actions/core";
+import { getInputWrapper } from "@/config/inputWrapper.js";
+import { logDebug } from "@/logger.js";
+
+export const getSecrets = async () => {
+  const accessKey = getInput("access-key", { required: true });
+  setSecret(accessKey);
+
+  return { accessKey };
+};
 
 export const getFeatureFlags = async () => {
+  logDebug("Retrieving feature flags");
   return {
     disableTypeValidation: getBooleanInput("disable-type-validation"),
     enableDeleteAction: getBooleanInput("enable-delete-action"),
@@ -14,7 +26,8 @@ export const getFeatureFlags = async () => {
 };
 
 export const getPullZoneConfig = async () => {
-  const accessKey = getInput("access-key", { required: true });
+  logDebug("Retrieving pullZoneConfig");
+  const { accessKey } = await getSecrets();
   const pullZoneId = getInput("pull-zone-id", { required: true });
   const pullZoneClient = getBunnyClient(
     accessKey,
@@ -27,12 +40,12 @@ export const getPullZoneConfig = async () => {
 };
 
 export const getEdgeStorageConfig = async () => {
-  // TODO: test what happens when getInput doesn't have a required input
-  const accessKey = getInput("access-key", { required: true });
+  logDebug("Retrieving edgeStorageConfig");
+  const { accessKey } = await getSecrets();
   const storageEndpoint = await getInputWrapper({
     inputName: "storage-endpoint",
     inputOptions: { required: true },
-    validator: (url: string) => validateUrl(url, "https"),
+    validator: (url: string) => validateUrl(url, "https:"),
   });
 
   return {
@@ -42,8 +55,12 @@ export const getEdgeStorageConfig = async () => {
       transformInput: async (input: string) => parseInt(input, 10),
       validator: validatePositiveInteger,
     }),
-    directoryToUpload: getInput("directory-to-upload", {
-      required: true,
+    directoryToUpload: await getInputWrapper({
+      inputName: "directory-to-upload",
+      inputOptions: { required: true },
+      validator: async (path: string) => validateDirectory(path),
+      errorLogMessage:
+        "The directory-to-upload path isn't a valid path to an existing directory or doesn't have read access.",
     }),
     edgeStorageClient: getBunnyClient(accessKey, storageEndpoint),
     storageZoneName: getInput("storage-zone-name", { required: true }),

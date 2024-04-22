@@ -18,8 +18,8 @@ dependencies:
     specifier: 2.0.0
     version: 2.0.0
   zod:
-    specifier: 3.22.5
-    version: 3.22.5
+    specifier: 3.23.1
+    version: 3.23.1
 
 devDependencies:
   '@types/express':
@@ -2720,6 +2720,6 @@ packages:
     engines: {node: '>=12.20'}
     dev: true
 
-  /zod@3.22.5:
-    resolution: {integrity: sha512-HqnGsCdVZ2xc0qWPLdO25WnseXThh0kEYKIdV5F/hTHO75hNZFp8thxSeHhiPrHZKrFTo1SOgkAj9po5bexZlw==}
+  /zod@3.23.1:
+    resolution: {integrity: sha512-fwxuO7wwRmBv1+OvqlZF0t73s3xhR0Cr7mRIFSca6Z/ZNsrzvCPl4Az4KJqi1mgkXdODuan91Cyyg8it0my1ag==}
     dev: false

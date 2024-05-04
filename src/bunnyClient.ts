@@ -23,7 +23,7 @@ export const getBunnyClient = (accessKey: string, baseUrl: string) => {
     },
     retry: {
       limit: 3,
-      methods: ["GET", "PUT"],
+      methods: ["GET", "PUT", "DELETE", "POST"],
       statusCodes: [408, 500, 502, 503, 504, 521, 522, 524],
       errorCodes: [
         "ETIMEDOUT",

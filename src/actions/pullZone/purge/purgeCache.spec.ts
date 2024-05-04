@@ -11,7 +11,7 @@ describe("purgeCache", () => {
     postSpy.mockRejectedValueOnce(new Error("test"));
 
     await expect(() =>
-      purgeCache({ client, pullZoneId: "test" }),
+      purgeCache({ client, pullZoneId: "test", replicationTimeout: 0 }),
     ).rejects.toThrow(new Error("test"));
   });
 
@@ -23,7 +23,7 @@ describe("purgeCache", () => {
     );
 
     await expect(() =>
-      purgeCache({ client, pullZoneId: "test" }),
+      purgeCache({ client, pullZoneId: "test", replicationTimeout: 0 }),
     ).rejects.toThrow(new RequestError("test error", {}, new Options()));
   });
 });

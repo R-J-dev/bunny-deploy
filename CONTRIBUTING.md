@@ -10,7 +10,8 @@ See getting started for more info about each command.
 ```bash
 nvm install
 nvm use
-npm install -g pnpm@8.15.5
+# Will automatically install the configured pnpm version when you run a pnpm command
+corepack enable
 pnpm install
 
 # most important commands:
@@ -39,13 +40,11 @@ nvm use
 nvm alias default SPECIFY_NODE_VERSION_HERE
 ```
 
-pnpm is used to manage the used packages in this project. \
-If you don't have pnpm, see: <https://pnpm.io/installation#using-npm>.
-
-Or run:
+pnpm is used to manage the used packages in this project.
+You can run below corepack command, which will automatically install the configured pnpm version when you run a pnpm command.
 
 ```bash
-npm install -g pnpm@8.15.5
+corepack enable
 ```
 
 To install the required dependencies, run:
@@ -54,7 +53,7 @@ To install the required dependencies, run:
 pnpm install
 ```
 
-## Rules to follow before creating a new MR
+## Rules to follow before creating a new PR
 
 ### Add documentation
 

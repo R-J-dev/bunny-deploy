@@ -22,7 +22,7 @@ interface UploadDirectoryToStorageZoneProps {
    * This path will be prefixed to the relative paths of the files found in the directoryToUpload.
    * If left empty, files will be uploaded to the root of the storage zone.
    */
-  targetDirectory: string;
+  targetDirectory?: string;
   /*
    * The maximum number of file upload operations to run concurrently.
    * This parameter controls how many files are uploaded in parallel, allowing for efficient use of resources and faster upload times.
@@ -84,7 +84,7 @@ export const uploadDirectoryToStorageZone = async ({
 const getUploadPath = (
   absoluteFilePath: string,
   directoryToUpload: string,
-  targetDirectory: string,
+  targetDirectory?: string,
 ) => {
   // Use replaceAll to remove backslashes on Windows
   const relativeFilePath = relative(

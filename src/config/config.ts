@@ -75,6 +75,6 @@ export const getEdgeStorageConfig = async () => {
     }),
     edgeStorageClient: getBunnyClient(accessKey, storageEndpoint),
     storageZoneName: getInput("storage-zone-name", { required: true }),
-    targetDirectory: getInput("target-directory", { required: true }),
+    targetDirectory: getInput("target-directory"),
   };
 };

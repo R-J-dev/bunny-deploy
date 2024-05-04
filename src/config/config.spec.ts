@@ -131,7 +131,6 @@ describe("config", () => {
         ["concurrency"],
         ["directory-to-upload"],
         ["storage-zone-name"],
-        ["target-directory"],
       ])(
         "should throw when configParam '%s' is missing",
         async (configParam: string) => {

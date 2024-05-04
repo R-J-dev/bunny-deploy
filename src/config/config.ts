@@ -35,9 +35,17 @@ export const getPullZoneConfig = async () => {
     accessKey,
     "https://api.bunny.net/pullzone/",
   );
+  const replicationTimeout = await getInputWrapper({
+    inputName: "replication-timeout",
+    inputOptions: { required: true },
+    transformInput: async (input: string) => parseInt(input, 10),
+    validator: validateInteger,
+    errorLogMessage: "The replication-timeout is not a valid integer.",
+  });
   return {
     pullZoneId: pullZoneId,
     pullZoneClient,
+    replicationTimeout,
   };
 };
 
@@ -66,13 +74,6 @@ export const getEdgeStorageConfig = async () => {
         "The directory-to-upload path isn't a valid path to an existing directory or doesn't have read access.",
     }),
     edgeStorageClient: getBunnyClient(accessKey, storageEndpoint),
-    replicationTimeout: await getInputWrapper({
-      inputName: "replication-timeout",
-      inputOptions: { required: true },
-      transformInput: async (input: string) => parseInt(input, 10),
-      validator: validateInteger,
-      errorLogMessage: "The replication-timeout is not a valid integer.",
-    }),
     storageZoneName: getInput("storage-zone-name", { required: true }),
     targetDirectory: getInput("target-directory", { required: true }),
   };

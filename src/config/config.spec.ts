@@ -40,6 +40,7 @@ describe("config", () => {
     const testConfig = {
       "access-key": "test-access-key",
       "pull-zone-id": "12345",
+      "replication-timeout": "0",
     };
     beforeEach(() => {
       Object.entries(testConfig).forEach(([key, value]) => {
@@ -52,11 +53,20 @@ describe("config", () => {
       expect(config).toEqual({
         pullZoneId: "12345",
         pullZoneClient: expect.anything(),
+        replicationTimeout: 0,
       });
     });
 
+    it("should format replication-timeout to an int", async () => {
+      process.env["INPUT_REPLICATION-TIMEOUT"] = "20.6";
+
+      const config = await getPullZoneConfig();
+
+      expect(config.replicationTimeout).toBe(20);
+    });
+
     describe("Missing required config", () => {
-      it.each([["access-key"], ["pull-zone-id"]])(
+      it.each([["access-key"], ["pull-zone-id"], ["replication-timeout"]])(
         "should throw when configParam '%s' is missing",
         async (configParam: string) => {
           delete process.env[`INPUT_${configParam.toUpperCase()}`];
@@ -66,6 +76,16 @@ describe("config", () => {
           );
         },
       );
+    });
+
+    describe("Invalid replication-timeout", () => {
+      it("should throw when replication-timeout is not a number", async () => {
+        process.env["INPUT_REPLICATION-TIMEOUT"] = "test";
+
+        await expect(() => getPullZoneConfig()).rejects.toThrow(
+          InvalidIntegerError,
+        );
+      });
     });
   });
 
@@ -77,7 +97,6 @@ describe("config", () => {
       "storage-endpoint": "https://example.com",
       concurrency: "5",
       "directory-to-upload": __dirname,
-      "replication-timeout": "0",
     };
     beforeEach(() => {
       Object.entries(testConfig).forEach(([key, value]) => {
@@ -91,7 +110,6 @@ describe("config", () => {
       expect(config).toEqual({
         concurrency: 5,
         directoryToUpload: __dirname,
-        replicationTimeout: 0,
         storageZoneName: "test-zone",
         targetDirectory: "test/target",
         edgeStorageClient: expect.anything(),
@@ -106,14 +124,6 @@ describe("config", () => {
       expect(config.concurrency).toBe(3);
     });
 
-    it("should format replication-timeout to an int", async () => {
-      process.env["INPUT_REPLICATION-TIMEOUT"] = "20.6";
-
-      const config = await getEdgeStorageConfig();
-
-      expect(config.replicationTimeout).toBe(20);
-    });
-
     describe("Missing required config", () => {
       it.each([
         ["access-key"],
@@ -122,7 +132,6 @@ describe("config", () => {
         ["directory-to-upload"],
         ["storage-zone-name"],
         ["target-directory"],
-        ["replication-timeout"],
       ])(
         "should throw when configParam '%s' is missing",
         async (configParam: string) => {
@@ -156,16 +165,6 @@ describe("config", () => {
 
       it("should throw when concurrency is not a positive integer", async () => {
         process.env["INPUT_CONCURRENCY"] = "-1";
-
-        await expect(() => getEdgeStorageConfig()).rejects.toThrow(
-          InvalidIntegerError,
-        );
-      });
-    });
-
-    describe("Invalid replication-timeout", () => {
-      it("should throw when replication-timeout is not a number", async () => {
-        process.env["INPUT_REPLICATION-TIMEOUT"] = "test";
 
         await expect(() => getEdgeStorageConfig()).rejects.toThrow(
           InvalidIntegerError,

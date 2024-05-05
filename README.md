@@ -18,18 +18,18 @@ The required inputs could be different depending on the feature flag(s) that you
 See for more examples: [Examples](#examples)
 
 ```yaml
-- name: Deploy to Bunny CDN
+- name: Deploy to Bunny
   uses: R-J-dev/bunny-deploy@v1
   with:
     access-key: ${{ secrets.BUNNY_ACCESS_KEY }}
     directory-to-upload: "./build"
     storage-endpoint: "storage.bunnycdn.com"
     storage-zone-name: "my-storage-zone"
-    target-directory: "production"
-    concurrency: 50
+    concurrency: "50"
     enable-delete-action: true
     enable-purge-pull-zone: true
     pull-zone-id: "12345"
+    replication-timeout: "15"
 ```
 
 ## Config

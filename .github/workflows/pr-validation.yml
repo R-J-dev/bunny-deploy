@@ -4,9 +4,6 @@ on:
   pull_request:
     branches:
       - main
-  # push:
-  #   branches:
-  #     - main
 
 permissions:
   contents: read
@@ -53,3 +50,9 @@ jobs:
         uses: ./.github/actions/install-dependencies
       - name: Build
         run: pnpm build
+      - name: Check build
+        run: |
+          if ! git diff --quiet; then
+            echo "Build output is different from the existing dist directory. Try running 'pnpm build' and commit the changes."
+            exit 1
+          fi

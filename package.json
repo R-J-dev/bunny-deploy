@@ -1,6 +1,6 @@
 {
   "name": "bunny-deploy",
-  "version": "1.0.0",
+  "version": "0.0.0-semantically-released",
   "description": "GitHub action for deploying your static app to Bunny CDN 🚀",
   "homepage": "https://github.com/R-J-dev/bunny-deploy#readme",
   "type": "module",

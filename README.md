@@ -15,7 +15,7 @@ The required inputs could be different depending on the feature flag(s) that you
 
 > **Warning** ⚠️
 >
-> Unfortunately I didn't found an option in Bunny to rollback the changes that can be made with this GitHub Action. \
+> Unfortunately I didn't found an option in Bunny to rollback the changes that can be made with this GitHub Action.
 > When something fails while running this action, you might have to manually fix it yourself.
 
 ## Example upload with delete and purge
@@ -30,6 +30,7 @@ See for more examples: [Examples](#examples)
     directory-to-upload: "./build"
     storage-endpoint: "storage.bunnycdn.com"
     storage-zone-name: "my-storage-zone"
+    storage-zone-password: ${{ secrets.BUNNY_STORAGE_ZONE_PASSWORD }}
     concurrency: "50"
     enable-delete-action: true
     enable-purge-pull-zone: true
@@ -47,9 +48,9 @@ See for more examples: [Examples](#examples)
     <th>Description</th>
   </tr>
   <tr>
-    <td>access-key</td>
+    <td>storage-zone-password</td>
     <td>
-      Your bunny.net storage zone API key. This is necessary for the network requests that needs to be made to Bunny. See for more info: <a href="https://docs.bunny.net/reference/put_-storagezonename-path-filename#request-headers">Bunny Request headers</a>. This will be read in src/config/config.ts, setSecret is used to mask it from logs (in case it will be logged by accident in your action run). Do not set this as plain text, save this as a secret in GitHub and reference here the secret id. See for more info: <a href="https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions#using-secrets-in-a-workflow">Using secrets in a workflow</a>. In case you still have doubts, check the source code and pin this action to a full length commit SHA. See for more info: <a href="https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-third-party-actions">Using third-party actions</a> about pinning an action to a full length commit SHA.
+      Your bunny.net storage zone password, you can find this in the storage zone details page FTP & API Access. It should have read & write access, otherwise it can't upload files for example. This is necessary for edge storage API requests that needs to be made to Bunny. See for more info: <a href="https://docs.bunny.net/reference/storage-api#header-name-accesskey">authentication header</a> in the docs. This will be read in src/config/config.ts, setSecret is used to mask it from logs (in case it will be logged by accident in your action run). Do not set this as plain text, save this as a secret in GitHub and reference here the secret id. See for more info: <a href="https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions#using-secrets-in-a-workflow">Using secrets in a workflow</a>. In case you still have doubts, check the source code and pin this action to a full length commit SHA. See for more info: <a href="https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-third-party-actions">Using third-party actions</a> about pinning an action to a full length commit SHA.
     </td>
   </tr>
   <tr>
@@ -80,7 +81,7 @@ See for more examples: [Examples](#examples)
   <tr>
     <td>access-key</td>
     <td>
-      Your bunny.net storage zone API key. This is necessary for the network requests that needs to be made to Bunny. See for more info: <a href="https://docs.bunny.net/reference/put_-storagezonename-path-filename#request-headers">Bunny Request headers</a>. This will be read in src/config/config.ts, setSecret is used to mask it from logs (in case it will be logged by accident in your action run). Do not set this as plain text, save this as a secret in GitHub and reference here the secret id. See for more info: <a href="https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions#using-secrets-in-a-workflow">Using secrets in a workflow</a>. In case you still have doubts, check the source code and pin this action to a full length commit SHA. See for more info: <a href="https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-third-party-actions">Using third-party actions</a> about pinning an action to a full length commit SHA.
+      Your bunny.net storage zone API key. This is necessary for the network requests that needs to be made to Bunny. See for more info: <a href="https://docs.bunny.net/reference/bunnynet-api-overview#header-name-accesskey">authentication header</a> in the docs. This will be read in src/config/config.ts, setSecret is used to mask it from logs (in case it will be logged by accident in your action run). Do not set this as plain text, save this as a secret in GitHub and reference here the secret id. See for more info: <a href="https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions#using-secrets-in-a-workflow">Using secrets in a workflow</a>. In case you still have doubts, check the source code and pin this action to a full length commit SHA. See for more info: <a href="https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-third-party-actions">Using third-party actions</a> about pinning an action to a full length commit SHA.
     </td>
   </tr>
   <tr>
@@ -143,7 +144,7 @@ See for more examples: [Examples](#examples)
 - name: Upload build to Bunny
   uses: R-J-dev/bunny-deploy@v1
   with:
-    access-key: ${{ secrets.BUNNY_ACCESS_KEY }}
+    storage-zone-password: ${{ secrets.BUNNY_STORAGE_ZONE_PASSWORD }}
     directory-to-upload: "./build"
     storage-endpoint: "storage.bunnycdn.com"
     storage-zone-name: "my-storage-zone"
@@ -160,6 +161,7 @@ See for more examples: [Examples](#examples)
     directory-to-upload: "./build"
     storage-endpoint: "storage.bunnycdn.com"
     storage-zone-name: "my-storage-zone"
+    storage-zone-password: ${{ secrets.BUNNY_STORAGE_ZONE_PASSWORD }}
     concurrency: "50"
     enable-delete-action: true
     enable-purge-pull-zone: true

@@ -110,7 +110,7 @@ describe("config", () => {
 
   describe("getEdgeStorageConfig", () => {
     const testConfig = {
-      "access-key": "test-access-key",
+      "storage-zone-password": "test-storage-zone-password",
       "storage-zone-name": "test-zone",
       "target-directory": "/test/target",
       "storage-endpoint": "https://example.com",
@@ -145,7 +145,7 @@ describe("config", () => {
 
     describe("Missing required config", () => {
       it.each([
-        ["access-key"],
+        ["storage-zone-password"],
         ["storage-endpoint"],
         ["concurrency"],
         ["directory-to-upload"],

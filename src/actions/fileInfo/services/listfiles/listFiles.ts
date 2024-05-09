@@ -1,4 +1,5 @@
 import { logDebug } from "@/logger.js";
+import { getPathWithoutLeadingSlash } from "@/utils/path/path.js";
 import { Got } from "got";
 import { z } from "zod";
 
@@ -39,7 +40,9 @@ export const listFiles = async ({
   disableTypeValidation = false,
 }: ListFiles) => {
   logDebug(`Retrieving file info for: ${path}`);
-  const response = await client.get(path, {
+  // Remote paths received from this request starts with a slash, which is not allowed to pass as an url to got (when a prefixUrl is defined).
+  // See for more info: https://github.com/sindresorhus/got/blob/main/documentation/2-options.md#note-2
+  const response = await client.get(getPathWithoutLeadingSlash(path), {
     headers: { "Content-Type": "application/json" },
     resolveBodyOnly: true,
     responseType: "json",

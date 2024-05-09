@@ -1,3 +1,4 @@
+import { getPathWithoutLeadingSlash } from "@/utils/path/path.js";
 import { asyncForEach } from "modern-async";
 import type { Got } from "got";
 import { logInfo, logWarning } from "@/logger.js";
@@ -36,7 +37,9 @@ export const deleteFiles = async ({
     async (file) => {
       try {
         logInfo(`Deleting file: ${file}`);
-        await client.delete(file);
+        // It is not allowed to pass an url to got with a leading slash (when a prefixUrl is defined).
+        // See for more info: https://github.com/sindresorhus/got/blob/main/documentation/2-options.md#note-2
+        await client.delete(getPathWithoutLeadingSlash(file));
       } catch (error) {
         logWarning(
           `Failed deleting file: ${file}.

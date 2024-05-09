@@ -45249,10 +45249,10 @@ const transformDirectoryToUploadInput = async (directoryToUpload) => {
 
 
 
-const getSecrets = async () => {
-    const accessKey = (0,core.getInput)("access-key", { required: true });
-    (0,core.setSecret)(accessKey);
-    return { accessKey };
+const getSecret = async (secretName) => {
+    const secret = (0,core.getInput)(secretName, { required: true });
+    (0,core.setSecret)(secret);
+    return secret;
 };
 const getFeatureFlags = async () => {
     logDebug("Retrieving feature flags");
@@ -45265,7 +45265,7 @@ const getFeatureFlags = async () => {
 };
 const getPullZoneConfig = async () => {
     logDebug("Retrieving pullZoneConfig");
-    const { accessKey } = await getSecrets();
+    const accessKey = await getSecret("access-key");
     const pullZoneId = await getInputWrapper({
         inputName: "pull-zone-id",
         inputOptions: { required: true },
@@ -45288,8 +45288,7 @@ const getPullZoneConfig = async () => {
 };
 const getEdgeStorageConfig = async () => {
     logDebug("Retrieving edgeStorageConfig");
-    const { accessKey } = await getSecrets();
-    // TODO: get storageZonePassword here instead of accessKey, getPullZoneConfig needs the accessKey
+    const storageZonePassword = await getSecret("storage-zone-password");
     const storageEndpoint = await getInputWrapper({
         inputName: "storage-endpoint",
         inputOptions: { required: true },
@@ -45309,7 +45308,7 @@ const getEdgeStorageConfig = async () => {
             validator: validateDirectory,
             errorLogMessage: "The directory-to-upload path isn't a valid path to an existing directory or doesn't have read access.",
         }),
-        edgeStorageClient: getBunnyClient(accessKey, storageEndpoint),
+        edgeStorageClient: getBunnyClient(storageZonePassword, storageEndpoint),
         storageZoneName: (0,core.getInput)("storage-zone-name", { required: true }),
         targetDirectory: await getInputWrapper({
             inputName: "target-directory",

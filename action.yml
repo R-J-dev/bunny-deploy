@@ -8,47 +8,71 @@ branding:
 
 inputs:
   access-key:
+    required: false
     description: "Your bunny.net storage zone API key.
       This is necessary for the network requests that needs to be made to Bunny.
-      See for more info: https://docs.bunny.net/reference/put_-storagezonename-path-filename#request-headers.
+      See for more info: https://docs.bunny.net/reference/bunnynet-api-overview#header-name-accesskey.
       This will be read in src/config/config.ts, setSecret is used to mask it from logs (in case it will be logged by accident in your action run).
       Do not set this as plain text, save this as a secret in GitHub and reference here the secret id.
       See for more info: https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions#using-secrets-in-a-workflow.
       In case you still have doubts, check the source code and pin this action to a full length commit SHA.
       See for more info: https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-third-party-actions about pinning an action to a full length commit SHA."
   directory-to-upload:
+    required: false
     description: "The path to the directory that needs to be uploaded to Bunny. An absolute path is preferred, but otherwise the action will combine the GITHUB_WORKSPACE with this input."
   storage-endpoint:
+    required: false
     description: "The storage API endpoint of your primary storage region. See for more info: https://docs.bunny.net/reference/storage-api#storage-endpoints."
   storage-zone-name:
+    required: false
     description: "The name of your storage zone, to determine to which storage zone the static app needs to upload."
+  storage-zone-password:
+    required: false
+    description:
+      "Your bunny.net storage zone password, you can find this in the storage zone details page FTP & API Access.
+      It should have read & write access, otherwise it can't upload files for example.
+      This is necessary for edge storage API requests that needs to be made to Bunny.
+      See for more info: https://docs.bunny.net/reference/bunnynet-api-overview#header-name-accesskey.
+      This will be read in src/config/config.ts, setSecret is used to mask it from logs (in case it will be logged by accident in your action run).
+      Do not set this as plain text, save this as a secret in GitHub and reference here the secret id.
+      See for more info: https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions#using-secrets-in-a-workflow.
+      In case you still have doubts, check the source code and pin this action to a full length commit SHA.
+      See for more info: https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-third-party-actions about pinning an action to a full length commit SHA."
   target-directory:
+    required: false
     description:
       "The directory path where the files from directory-to-upload needs to be uploaded to inside your storage zone.
       When the target-directory hasn't been passed or is an empty string, then the directory-to-upload will be uploaded to the root of your storage zone."
   pull-zone-id:
+    required: false
     description: "The pull zone id is required for purging the cache."
   replication-timeout:
+    required: false
     description: "The amount of seconds to wait before purging the cache.
       Unfortunately Bunny doesn't provide an api endpoint yet to check if the replicated storage zones are on the latest version (equal to main storage zone).
       See for more info: https://support.bunny.net/hc/en-us/articles/360020526159-Understanding-Geo-Replication.
       As you can read in the before mentioned link, an uploaded file should be replicated to other regions within a couple of seconds.
       So I think it should be safe to set this to 15 seconds, but check what works best for you."
   concurrency:
+    required: false
     description:
       "The maximum amount of concurrent actions (retrieving remote file info, deleting files, uploading files).
       For example this action can upload files using concurrency, but it depends on the GitHub runner and the API limit how much concurrent requests are possible.
       At Bunny the limit for concurrent uploads per storage zone seems to be 50.
       See for more info: https://docs.bunny.net/reference/edge-storage-api-limits."
   enable-delete-action:
+    required: false
     description:
       "Removes directories and files from your storage zone that do not exist in the specified directory-to-upload.
       This action compares the contents of the storage zone against the local directory and deletes any files that are present in the storage zone but absent from the local directory."
   enable-purge-pull-zone:
+    required: false
     description: "Purges the cache of the given pull-zone-id when all actions have finished."
   enable-purge-only:
+    required: false
     description: "Only enables the action to purge the pull zone cache of the given pull-zone-id and doesn't execute any other actions."
   disable-type-validation:
+    required: false
     description: "Disables type validation when the action retrieves file info.
       You probably will not need to disable the type validation,
       but in case Bunny changes their API and the action doesn't break due to the changes,

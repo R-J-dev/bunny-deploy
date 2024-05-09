@@ -1,5 +1,6 @@
 import {
   InvalidIntegerError,
+  InvalidDigitStringError,
   InvalidPathError,
   InvalidUrlProtocolError,
 } from "@/errors.js";
@@ -20,6 +21,12 @@ export const validateUrl = async (url: string, expectedProtocol: string) => {
       invalidProtocol: validUrl.protocol,
       expectedProtocol: expectedProtocol,
     });
+  }
+};
+
+export const validateDigitString = async (numberString: string) => {
+  if (!/^\d+$/.test(numberString)) {
+    throw new InvalidDigitStringError({ invalidString: numberString });
   }
 };
 

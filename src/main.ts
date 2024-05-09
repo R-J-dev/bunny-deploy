@@ -9,8 +9,6 @@ import {
   getPullZoneConfig,
 } from "@/config/config.js";
 
-// TODO: document what todo when an deployment fails
-
 // TODO: add tests for this:
 /**
  * Main function for the Bunny Deploy action

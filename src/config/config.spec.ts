@@ -6,6 +6,7 @@ import {
 } from "@/config/config.js";
 import {
   InvalidIntegerError,
+  InvalidDigitStringError,
   InvalidPathError,
   InvalidUrlProtocolError,
 } from "@/errors.js";
@@ -87,13 +88,31 @@ describe("config", () => {
         );
       });
     });
+
+    describe("Invalid pull-zone-id", () => {
+      it("should throw when the pull-zone-id has a leading slash", async () => {
+        process.env["INPUT_PULL-ZONE-ID"] = "/1234";
+
+        await expect(() => getPullZoneConfig()).rejects.toThrow(
+          InvalidDigitStringError,
+        );
+      });
+
+      it("should throw when the pull-zone-id contains decimals", async () => {
+        process.env["INPUT_PULL-ZONE-ID"] = "1234,56";
+
+        await expect(() => getPullZoneConfig()).rejects.toThrow(
+          InvalidDigitStringError,
+        );
+      });
+    });
   });
 
   describe("getEdgeStorageConfig", () => {
     const testConfig = {
       "access-key": "test-access-key",
       "storage-zone-name": "test-zone",
-      "target-directory": "test/target",
+      "target-directory": "/test/target",
       "storage-endpoint": "https://example.com",
       concurrency: "5",
       "directory-to-upload": __dirname,
@@ -111,7 +130,7 @@ describe("config", () => {
         concurrency: 5,
         directoryToUpload: __dirname,
         storageZoneName: "test-zone",
-        targetDirectory: "test/target",
+        targetDirectory: "test/target", // Leading slash should be removed
         edgeStorageClient: expect.anything(),
       });
     });

@@ -25,6 +25,19 @@ export class InvalidUrlProtocolError extends Error {
   }
 }
 
+type InvalidIntStringParams =
+  | { invalidString: string; message?: string }
+  | { invalidString?: string; message: string };
+
+export class InvalidDigitStringError extends Error {
+  constructor({ invalidString, message }: InvalidIntStringParams) {
+    super(
+      message ??
+        `Invalid digit string: ${invalidString}. Only digits are allowed.`,
+    );
+  }
+}
+
 type InvalidNumberParams =
   | { invalidInt: number; message?: string }
   | { invalidInt?: number; message: string };

@@ -26,11 +26,6 @@ interface GetFileInfoProps {
   disableTypeValidation?: boolean;
 }
 
-// The delete action should have a feature flag to enable it.
-// We should also warn people in the readme that Bunny doesn't provide an option to reset
-// your storage zone to a specific backup through their API.
-// So when an upload or delete fails, they have to manually fix their storage zone :(
-
 export type FileInfo = {
   unchangedFiles: Set<string>;
   unknownRemoteFiles: Set<string>;
@@ -57,7 +52,7 @@ export const getFileInfo = async ({
   listFilesResults.add(
     await listFiles({
       client,
-      path: `/${storageZoneName}`,
+      path: `${storageZoneName}`,
       disableTypeValidation,
     }),
   );

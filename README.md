@@ -13,6 +13,11 @@ The default action for this GitHub action, is that it uploads a given directory 
 It also provides some extra features, which are listed under [Feature flags](#feature-flags-optional).
 The required inputs could be different depending on the feature flag(s) that you enable. See for more info: [Config](#config).
 
+> **Warning** ⚠️
+>
+> Unfortunately I didn't found an option in Bunny to rollback the changes that can be made with this GitHub Action. \
+> When something fails while running this action, you might have to manually fix it yourself.
+
 ## Example upload with delete and purge
 
 See for more examples: [Examples](#examples)

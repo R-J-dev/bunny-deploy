@@ -3,6 +3,7 @@ import { getBunnyClient } from "@/bunnyClient.js";
 import {
   validateDirectory,
   validateInteger,
+  validateDigitString,
   validatePositiveInteger,
   validateUrl,
 } from "@/config/validators.js";
@@ -30,7 +31,12 @@ export const getFeatureFlags = async () => {
 export const getPullZoneConfig = async () => {
   logDebug("Retrieving pullZoneConfig");
   const { accessKey } = await getSecrets();
-  const pullZoneId = getInput("pull-zone-id", { required: true });
+  const pullZoneId = await getInputWrapper({
+    inputName: "pull-zone-id",
+    inputOptions: { required: true },
+    validator: validateDigitString,
+    errorLogMessage: "The pull-zone-id should only contain digits.",
+  });
   const pullZoneClient = getBunnyClient(
     accessKey,
     "https://api.bunny.net/pullzone/",
@@ -52,6 +58,7 @@ export const getPullZoneConfig = async () => {
 export const getEdgeStorageConfig = async () => {
   logDebug("Retrieving edgeStorageConfig");
   const { accessKey } = await getSecrets();
+  // TODO: get storageZonePassword here instead of accessKey, getPullZoneConfig needs the accessKey
   const storageEndpoint = await getInputWrapper({
     inputName: "storage-endpoint",
     inputOptions: { required: true },
@@ -75,6 +82,11 @@ export const getEdgeStorageConfig = async () => {
     }),
     edgeStorageClient: getBunnyClient(accessKey, storageEndpoint),
     storageZoneName: getInput("storage-zone-name", { required: true }),
-    targetDirectory: getInput("target-directory"),
+    targetDirectory: await getInputWrapper({
+      inputName: "target-directory",
+      transformInput: async (input: string) => {
+        if (input.startsWith("/")) return input.slice(1);
+      },
+    }),
   };
 };

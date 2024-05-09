@@ -33880,6 +33880,11 @@ const getUploadPath = (absoluteFilePath, directoryToUpload, targetDirectory) => 
         : relativeFilePath;
 };
 
+;// CONCATENATED MODULE: ./src/utils/path/path.ts
+const getPathWithoutLeadingSlash = (path) => {
+    return path.startsWith("/") ? path.slice(1) : path;
+};
+
 ;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@3.22.5/node_modules/zod/lib/index.mjs
 var util;
 (function (util) {
@@ -37902,6 +37907,7 @@ var z = /*#__PURE__*/Object.freeze({
 ;// CONCATENATED MODULE: ./src/actions/fileInfo/services/listfiles/listFiles.ts
 
 
+
 const ListFileItem = z.object({
     Guid: z.string(),
     StorageZoneName: z.string(),
@@ -37922,7 +37928,9 @@ const ListFileItem = z.object({
 const ListFileResponseSchema = z.array(ListFileItem);
 const listFiles = async ({ client, path, disableTypeValidation = false, }) => {
     logDebug(`Retrieving file info for: ${path}`);
-    const response = await client.get(path, {
+    // Remote paths received from this request starts with a slash, which is not allowed to pass as an url to got (when a prefixUrl is defined).
+    // See for more info: https://github.com/sindresorhus/got/blob/main/documentation/2-options.md#note-2
+    const response = await client.get(getPathWithoutLeadingSlash(path), {
         headers: { "Content-Type": "application/json" },
         resolveBodyOnly: true,
         responseType: "json",
@@ -38014,7 +38022,7 @@ const getFileInfo = async ({ client, directoryToUpload, storageZoneName, concurr
     const listFilesResults = new Set();
     listFilesResults.add(await listFiles({
         client,
-        path: `/${storageZoneName}`,
+        path: `${storageZoneName}`,
         disableTypeValidation,
     }));
     while (listFilesResults.size) {
@@ -38057,6 +38065,7 @@ const getFileInfo = async ({ client, directoryToUpload, storageZoneName, concurr
 ;// CONCATENATED MODULE: ./src/actions/delete/delete.ts
 
 
+
 /**
  * Asynchronously deletes a set of files or directories in a remote storage zone.
  */
@@ -38064,7 +38073,9 @@ const deleteFiles = async ({ client, filesToDelete, concurrency, }) => {
     await src_asyncForEach(filesToDelete, async (file) => {
         try {
             logInfo(`Deleting file: ${file}`);
-            await client.delete(file);
+            // It is not allowed to pass an url to got with a leading slash (when a prefixUrl is defined).
+            // See for more info: https://github.com/sindresorhus/got/blob/main/documentation/2-options.md#note-2
+            await client.delete(getPathWithoutLeadingSlash(file));
         }
         catch (error) {
             logWarning(`Failed deleting file: ${file}.
@@ -45063,6 +45074,12 @@ class InvalidUrlProtocolError extends Error {
             `Invalid protocol '${invalidProtocol}' provided, expected: '${expectedProtocol}'`);
     }
 }
+class InvalidDigitStringError extends Error {
+    constructor({ invalidString, message }) {
+        super(message ??
+            `Invalid digit string: ${invalidString}. Only digits are allowed.`);
+    }
+}
 class InvalidIntegerError extends Error {
     constructor({ invalidInt, message }) {
         super(message ?? `Expected an integer, but received: ${invalidInt}`);
@@ -45136,6 +45153,11 @@ const validateUrl = async (url, expectedProtocol) => {
             invalidProtocol: validUrl.protocol,
             expectedProtocol: expectedProtocol,
         });
+    }
+};
+const validateDigitString = async (numberString) => {
+    if (!/^\d+$/.test(numberString)) {
+        throw new InvalidDigitStringError({ invalidString: numberString });
     }
 };
 const validateInteger = async (int) => {
@@ -45244,7 +45266,12 @@ const getFeatureFlags = async () => {
 const getPullZoneConfig = async () => {
     logDebug("Retrieving pullZoneConfig");
     const { accessKey } = await getSecrets();
-    const pullZoneId = (0,core.getInput)("pull-zone-id", { required: true });
+    const pullZoneId = await getInputWrapper({
+        inputName: "pull-zone-id",
+        inputOptions: { required: true },
+        validator: validateDigitString,
+        errorLogMessage: "The pull-zone-id should only contain digits.",
+    });
     const pullZoneClient = getBunnyClient(accessKey, "https://api.bunny.net/pullzone/");
     const replicationTimeout = await getInputWrapper({
         inputName: "replication-timeout",
@@ -45262,6 +45289,7 @@ const getPullZoneConfig = async () => {
 const getEdgeStorageConfig = async () => {
     logDebug("Retrieving edgeStorageConfig");
     const { accessKey } = await getSecrets();
+    // TODO: get storageZonePassword here instead of accessKey, getPullZoneConfig needs the accessKey
     const storageEndpoint = await getInputWrapper({
         inputName: "storage-endpoint",
         inputOptions: { required: true },
@@ -45283,7 +45311,13 @@ const getEdgeStorageConfig = async () => {
         }),
         edgeStorageClient: getBunnyClient(accessKey, storageEndpoint),
         storageZoneName: (0,core.getInput)("storage-zone-name", { required: true }),
-        targetDirectory: (0,core.getInput)("target-directory"),
+        targetDirectory: await getInputWrapper({
+            inputName: "target-directory",
+            transformInput: async (input) => {
+                if (input.startsWith("/"))
+                    return input.slice(1);
+            },
+        }),
     };
 };
 
@@ -45294,7 +45328,6 @@ const getEdgeStorageConfig = async () => {
 
 
 
-// TODO: document what todo when an deployment fails
 // TODO: add tests for this:
 /**
  * Main function for the Bunny Deploy action

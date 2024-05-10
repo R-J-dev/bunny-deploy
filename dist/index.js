@@ -38056,8 +38056,8 @@ const getFileInfo = async ({ client, directoryToUpload, storageZoneName, concurr
                 return;
             }
             const checksum = await getFileChecksum(localFilePath);
-            logDebug(`localChecksum: ${checksum} === ${remoteFile.Checksum} :remoteFileChecksum`);
-            if (checksum === remoteFile.Checksum) {
+            logDebug(`localFilePath: ${localFilePath}, localChecksum: ${checksum.toLowerCase()}, remoteFileChecksum: ${remoteFile.Checksum?.toLowerCase()}`);
+            if (checksum.toLowerCase() === remoteFile.Checksum?.toLowerCase()) {
                 logInfo(`Found unchanged local file ${localFilePath} compared to remote: '${remoteFile.Path}${remoteFile.ObjectName}'`);
                 fileInfo.unchangedFiles.add(localFilePath);
             }
@@ -45101,6 +45101,11 @@ class InvalidPathError extends Error {
         super(message ?? `The given path: '${invalidPath}' isn't valid.`);
     }
 }
+class InvalidStorageZoneNameError extends Error {
+    constructor(message = "storage-zone-name should not contain a slash") {
+        super(message);
+    }
+}
 
 ;// CONCATENATED MODULE: ./src/bunnyClient.ts
 
@@ -45260,6 +45265,7 @@ const transformDirectoryToUploadInput = async (directoryToUpload) => {
 
 
 
+
 const getSecret = async (secretName) => {
     const secret = (0,core.getInput)(secretName, { required: true });
     (0,core.setSecret)(secret);
@@ -45320,7 +45326,14 @@ const getEdgeStorageConfig = async () => {
             errorLogMessage: "The directory-to-upload path isn't a valid path to an existing directory or doesn't have read access.",
         }),
         edgeStorageClient: getBunnyClient(storageZonePassword, storageEndpoint),
-        storageZoneName: (0,core.getInput)("storage-zone-name", { required: true }),
+        storageZoneName: await getInputWrapper({
+            inputName: "storage-zone-name",
+            inputOptions: { required: true },
+            validator: async (input) => {
+                if (input.includes("/"))
+                    throw new InvalidStorageZoneNameError();
+            },
+        }),
         targetDirectory: await getInputWrapper({
             inputName: "target-directory",
             transformInput: async (input) => {

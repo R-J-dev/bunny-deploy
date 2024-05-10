@@ -57,3 +57,11 @@ export class InvalidPathError extends Error {
     super(message ?? `The given path: '${invalidPath}' isn't valid.`);
   }
 }
+
+export class InvalidStorageZoneNameError extends Error {
+  constructor(
+    message: string = "storage-zone-name should not contain a slash",
+  ) {
+    super(message);
+  }
+}

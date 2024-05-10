@@ -42,7 +42,7 @@ export const deleteFiles = async ({
         await client.delete(getPathWithoutLeadingSlash(file));
       } catch (error) {
         logWarning(
-          `Failed deleting file: ${file}.
+          `Failed deleting file: ${file}
           You might need to delete the file yourself or reset your storage zone with a back-up.
           The error that triggered this was: ${error instanceof Error ? error.message : "unknown"}`,
         );

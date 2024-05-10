@@ -93,9 +93,9 @@ export const getFileInfo = async ({
         }
         const checksum = await getFileChecksum(localFilePath);
         logDebug(
-          `localChecksum: ${checksum} === ${remoteFile.Checksum} :remoteFileChecksum`,
+          `localFilePath: ${localFilePath}, localChecksum: ${checksum.toLowerCase()}, remoteFileChecksum: ${remoteFile.Checksum?.toLowerCase()}`,
         );
-        if (checksum === remoteFile.Checksum) {
+        if (checksum.toLowerCase() === remoteFile.Checksum?.toLowerCase()) {
           logInfo(
             `Found unchanged local file ${localFilePath} compared to remote: '${remoteFile.Path}${remoteFile.ObjectName}'`,
           );

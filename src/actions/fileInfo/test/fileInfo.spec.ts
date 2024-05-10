@@ -181,7 +181,7 @@ describe("getFileInfo", () => {
     );
     expect(fileInfo.unknownRemoteFiles).toEqual(
       new Set([
-        `/${storageZoneName}/test-dir/test-dir-to-delete`,
+        `/${storageZoneName}/test-dir/test-dir-to-delete/`,
         `/${storageZoneName}/test-dir/nested-test-dir/test-file-to-delete.txt`,
       ]),
     );

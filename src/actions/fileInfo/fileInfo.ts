@@ -2,7 +2,7 @@ import {
   ListFileItem,
   listFiles,
 } from "@/actions/fileInfo/services/listfiles/listFiles.js";
-import { logInfo } from "@/logger.js";
+import { logDebug, logInfo } from "@/logger.js";
 import { getFileChecksum } from "@/utils/checksum/checksum.js";
 import { Got } from "got";
 import { NoReadAccessToFileError } from "@/actions/fileInfo/errors.js";
@@ -72,6 +72,7 @@ export const getFileInfo = async ({
           localFilePath = await getLocalFilePath(directoryToUpload, remoteFile);
         } catch (error) {
           if (error instanceof NoReadAccessToFileError) {
+            logDebug(error.message);
             const remoteFileEndpoint = getRemoteFileEndpoint(remoteFile);
             logInfo(`Found unknown remote file: '${remoteFileEndpoint}'`);
             fileInfo.unknownRemoteFiles.add(remoteFileEndpoint);
@@ -91,6 +92,9 @@ export const getFileInfo = async ({
           return;
         }
         const checksum = await getFileChecksum(localFilePath);
+        logDebug(
+          `localChecksum: ${checksum} === ${remoteFile.Checksum} :remoteFileChecksum`,
+        );
         if (checksum === remoteFile.Checksum) {
           logInfo(
             `Found unchanged local file ${localFilePath} compared to remote: '${remoteFile.Path}${remoteFile.ObjectName}'`,

@@ -29,6 +29,7 @@ interface UploadDirectoryToStorageZoneProps {
    */
   concurrency: number;
   fileInfo: FileInfo;
+  storageZoneName: string;
 }
 
 /**
@@ -42,6 +43,7 @@ export const uploadDirectoryToStorageZone = async ({
   targetDirectory,
   concurrency,
   fileInfo,
+  storageZoneName,
 }: UploadDirectoryToStorageZoneProps) => {
   try {
     const files = await readdir(directoryToUpload, {
@@ -61,7 +63,9 @@ export const uploadDirectoryToStorageZone = async ({
         const uploadPath = getUploadPath(
           filePath,
           directoryToUpload,
-          targetDirectory,
+          targetDirectory
+            ? join(storageZoneName, targetDirectory)
+            : storageZoneName,
         );
         await uploadFile(client, uploadPath, filePath);
       },
@@ -78,20 +82,18 @@ export const uploadDirectoryToStorageZone = async ({
  *
  * @param absoluteFilePath - The absolute path to the file that you want to upload
  * @param directoryToUpload - The absolute path to the local directory that you are uploading
- * @param targetDirectory - The path of the remote directory where the file should be uploaded to.
+ * @param targetDirectory - The path of the remote directory where the file should be uploaded to (starting with the storageZoneName)
  * @returns upload path
  */
 const getUploadPath = (
   absoluteFilePath: string,
   directoryToUpload: string,
-  targetDirectory?: string,
+  targetDirectory: string,
 ) => {
   // Use replaceAll to remove backslashes on Windows
   const relativeFilePath = relative(
     directoryToUpload,
     absoluteFilePath,
   ).replaceAll("\\", "/");
-  return targetDirectory
-    ? join(targetDirectory, relativeFilePath).replaceAll("\\", "/")
-    : relativeFilePath;
+  return join(targetDirectory, relativeFilePath).replaceAll("\\", "/");
 };

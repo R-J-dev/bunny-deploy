@@ -52,7 +52,7 @@ export const getFileInfo = async ({
   listFilesResults.add(
     await listFiles({
       client,
-      path: `${storageZoneName}`,
+      path: `${storageZoneName}/`,
       disableTypeValidation,
     }),
   );

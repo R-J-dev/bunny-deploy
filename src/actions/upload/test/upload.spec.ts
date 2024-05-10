@@ -12,8 +12,9 @@ import { uploadFileHeaders } from "@/actions/upload/uploadFile.js";
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const directoryToUpload = join(__dirname, "../test/test-dir-for-upload");
-const targetDirectory = `test/upload-with-stream/${testUploadResultDirectory}/upload-with-stream`;
+const targetDirectory = `upload-with-stream/${testUploadResultDirectory}/upload-with-stream`;
 const storageZoneEndpoint = testServerUrl;
+const storageZoneName = "test";
 const bunnyClient = getBunnyClient("test", storageZoneEndpoint);
 let concurrentUploads = 0;
 let maxConcurrentUploads = 0;
@@ -54,6 +55,7 @@ describe("uploadDirectoryToStorageZone", () => {
           unchangedFiles: new Set<string>(),
           unknownRemoteFiles: new Set<string>(),
         },
+        storageZoneName,
       });
 
       expect(maxConcurrentUploads).toBeLessThanOrEqual(concurrency);
@@ -74,6 +76,7 @@ describe("uploadDirectoryToStorageZone", () => {
           unchangedFiles: new Set<string>(),
           unknownRemoteFiles: new Set<string>(),
         },
+        storageZoneName,
       });
 
       // Assuming there are 3 files in the directory
@@ -104,6 +107,7 @@ describe("uploadDirectoryToStorageZone", () => {
             unchangedFiles: new Set<string>(),
             unknownRemoteFiles: new Set<string>(),
           },
+          storageZoneName,
         }),
       ).rejects.toThrow();
     });
@@ -130,12 +134,13 @@ describe("uploadDirectoryToStorageZone", () => {
             unchangedFiles: unchangedFiles,
             unknownRemoteFiles: new Set<string>(),
           },
+          storageZoneName,
         });
 
         // There are in total 3 files in the directoryToUpload, 2 of those are unchanged.
         expect(putSpy).toHaveBeenCalledTimes(1);
         expect(putSpy).toHaveBeenCalledWith(
-          `${targetDirectory}/nested-test-dir/nested-file.html`,
+          `${storageZoneName}/${targetDirectory}/nested-test-dir/nested-file.html`,
           uploadFileHeaders,
         );
       });

@@ -66,6 +66,7 @@ export const run = async () => {
       targetDirectory,
       concurrency,
       fileInfo,
+      storageZoneName,
     });
     endGroup();
 

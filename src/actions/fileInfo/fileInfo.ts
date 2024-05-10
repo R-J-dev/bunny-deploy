@@ -1,4 +1,7 @@
-import { listFiles } from "@/actions/fileInfo/services/listfiles/listFiles.js";
+import {
+  ListFileItem,
+  listFiles,
+} from "@/actions/fileInfo/services/listfiles/listFiles.js";
 import { logInfo } from "@/logger.js";
 import { getFileChecksum } from "@/utils/checksum/checksum.js";
 import { Got } from "got";
@@ -69,7 +72,7 @@ export const getFileInfo = async ({
           localFilePath = await getLocalFilePath(directoryToUpload, remoteFile);
         } catch (error) {
           if (error instanceof NoReadAccessToFileError) {
-            const remoteFileEndpoint = `${remoteFile.Path}${remoteFile.ObjectName}`;
+            const remoteFileEndpoint = getRemoteFileEndpoint(remoteFile);
             logInfo(`Found unknown remote file: '${remoteFileEndpoint}'`);
             fileInfo.unknownRemoteFiles.add(remoteFileEndpoint);
             return;
@@ -81,7 +84,7 @@ export const getFileInfo = async ({
           listFilesResults.add(
             await listFiles({
               client,
-              path: `${remoteFile.Path}${remoteFile.ObjectName}/`,
+              path: getRemoteFileEndpoint(remoteFile),
               disableTypeValidation,
             }),
           );
@@ -100,4 +103,12 @@ export const getFileInfo = async ({
   }
 
   return fileInfo;
+};
+
+const getRemoteFileEndpoint = (remoteFile: ListFileItem) => {
+  const remoteFileEndpoint = `${remoteFile.Path}${remoteFile.ObjectName}`;
+  if (remoteFile.IsDirectory && !remoteFile.ObjectName.endsWith("/")) {
+    return `${remoteFileEndpoint}/`;
+  }
+  return remoteFileEndpoint;
 };

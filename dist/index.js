@@ -33840,7 +33840,7 @@ const uploadFile = async (client, uploadPath, filePath) => {
  * This function recursively traverses the specified directory, uploading each file to the storage zone in parallel batches.
  * It is designed to efficiently handle large numbers of files by limiting the number of concurrent uploads.
  */
-const uploadDirectoryToStorageZone = async ({ client, directoryToUpload, targetDirectory, concurrency, fileInfo, }) => {
+const uploadDirectoryToStorageZone = async ({ client, directoryToUpload, targetDirectory, concurrency, fileInfo, storageZoneName, }) => {
     try {
         const files = await (0,promises_namespaceObject.readdir)(directoryToUpload, {
             encoding: "utf8",
@@ -33855,7 +33855,9 @@ const uploadDirectoryToStorageZone = async ({ client, directoryToUpload, targetD
                 logInfo(`Skipped uploading unchanged file: ${filePath}`);
                 return;
             }
-            const uploadPath = getUploadPath(filePath, directoryToUpload, targetDirectory);
+            const uploadPath = getUploadPath(filePath, directoryToUpload, targetDirectory
+                ? (0,external_path_.join)(storageZoneName, targetDirectory)
+                : storageZoneName);
             await uploadFile(client, uploadPath, filePath);
         }, concurrency);
     }
@@ -33869,15 +33871,13 @@ const uploadDirectoryToStorageZone = async ({ client, directoryToUpload, targetD
  *
  * @param absoluteFilePath - The absolute path to the file that you want to upload
  * @param directoryToUpload - The absolute path to the local directory that you are uploading
- * @param targetDirectory - The path of the remote directory where the file should be uploaded to.
+ * @param targetDirectory - The path of the remote directory where the file should be uploaded to (starting with the storageZoneName)
  * @returns upload path
  */
 const getUploadPath = (absoluteFilePath, directoryToUpload, targetDirectory) => {
     // Use replaceAll to remove backslashes on Windows
     const relativeFilePath = (0,external_path_.relative)(directoryToUpload, absoluteFilePath).replaceAll("\\", "/");
-    return targetDirectory
-        ? (0,external_path_.join)(targetDirectory, relativeFilePath).replaceAll("\\", "/")
-        : relativeFilePath;
+    return (0,external_path_.join)(targetDirectory, relativeFilePath).replaceAll("\\", "/");
 };
 
 ;// CONCATENATED MODULE: ./src/utils/path/path.ts
@@ -45368,6 +45368,7 @@ const run = async () => {
             targetDirectory,
             concurrency,
             fileInfo,
+            storageZoneName,
         });
         (0,core.endGroup)();
         if (enablePurgePullZone) {

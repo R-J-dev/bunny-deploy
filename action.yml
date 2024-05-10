@@ -62,17 +62,21 @@ inputs:
       See for more info: https://docs.bunny.net/reference/edge-storage-api-limits."
   enable-delete-action:
     required: false
+    default: false
     description:
       "Removes directories and files from your storage zone that do not exist in the specified directory-to-upload.
       This action compares the contents of the storage zone against the local directory and deletes any files that are present in the storage zone but absent from the local directory."
   enable-purge-pull-zone:
     required: false
+    default: false
     description: "Purges the cache of the given pull-zone-id when all actions have finished."
   enable-purge-only:
     required: false
+    default: false
     description: "Only enables the action to purge the pull zone cache of the given pull-zone-id and doesn't execute any other actions."
   disable-type-validation:
     required: false
+    default: false
     description: "Disables type validation when the action retrieves file info.
       You probably will not need to disable the type validation,
       but in case Bunny changes their API and the action doesn't break due to the changes,

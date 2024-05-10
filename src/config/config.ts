@@ -10,6 +10,7 @@ import {
 import { getInputWrapper } from "@/config/inputWrapper.js";
 import { transformDirectoryToUploadInput } from "@/config/transformers.js";
 import { logDebug } from "@/logger.js";
+import { InvalidStorageZoneNameError } from "@/errors.js";
 
 export const getSecret = async (secretName: string) => {
   const secret = getInput(secretName, { required: true });
@@ -79,7 +80,13 @@ export const getEdgeStorageConfig = async () => {
         "The directory-to-upload path isn't a valid path to an existing directory or doesn't have read access.",
     }),
     edgeStorageClient: getBunnyClient(storageZonePassword, storageEndpoint),
-    storageZoneName: getInput("storage-zone-name", { required: true }),
+    storageZoneName: await getInputWrapper({
+      inputName: "storage-zone-name",
+      inputOptions: { required: true },
+      validator: async (input: string) => {
+        if (input.includes("/")) throw new InvalidStorageZoneNameError();
+      },
+    }),
     targetDirectory: await getInputWrapper({
       inputName: "target-directory",
       transformInput: async (input: string) => {

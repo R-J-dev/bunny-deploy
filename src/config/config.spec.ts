@@ -9,6 +9,7 @@ import {
   InvalidDigitStringError,
   InvalidPathError,
   InvalidUrlProtocolError,
+  InvalidStorageZoneNameError,
 } from "@/errors.js";
 import { join } from "path";
 
@@ -168,6 +169,16 @@ describe("config", () => {
 
         await expect(() => getEdgeStorageConfig()).rejects.toThrow(
           InvalidUrlProtocolError,
+        );
+      });
+    });
+
+    describe("Invalid storage-zone-name", () => {
+      it("should throw when storage-zone-name contains an slash", async () => {
+        process.env["INPUT_STORAGE-ZONE-NAME"] = "test/";
+
+        await expect(() => getEdgeStorageConfig()).rejects.toThrow(
+          InvalidStorageZoneNameError,
         );
       });
     });

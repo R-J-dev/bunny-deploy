@@ -1,3 +1,4 @@
+import { logDebug } from "@/logger.js";
 import { createHash } from "crypto";
 import { createReadStream } from "node:fs";
 
@@ -8,6 +9,7 @@ import { createReadStream } from "node:fs";
  * @returns {Promise<string>} A promise that resolves with the checksum of the file.
  */
 export const getFileChecksum = async (filePath: string): Promise<string> => {
+  logDebug(`Generating checksum for local file: ${filePath}`);
   return new Promise<string>((resolve, reject) => {
     const hash = createHash("sha256");
     const stream = createReadStream(filePath);

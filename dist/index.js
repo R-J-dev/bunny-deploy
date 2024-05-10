@@ -37945,6 +37945,7 @@ var external_crypto_ = __nccwpck_require__(6113);
 ;// CONCATENATED MODULE: ./src/utils/checksum/checksum.ts
 
 
+
 /**
  * Calculates the SHA-256 checksum of a file.
  *
@@ -37952,6 +37953,7 @@ var external_crypto_ = __nccwpck_require__(6113);
  * @returns {Promise<string>} A promise that resolves with the checksum of the file.
  */
 const getFileChecksum = async (filePath) => {
+    logDebug(`Generating checksum for local file: ${filePath}`);
     return new Promise((resolve, reject) => {
         const hash = (0,external_crypto_.createHash)("sha256");
         const stream = (0,external_node_fs_namespaceObject.createReadStream)(filePath);
@@ -38022,7 +38024,7 @@ const getFileInfo = async ({ client, directoryToUpload, storageZoneName, concurr
     const listFilesResults = new Set();
     listFilesResults.add(await listFiles({
         client,
-        path: `${storageZoneName}`,
+        path: `${storageZoneName}/`,
         disableTypeValidation,
     }));
     while (listFilesResults.size) {
@@ -38036,7 +38038,8 @@ const getFileInfo = async ({ client, directoryToUpload, storageZoneName, concurr
             }
             catch (error) {
                 if (error instanceof NoReadAccessToFileError) {
-                    const remoteFileEndpoint = `${remoteFile.Path}${remoteFile.ObjectName}`;
+                    logDebug(error.message);
+                    const remoteFileEndpoint = getRemoteFileEndpoint(remoteFile);
                     logInfo(`Found unknown remote file: '${remoteFileEndpoint}'`);
                     fileInfo.unknownRemoteFiles.add(remoteFileEndpoint);
                     return;
@@ -38047,12 +38050,13 @@ const getFileInfo = async ({ client, directoryToUpload, storageZoneName, concurr
                 // add directory to listFilesResults queue
                 listFilesResults.add(await listFiles({
                     client,
-                    path: `${remoteFile.Path}${remoteFile.ObjectName}/`,
+                    path: getRemoteFileEndpoint(remoteFile),
                     disableTypeValidation,
                 }));
                 return;
             }
             const checksum = await getFileChecksum(localFilePath);
+            logDebug(`localChecksum: ${checksum} === ${remoteFile.Checksum} :remoteFileChecksum`);
             if (checksum === remoteFile.Checksum) {
                 logInfo(`Found unchanged local file ${localFilePath} compared to remote: '${remoteFile.Path}${remoteFile.ObjectName}'`);
                 fileInfo.unchangedFiles.add(localFilePath);
@@ -38060,6 +38064,13 @@ const getFileInfo = async ({ client, directoryToUpload, storageZoneName, concurr
         }, concurrency);
     }
     return fileInfo;
+};
+const getRemoteFileEndpoint = (remoteFile) => {
+    const remoteFileEndpoint = `${remoteFile.Path}${remoteFile.ObjectName}`;
+    if (remoteFile.IsDirectory && !remoteFile.ObjectName.endsWith("/")) {
+        return `${remoteFileEndpoint}/`;
+    }
+    return remoteFileEndpoint;
 };
 
 ;// CONCATENATED MODULE: ./src/actions/delete/delete.ts
@@ -38078,7 +38089,7 @@ const deleteFiles = async ({ client, filesToDelete, concurrency, }) => {
             await client.delete(getPathWithoutLeadingSlash(file));
         }
         catch (error) {
-            logWarning(`Failed deleting file: ${file}.
+            logWarning(`Failed deleting file: ${file}
           You might need to delete the file yourself or reset your storage zone with a back-up.
           The error that triggered this was: ${error instanceof Error ? error.message : "unknown"}`);
         }

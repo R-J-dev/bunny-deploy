@@ -1,5 +1,8 @@
-import { listFiles } from "@/actions/fileInfo/services/listfiles/listFiles.js";
-import { logInfo } from "@/logger.js";
+import {
+  ListFileItem,
+  listFiles,
+} from "@/actions/fileInfo/services/listfiles/listFiles.js";
+import { logDebug, logInfo } from "@/logger.js";
 import { getFileChecksum } from "@/utils/checksum/checksum.js";
 import { Got } from "got";
 import { NoReadAccessToFileError } from "@/actions/fileInfo/errors.js";
@@ -52,7 +55,7 @@ export const getFileInfo = async ({
   listFilesResults.add(
     await listFiles({
       client,
-      path: `${storageZoneName}`,
+      path: `${storageZoneName}/`,
       disableTypeValidation,
     }),
   );
@@ -69,7 +72,8 @@ export const getFileInfo = async ({
           localFilePath = await getLocalFilePath(directoryToUpload, remoteFile);
         } catch (error) {
           if (error instanceof NoReadAccessToFileError) {
-            const remoteFileEndpoint = `${remoteFile.Path}${remoteFile.ObjectName}`;
+            logDebug(error.message);
+            const remoteFileEndpoint = getRemoteFileEndpoint(remoteFile);
             logInfo(`Found unknown remote file: '${remoteFileEndpoint}'`);
             fileInfo.unknownRemoteFiles.add(remoteFileEndpoint);
             return;
@@ -81,13 +85,16 @@ export const getFileInfo = async ({
           listFilesResults.add(
             await listFiles({
               client,
-              path: `${remoteFile.Path}${remoteFile.ObjectName}/`,
+              path: getRemoteFileEndpoint(remoteFile),
               disableTypeValidation,
             }),
           );
           return;
         }
         const checksum = await getFileChecksum(localFilePath);
+        logDebug(
+          `localChecksum: ${checksum} === ${remoteFile.Checksum} :remoteFileChecksum`,
+        );
         if (checksum === remoteFile.Checksum) {
           logInfo(
             `Found unchanged local file ${localFilePath} compared to remote: '${remoteFile.Path}${remoteFile.ObjectName}'`,
@@ -100,4 +107,12 @@ export const getFileInfo = async ({
   }
 
   return fileInfo;
+};
+
+const getRemoteFileEndpoint = (remoteFile: ListFileItem) => {
+  const remoteFileEndpoint = `${remoteFile.Path}${remoteFile.ObjectName}`;
+  if (remoteFile.IsDirectory && !remoteFile.ObjectName.endsWith("/")) {
+    return `${remoteFileEndpoint}/`;
+  }
+  return remoteFileEndpoint;
 };

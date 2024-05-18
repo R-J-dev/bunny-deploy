@@ -146,7 +146,7 @@ See for more examples: [Examples](#examples)
   with:
     storage-zone-password: ${{ secrets.BUNNY_STORAGE_ZONE_PASSWORD }}
     directory-to-upload: "./build"
-    storage-endpoint: "storage.bunnycdn.com"
+    storage-endpoint: "https://storage.bunnycdn.com"
     storage-zone-name: "my-storage-zone"
     concurrency: "50"
 ```
@@ -159,7 +159,7 @@ See for more examples: [Examples](#examples)
   with:
     access-key: ${{ secrets.BUNNY_ACCESS_KEY }}
     directory-to-upload: "./build"
-    storage-endpoint: "storage.bunnycdn.com"
+    storage-endpoint: "https://storage.bunnycdn.com"
     storage-zone-name: "my-storage-zone"
     storage-zone-password: ${{ secrets.BUNNY_STORAGE_ZONE_PASSWORD }}
     concurrency: "50"
@@ -169,7 +169,7 @@ See for more examples: [Examples](#examples)
     replication-timeout: "15"
 ```
 
-### Pruge only
+### Purge only
 
 ```yaml
 - name: Deploy to Bunny

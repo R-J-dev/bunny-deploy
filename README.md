@@ -15,7 +15,7 @@ The required inputs could be different depending on the feature flag(s) that you
 
 > **Warning** ⚠️
 >
-> Unfortunately I didn't found an option in Bunny to rollback the changes that can be made with this GitHub Action.
+> There is no option yet to rollback the changes that you can make with this GitHub Action.
 > When something fails while running this action, you might have to manually fix it yourself.
 
 ## Example upload with delete and purge

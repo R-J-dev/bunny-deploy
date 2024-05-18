@@ -45360,7 +45360,7 @@ const run = async () => {
         const { disableTypeValidation, enableDeleteAction, enablePurgePullZone, enablePurgeOnly, } = await getFeatureFlags();
         if (enablePurgeOnly) {
             const { pullZoneClient, pullZoneId, replicationTimeout } = await getPullZoneConfig();
-            await purgeCache({
+            return await purgeCache({
                 client: pullZoneClient,
                 pullZoneId,
                 replicationTimeout,

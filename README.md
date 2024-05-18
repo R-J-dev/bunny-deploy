@@ -15,7 +15,7 @@ The required inputs could be different depending on the feature flag(s) that you
 
 > **Warning** ⚠️
 >
-> Unfortunately I didn't found an option in Bunny to rollback the changes that can be made with this GitHub Action.
+> There is no option yet to rollback the changes that you can make with this GitHub Action.
 > When something fails while running this action, you might have to manually fix it yourself.
 
 ## Example upload with delete and purge
@@ -146,7 +146,7 @@ See for more examples: [Examples](#examples)
   with:
     storage-zone-password: ${{ secrets.BUNNY_STORAGE_ZONE_PASSWORD }}
     directory-to-upload: "./build"
-    storage-endpoint: "storage.bunnycdn.com"
+    storage-endpoint: "https://storage.bunnycdn.com"
     storage-zone-name: "my-storage-zone"
     concurrency: "50"
 ```
@@ -159,7 +159,7 @@ See for more examples: [Examples](#examples)
   with:
     access-key: ${{ secrets.BUNNY_ACCESS_KEY }}
     directory-to-upload: "./build"
-    storage-endpoint: "storage.bunnycdn.com"
+    storage-endpoint: "https://storage.bunnycdn.com"
     storage-zone-name: "my-storage-zone"
     storage-zone-password: ${{ secrets.BUNNY_STORAGE_ZONE_PASSWORD }}
     concurrency: "50"
@@ -169,7 +169,7 @@ See for more examples: [Examples](#examples)
     replication-timeout: "15"
 ```
 
-### Pruge only
+### Purge only
 
 ```yaml
 - name: Deploy to Bunny

@@ -103,4 +103,4 @@ pnpm install
 - Should be maintained on a regular basis
   - Prefer dependencies with 100+ stars or some other indication, which makes it likely that it will be maintained for the upcoming months/years.
 - Has zero vulnerabilities in the latest version
-- Has a license which allows it to be used in this project
+- Has a license (MIT) which allows it to be used in this project

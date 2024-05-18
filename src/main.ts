@@ -25,7 +25,7 @@ export const run = async () => {
     if (enablePurgeOnly) {
       const { pullZoneClient, pullZoneId, replicationTimeout } =
         await getPullZoneConfig();
-      await purgeCache({
+      return await purgeCache({
         client: pullZoneClient,
         pullZoneId,
         replicationTimeout,

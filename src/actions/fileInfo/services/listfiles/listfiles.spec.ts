@@ -1,16 +1,21 @@
 import { listFiles } from "@/actions/fileInfo/services/listfiles/listFiles.js";
 import { getBunnyClient } from "@/bunnyClient.js";
-import { testServerUrl } from "@/testSetup/globalTestSetup.js";
-import { describe, it, expect, vi, afterEach } from "vitest";
+import type { Got } from "got";
+import { describe, it, expect, vi, afterEach, inject, beforeAll } from "vitest";
 import { ZodError } from "zod";
 
 describe("listFiles", () => {
-  const storageZoneEndpoint = testServerUrl;
-  const bunnyClient = getBunnyClient("test", storageZoneEndpoint);
+  let bunnyClient: Got;
+
+  beforeAll(() => {
+    const storageZoneEndpoint = inject("testServerUrl");
+    bunnyClient = getBunnyClient("test", storageZoneEndpoint);
+  });
 
   afterEach(() => {
     vi.restoreAllMocks();
   });
+
   describe("response type is invalid", () => {
     describe("when type validation is disabled", () => {
       it("should return the request response without runtime type validation", async () => {

@@ -49,6 +49,9 @@ devDependencies:
   fs-extra:
     specifier: 11.2.0
     version: 11.2.0
+  get-port:
+    specifier: 7.1.0
+    version: 7.1.0
   license-checker-rseidelsohn:
     specifier: 4.3.0
     version: 4.3.0
@@ -1619,6 +1622,11 @@ packages:
       has-proto: 1.0.1
       has-symbols: 1.0.3
       hasown: 2.0.1
+    dev: true
+
+  /get-port@7.1.0:
+    resolution: {integrity: sha512-QB9NKEeDg3xxVwCCwJQ9+xycaz6pBB6iQ76wiWMl1927n0Kir6alPiP+yuiICLLU4jpMe08dXfpebuQppFA2zw==}
+    engines: {node: '>=16'}
     dev: true
 
   /get-stream@6.0.1:

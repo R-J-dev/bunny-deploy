@@ -9,7 +9,6 @@ import {
   getPullZoneConfig,
 } from "@/config/config.js";
 
-// TODO: add tests for this:
 /**
  * Main function for the Bunny Deploy action
  */

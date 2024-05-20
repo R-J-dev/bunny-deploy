@@ -1,5 +1,5 @@
 import { getInput, getBooleanInput, setSecret } from "@actions/core";
-import { getBunnyClient } from "@/bunnyClient.js";
+import { getBunnyClient } from "@/bunnyClient/bunnyClient.js";
 import {
   validateDirectory,
   validateInteger,

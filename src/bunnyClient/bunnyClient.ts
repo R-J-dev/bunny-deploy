@@ -1,4 +1,4 @@
-import got, { Options, RequestError } from "got";
+import got, { type Method, Options, RequestError } from "got";
 import { MissingAccessKeyError } from "@/errors.js";
 import { logNotice } from "@/logger.js";
 
@@ -6,9 +6,8 @@ const logRetry = (error: RequestError, retryCount: number) => {
   logNotice(`Retrying after error ${error.code}, retry #: ${retryCount}`);
 };
 
-// TODO: add tests that check retry mechanism
-// should not retry on 400 status code
-// should retry on 408, 500, 502, 503, 504, 521, 522, 524
+export const retryStatusCodes = [408, 500, 502, 503, 504, 521, 522, 524];
+export const retryMethods: Method[] = ["GET", "DELETE"];
 export const getBunnyClient = (accessKey: string, baseUrl: string) => {
   if (!accessKey) throw new MissingAccessKeyError();
 
@@ -23,8 +22,8 @@ export const getBunnyClient = (accessKey: string, baseUrl: string) => {
     },
     retry: {
       limit: 3,
-      methods: ["GET", "PUT", "DELETE", "POST"],
-      statusCodes: [408, 500, 502, 503, 504, 521, 522, 524],
+      methods: retryMethods,
+      statusCodes: retryStatusCodes,
       errorCodes: [
         "ETIMEDOUT",
         "ECONNRESET",

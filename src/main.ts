@@ -9,7 +9,6 @@ import {
   getPullZoneConfig,
 } from "@/config/config.js";
 
-// TODO: add tests for this:
 /**
  * Main function for the Bunny Deploy action
  */
@@ -80,7 +79,6 @@ export const run = async () => {
       });
     }
   } catch (err) {
-    const errorMessage = err instanceof Error ? err.message : "Unknown error";
-    setFailed(errorMessage);
+    setFailed(err instanceof Error ? err : "Unknown error");
   }
 };

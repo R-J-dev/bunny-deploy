@@ -1,12 +1,15 @@
-import { getBunnyClient } from "@/bunnyClient.js";
-import { testServerUrl } from "@/testSetup/globalTestSetup.js";
-import { describe, it, expect, vi } from "vitest";
+import { getBunnyClient } from "@/bunnyClient/bunnyClient.js";
+import { describe, it, expect, vi, beforeAll, inject } from "vitest";
 import { purgeCache } from "@/actions/pullZone/purge/purgeCache.js";
-import { RequestError, Options } from "got";
+import { RequestError, Options, type Got } from "got";
 
 describe("purgeCache", () => {
+  let client: Got;
+  beforeAll(() => {
+    const storageZoneEndpoint = inject("testServerUrl");
+    client = getBunnyClient("test", storageZoneEndpoint);
+  });
   it("should throw when an Error occurs", async () => {
-    const client = getBunnyClient("test", testServerUrl);
     const postSpy = vi.spyOn(client, "post");
     postSpy.mockRejectedValueOnce(new Error("test"));
 
@@ -16,7 +19,6 @@ describe("purgeCache", () => {
   });
 
   it("should throw when an RequestError occurs", async () => {
-    const client = getBunnyClient("test", testServerUrl);
     const postSpy = vi.spyOn(client, "post");
     postSpy.mockRejectedValueOnce(
       new RequestError("test error", {}, new Options()),

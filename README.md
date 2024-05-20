@@ -4,7 +4,6 @@ GitHub action for deploying your static app to Bunny CDN 🚀
 
 ✔️ Uploads a given directory to a storage zone on Bunny \
 ✔️ Doesn't upload unchanged files \
-✔️ Retries failed requests to Bunny \
 ✔️ Optionally deletes directories and files from your storage zone that do not exist in the specified directory-to-upload \
 ✔️ Optionally purges the cache of a given pull zone \
 ✔️ Optionally use concurrency to make it fast

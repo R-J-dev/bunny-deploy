@@ -1,3 +1,5 @@
+import getPort from "get-port";
+import type { GlobalSetupContext } from "vitest/node";
 import {
   deleteTestUploads,
   isServerUp,
@@ -25,15 +27,16 @@ const waitUntilTestServerIsUp = async (port: number) => {
 
 declare module "vitest" {
   interface ProvidedContext {
-    testServer: ReturnType<typeof startTestServer>;
+    testServerUrl: string;
   }
 }
 
 let testServer: ReturnType<typeof startTestServer> | undefined = undefined;
-const port = 8000;
-export const testServerUrl = `http://localhost:${port}`;
 
-export const setup = async () => {
+export const setup = async ({ provide }: GlobalSetupContext) => {
+  const port = await getPort({ host: "localhost" });
+  const testServerUrl = `http://localhost:${port}`;
+  provide("testServerUrl", testServerUrl);
   testServer = startTestServer(port);
 
   await waitUntilTestServerIsUp(port);

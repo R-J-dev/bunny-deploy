@@ -1,18 +1,36 @@
-import { getBunnyClient } from "@/bunnyClient.js";
-import { testServerUrl } from "@/testSetup/globalTestSetup.js";
-import { describe, it, expect, vi, afterEach } from "vitest";
+import { getBunnyClient } from "@/bunnyClient/bunnyClient.js";
+import {
+  describe,
+  it,
+  expect,
+  vi,
+  afterEach,
+  inject,
+  beforeAll,
+  beforeEach,
+} from "vitest";
 import { deleteFiles } from "@/actions/delete/delete.js";
+import type { Got } from "got";
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-const bunnyClient = getBunnyClient("test", testServerUrl);
-let concurrentDeletes = 0;
-let maxConcurrentDeletes = 0;
-
 describe("deleteFiles", () => {
+  let bunnyClient: Got, concurrentDeletes: number, maxConcurrentDeletes: number;
+
+  beforeAll(() => {
+    const testServerUrl = inject("testServerUrl");
+    bunnyClient = getBunnyClient("test", testServerUrl);
+  });
+
+  beforeEach(() => {
+    concurrentDeletes = 0;
+    maxConcurrentDeletes = 0;
+  });
+
   afterEach(() => {
     vi.restoreAllMocks();
   });
+
   describe.each([[1], [2], [5]])("Concurrency is set to %i", (concurrency) => {
     it(
       `should not delete more than ${concurrency} files concurrently`,
@@ -21,8 +39,6 @@ describe("deleteFiles", () => {
       },
       async () => {
         const deleteSpy = vi.spyOn(bunnyClient, "delete");
-        concurrentDeletes = 0;
-        maxConcurrentDeletes = 0;
         // Mock `delete` to track concurrent deletes
         // @ts-expect-error returning a mock so a type error will be expected.
         deleteSpy.mockImplementation(async () => {

@@ -1,25 +1,44 @@
-import { describe, it, expect, vi, afterEach } from "vitest";
+import {
+  describe,
+  it,
+  expect,
+  vi,
+  afterEach,
+  beforeAll,
+  inject,
+  beforeEach,
+} from "vitest";
 import { uploadDirectoryToStorageZone } from "@/actions/upload/uploadDirectory.js";
 import * as upload from "@/actions/upload/uploadFile.js";
 import { normalize, join } from "path";
-import { getBunnyClient } from "@/bunnyClient.js";
+import { getBunnyClient } from "@/bunnyClient/bunnyClient.js";
 import { readdir } from "node:fs/promises";
 import { testUploadResultDirectory } from "@/testSetup/testServer.js";
 import { removeSync } from "fs-extra";
-import { testServerUrl } from "@/testSetup/globalTestSetup.js";
 import { uploadFileHeaders } from "@/actions/upload/uploadFile.js";
+import type { Got } from "got";
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-const directoryToUpload = join(__dirname, "../test/test-dir-for-upload");
-const targetDirectory = `upload-with-stream/${testUploadResultDirectory}/upload-with-stream`;
-const storageZoneEndpoint = testServerUrl;
-const storageZoneName = "test";
-const bunnyClient = getBunnyClient("test", storageZoneEndpoint);
-let concurrentUploads = 0;
-let maxConcurrentUploads = 0;
-
 describe("uploadDirectoryToStorageZone", () => {
+  const directoryToUpload = join(__dirname, "../test/test-dir-for-upload");
+  const targetDirectory = `upload-with-stream/${testUploadResultDirectory}/upload-with-stream`;
+  const storageZoneName = "test";
+  let storageZoneEndpoint: string,
+    bunnyClient: Got,
+    concurrentUploads: number,
+    maxConcurrentUploads: number;
+
+  beforeAll(() => {
+    storageZoneEndpoint = inject("testServerUrl");
+    bunnyClient = getBunnyClient("test", storageZoneEndpoint);
+  });
+
+  beforeEach(() => {
+    concurrentUploads = 0;
+    maxConcurrentUploads = 0;
+  });
+
   afterEach(() => {
     vi.restoreAllMocks();
     const dirToDelete = join(__dirname, "../../../testSetup/result");
@@ -32,8 +51,6 @@ describe("uploadDirectoryToStorageZone", () => {
       uploadSpy.mockRestore();
     });
     it(`should not upload more than ${concurrency} files concurrently`, async () => {
-      concurrentUploads = 0;
-      maxConcurrentUploads = 0;
       // Mock `uploadFile` to track concurrent uploads
       uploadSpy.mockImplementation(async () => {
         concurrentUploads++;

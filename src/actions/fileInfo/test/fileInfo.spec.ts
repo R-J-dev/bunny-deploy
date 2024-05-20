@@ -6,14 +6,16 @@ import {
   beforeEach,
   afterEach,
   MockInstance,
+  inject,
+  beforeAll,
 } from "vitest";
 import { getFileInfo } from "@/actions/fileInfo/fileInfo.js";
 import * as listFilesModule from "@/actions/fileInfo/services/listfiles/listFiles.js";
 import path, { join } from "path";
-import { testServerUrl } from "@/testSetup/globalTestSetup.js";
-import { getBunnyClient } from "@/bunnyClient.js";
+import { getBunnyClient } from "@/bunnyClient/bunnyClient.js";
 import * as utils from "@/actions/fileInfo/utils.js";
 import { getLocalFilePath } from "@/actions/fileInfo/utils.js";
+import type { Got } from "got";
 
 const baseListFileItemMock = {
   StorageZoneName: "test-zone",
@@ -101,19 +103,27 @@ const mockListFilesResponse3 = [
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-const directoryToCheck = path.join(__dirname, "/test-dir-file-info");
-const bunnyClient = getBunnyClient("test", testServerUrl);
-let concurrentFileInfoGathering = 0;
-let maxConcurrentFileInfoGathering = 0;
-
 describe("getFileInfo", () => {
+  const directoryToCheck = path.join(__dirname, "/test-dir-file-info");
   const originalGetLocalFilePath = getLocalFilePath;
-  let getLocalFilePathSpy: MockInstance;
-  let listFilesSpy: MockInstance;
+  let getLocalFilePathSpy: MockInstance,
+    listFilesSpy: MockInstance,
+    bunnyClient: Got,
+    concurrentFileInfoGathering: number,
+    maxConcurrentFileInfoGathering: number;
+
+  beforeAll(() => {
+    const storageZoneEndpoint = inject("testServerUrl");
+    bunnyClient = getBunnyClient("test", storageZoneEndpoint);
+  });
+
   beforeEach(() => {
     getLocalFilePathSpy = vi.spyOn(utils, "getLocalFilePath");
     listFilesSpy = vi.spyOn(listFilesModule, "listFiles");
+    concurrentFileInfoGathering = 0;
+    maxConcurrentFileInfoGathering = 0;
   });
+
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -125,9 +135,6 @@ describe("getFileInfo", () => {
         timeout: 10000, // Due to simulating slow file read
       },
       async () => {
-        concurrentFileInfoGathering = 0;
-        maxConcurrentFileInfoGathering = 0;
-
         getLocalFilePathSpy.mockImplementation(
           async (
             directoryToUpload: string,

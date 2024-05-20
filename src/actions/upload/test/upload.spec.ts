@@ -11,7 +11,7 @@ import {
 import { uploadDirectoryToStorageZone } from "@/actions/upload/uploadDirectory.js";
 import * as upload from "@/actions/upload/uploadFile.js";
 import { normalize, join } from "path";
-import { getBunnyClient } from "@/bunnyClient.js";
+import { getBunnyClient } from "@/bunnyClient/bunnyClient.js";
 import { readdir } from "node:fs/promises";
 import { testUploadResultDirectory } from "@/testSetup/testServer.js";
 import { removeSync } from "fs-extra";

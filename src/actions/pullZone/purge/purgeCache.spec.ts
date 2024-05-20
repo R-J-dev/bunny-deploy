@@ -1,4 +1,4 @@
-import { getBunnyClient } from "@/bunnyClient.js";
+import { getBunnyClient } from "@/bunnyClient/bunnyClient.js";
 import { describe, it, expect, vi, beforeAll, inject } from "vitest";
 import { purgeCache } from "@/actions/pullZone/purge/purgeCache.js";
 import { RequestError, Options, type Got } from "got";

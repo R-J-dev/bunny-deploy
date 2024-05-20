@@ -1,5 +1,5 @@
 import { listFiles } from "@/actions/fileInfo/services/listfiles/listFiles.js";
-import { getBunnyClient } from "@/bunnyClient.js";
+import { getBunnyClient } from "@/bunnyClient/bunnyClient.js";
 import type { Got } from "got";
 import { describe, it, expect, vi, afterEach, inject, beforeAll } from "vitest";
 import { ZodError } from "zod";

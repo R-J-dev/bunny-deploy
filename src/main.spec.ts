@@ -60,12 +60,12 @@ describe("main", () => {
     vi.resetAllMocks();
   });
 
-  describe("when enablePurgeOnly is true", () => {
+  describe("when all storage zone actions are disabled and enable-purge-pull-zone is true", () => {
     it("should purge only and not perform other actions", async () => {
-      getFeatureFlagsSpy.mockResolvedValueOnce({
-        enablePurgeOnly: true,
+      getFeatureFlagsSpy.mockResolvedValue({
+        disableUpload: true,
         enableDeleteAction: false,
-        enablePurgePullZone: false,
+        enablePurgePullZone: true,
         disableTypeValidation: false,
       });
       purgeSpy.mockResolvedValueOnce(undefined);
@@ -81,8 +81,8 @@ describe("main", () => {
 
   describe("when all feature flags are false", () => {
     it("should only upload the given directory to the storage zone", async () => {
-      getFeatureFlagsSpy.mockResolvedValueOnce({
-        enablePurgeOnly: false,
+      getFeatureFlagsSpy.mockResolvedValue({
+        disableUpload: false,
         enableDeleteAction: false,
         enablePurgePullZone: false,
         disableTypeValidation: false,
@@ -97,17 +97,17 @@ describe("main", () => {
     });
   });
 
-  describe("when all feature flags except enablePurgeOnly are true", () => {
+  describe("when all feature flags except disableUpload are true", () => {
     it("should delete, upload and purge", async () => {
-      getFeatureFlagsSpy.mockResolvedValueOnce({
-        enablePurgeOnly: false,
+      getFeatureFlagsSpy.mockResolvedValue({
+        disableUpload: false,
         enableDeleteAction: true,
         enablePurgePullZone: true,
         disableTypeValidation: true,
       });
       deleteSpy.mockResolvedValueOnce(undefined);
       uploadSpy.mockResolvedValueOnce(undefined);
-      purgeSpy.mockResolvedValue(undefined);
+      purgeSpy.mockResolvedValueOnce(undefined);
 
       await run();
 
@@ -117,43 +117,41 @@ describe("main", () => {
     });
   });
 
-  describe("when enablePurgeOnly is false", () => {
-    describe("and enableDeleteAction is true", () => {
-      it("should delete unknown files and upload the given directory to the storage zone", async () => {
-        getFeatureFlagsSpy.mockResolvedValueOnce({
-          enablePurgeOnly: false,
-          enableDeleteAction: true,
-          enablePurgePullZone: false,
-          disableTypeValidation: false,
-        });
-        deleteSpy.mockResolvedValueOnce(undefined);
-        uploadSpy.mockResolvedValueOnce(undefined);
-
-        await run();
-
-        expect(deleteSpy).toHaveBeenCalledOnce();
-        expect(uploadSpy).toHaveBeenCalledOnce();
-        expect(purgeSpy).not.toHaveBeenCalled();
+  describe("when enableDeleteAction is true", () => {
+    it("should delete unknown files and upload the given directory to the storage zone", async () => {
+      getFeatureFlagsSpy.mockResolvedValue({
+        disableUpload: false,
+        enableDeleteAction: true,
+        enablePurgePullZone: false,
+        disableTypeValidation: false,
       });
+      deleteSpy.mockResolvedValueOnce(undefined);
+      uploadSpy.mockResolvedValueOnce(undefined);
+
+      await run();
+
+      expect(deleteSpy).toHaveBeenCalledOnce();
+      expect(uploadSpy).toHaveBeenCalledOnce();
+      expect(purgeSpy).not.toHaveBeenCalled();
     });
+  });
 
-    describe("and enablePurgePullZone is true", () => {
-      it("should upload the given directory to the storage zone and purge the cache after the upload", async () => {
-        getFeatureFlagsSpy.mockResolvedValueOnce({
-          enablePurgeOnly: false,
-          enableDeleteAction: false,
-          enablePurgePullZone: true,
-          disableTypeValidation: false,
-        });
-        purgeSpy.mockResolvedValueOnce(undefined);
-        uploadSpy.mockResolvedValueOnce(undefined);
-
-        await run();
-
-        const uploadCallOrder = uploadSpy.mock.invocationCallOrder[0];
-        const purgeCallOrder = purgeSpy.mock.invocationCallOrder[0];
-        expect(uploadCallOrder).toBeLessThan(purgeCallOrder);
+  describe("when enablePurgePullZone is true", () => {
+    it("should upload the given directory to the storage zone and purge the cache after the upload", async () => {
+      getFeatureFlagsSpy.mockResolvedValue({
+        disableUpload: false,
+        enableDeleteAction: false,
+        enablePurgePullZone: true,
+        disableTypeValidation: false,
       });
+      purgeSpy.mockResolvedValueOnce(undefined);
+      uploadSpy.mockResolvedValueOnce(undefined);
+
+      await run();
+
+      const uploadCallOrder = uploadSpy.mock.invocationCallOrder[0];
+      const purgeCallOrder = purgeSpy.mock.invocationCallOrder[0];
+      expect(uploadCallOrder).toBeLessThan(purgeCallOrder);
     });
   });
 

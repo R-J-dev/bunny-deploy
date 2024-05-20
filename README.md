@@ -126,8 +126,8 @@ See for more examples: [Examples](#examples)
     <td>Purges the cache of the given pull-zone-id when all actions have finished.</td>
   </tr>
   <tr>
-    <td>enable-purge-only</td>
-    <td>Only enables the action to purge the pull zone cache of the given pull-zone-id and doesn't execute any other actions.</td>
+    <td>disable-upload</td>
+    <td>Disables the default upload action. This makes it possible to run for example the delete and/or purge action only.</td>
   </tr>
   <tr>
     <td>disable-type-validation</td>
@@ -175,7 +175,8 @@ See for more examples: [Examples](#examples)
   uses: R-J-dev/bunny-deploy@v1
   with:
     access-key: ${{ secrets.BUNNY_ACCESS_KEY }}
-    enable-purge-only: true
+    disable-upload: true
+    enable-purge-pull-zone: true
     pull-zone-id: "12345"
     replication-timeout: "15"
 ```

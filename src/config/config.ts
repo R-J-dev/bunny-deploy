@@ -24,7 +24,7 @@ export const getFeatureFlags = async () => {
     disableTypeValidation: getBooleanInput("disable-type-validation"),
     enableDeleteAction: getBooleanInput("enable-delete-action"),
     enablePurgePullZone: getBooleanInput("enable-purge-pull-zone"),
-    enablePurgeOnly: getBooleanInput("enable-purge-only"),
+    disableUpload: getBooleanInput("disable-upload"),
   };
 };
 

@@ -70,10 +70,10 @@ inputs:
     required: false
     default: false
     description: "Purges the cache of the given pull-zone-id when all actions have finished."
-  enable-purge-only:
+  disable-upload:
     required: false
     default: false
-    description: "Only enables the action to purge the pull zone cache of the given pull-zone-id and doesn't execute any other actions."
+    description: "Disables the default upload action. This makes it possible to run for example the delete and/or purge action only."
   disable-type-validation:
     required: false
     default: false

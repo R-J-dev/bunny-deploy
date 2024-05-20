@@ -19,13 +19,15 @@ describe("config", () => {
       "disable-type-validation": true,
       "enable-delete-action": false,
       "enable-purge-pull-zone": true,
-      "enable-purge-only": false,
+      "disable-upload": false,
     };
+
     beforeEach(() => {
       Object.entries(testConfig).forEach(([key, value]) => {
         process.env[`INPUT_${key.toUpperCase()}`] = `${value}`;
       });
     });
+
     it("should return the correct feature flags based on input", async () => {
       const featureFlags = await getFeatureFlags();
 
@@ -33,7 +35,7 @@ describe("config", () => {
         disableTypeValidation: true,
         enableDeleteAction: false,
         enablePurgePullZone: true,
-        enablePurgeOnly: false,
+        disableUpload: false,
       });
     });
   });

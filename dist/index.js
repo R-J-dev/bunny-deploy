@@ -45276,7 +45276,7 @@ const getFeatureFlags = async () => {
         disableTypeValidation: (0,core.getBooleanInput)("disable-type-validation"),
         enableDeleteAction: (0,core.getBooleanInput)("enable-delete-action"),
         enablePurgePullZone: (0,core.getBooleanInput)("enable-purge-pull-zone"),
-        enablePurgeOnly: (0,core.getBooleanInput)("enable-purge-only"),
+        disableUpload: (0,core.getBooleanInput)("disable-upload"),
     };
 };
 const getPullZoneConfig = async () => {
@@ -45350,39 +45350,36 @@ const getEdgeStorageConfig = async () => {
 
 
 
-/**
- * Main function for the Bunny Deploy action
- */
-const run = async () => {
-    try {
-        const { disableTypeValidation, enableDeleteAction, enablePurgePullZone, enablePurgeOnly, } = await getFeatureFlags();
-        if (enablePurgeOnly) {
-            const { pullZoneClient, pullZoneId, replicationTimeout } = await getPullZoneConfig();
-            return await purgeCache({
-                client: pullZoneClient,
-                pullZoneId,
-                replicationTimeout,
-            });
-        }
-        const { concurrency, directoryToUpload, edgeStorageClient, storageZoneName, targetDirectory, } = await getEdgeStorageConfig();
-        (0,core.startGroup)("Retrieving file info");
-        const fileInfo = await getFileInfo({
+const runPullZoneActions = async () => {
+    const { pullZoneClient, pullZoneId, replicationTimeout } = await getPullZoneConfig();
+    await purgeCache({
+        client: pullZoneClient,
+        pullZoneId,
+        replicationTimeout,
+    });
+};
+const runStorageZoneActions = async () => {
+    const { disableTypeValidation, enableDeleteAction, disableUpload } = await getFeatureFlags();
+    const { concurrency, directoryToUpload, edgeStorageClient, storageZoneName, targetDirectory, } = await getEdgeStorageConfig();
+    (0,core.startGroup)("Retrieving file info");
+    const fileInfo = await getFileInfo({
+        client: edgeStorageClient,
+        directoryToUpload,
+        storageZoneName,
+        concurrency,
+        disableTypeValidation,
+    });
+    (0,core.endGroup)();
+    if (enableDeleteAction) {
+        (0,core.startGroup)("Deleting unknown remote files");
+        await deleteFiles({
             client: edgeStorageClient,
-            directoryToUpload,
-            storageZoneName,
+            filesToDelete: fileInfo.unknownRemoteFiles,
             concurrency,
-            disableTypeValidation,
         });
         (0,core.endGroup)();
-        if (enableDeleteAction) {
-            (0,core.startGroup)("Deleting unknown remote files");
-            await deleteFiles({
-                client: edgeStorageClient,
-                filesToDelete: fileInfo.unknownRemoteFiles,
-                concurrency,
-            });
-            (0,core.endGroup)();
-        }
+    }
+    if (!disableUpload) {
         (0,core.startGroup)("Uploading directory to storage zone");
         await uploadDirectoryToStorageZone({
             client: edgeStorageClient,
@@ -45393,14 +45390,18 @@ const run = async () => {
             storageZoneName,
         });
         (0,core.endGroup)();
-        if (enablePurgePullZone) {
-            const { pullZoneClient, pullZoneId, replicationTimeout } = await getPullZoneConfig();
-            await purgeCache({
-                client: pullZoneClient,
-                pullZoneId,
-                replicationTimeout,
-            });
-        }
+    }
+};
+/**
+ * Main function for the Bunny Deploy action
+ */
+const run = async () => {
+    try {
+        const { enableDeleteAction, enablePurgePullZone, disableUpload } = await getFeatureFlags();
+        if (enableDeleteAction || !disableUpload)
+            await runStorageZoneActions();
+        if (enablePurgePullZone)
+            await runPullZoneActions();
     }
     catch (err) {
         (0,core.setFailed)(err instanceof Error ? err : "Unknown error");

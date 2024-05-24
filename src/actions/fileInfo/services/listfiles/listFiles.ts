@@ -1,6 +1,6 @@
 import { logDebug } from "@/logger.js";
 import { getPathWithoutLeadingSlash } from "@/utils/path/path.js";
-import { Got } from "got";
+import type { Got, OptionsInit } from "got";
 import { z } from "zod";
 
 const ListFileItem = z.object({
@@ -34,6 +34,12 @@ export interface ListFiles {
   disableTypeValidation: boolean;
 }
 
+export const listFilesRequestOptions: OptionsInit = {
+  headers: { "Content-Type": "application/json" },
+  resolveBodyOnly: true,
+  responseType: "json",
+};
+
 export const listFiles = async ({
   client,
   path,
@@ -42,11 +48,10 @@ export const listFiles = async ({
   logDebug(`Retrieving file info for: ${path}`);
   // Remote paths received from this request starts with a slash, which is not allowed to pass as an url to got (when a prefixUrl is defined).
   // See for more info: https://github.com/sindresorhus/got/blob/main/documentation/2-options.md#note-2
-  const response = await client.get(getPathWithoutLeadingSlash(path), {
-    headers: { "Content-Type": "application/json" },
-    resolveBodyOnly: true,
-    responseType: "json",
-  });
+  const response = await client.get(
+    getPathWithoutLeadingSlash(path),
+    listFilesRequestOptions,
+  );
   return disableTypeValidation
     ? (response as ListFileResponse)
     : ListFileResponseSchema.parse(response);

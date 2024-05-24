@@ -72,4 +72,37 @@ describe("deleteFiles", () => {
       },
     );
   });
+  describe("when path has a leading slash", () => {
+    it("should remove the leading slash", async () => {
+      const deleteSpy = vi.spyOn(bunnyClient, "delete");
+      deleteSpy.mockImplementationOnce(vi.fn());
+      const filesToDelete = new Set<string>();
+      filesToDelete.add("/test/testen/");
+
+      await deleteFiles({
+        client: bunnyClient,
+        filesToDelete,
+        concurrency: 10,
+      });
+
+      expect(deleteSpy).toHaveBeenCalledWith("test/testen/");
+    });
+  });
+
+  describe("when path doesn't has a leading slash", () => {
+    it("should not remove the first character", async () => {
+      const deleteSpy = vi.spyOn(bunnyClient, "delete");
+      deleteSpy.mockImplementationOnce(vi.fn());
+      const filesToDelete = new Set<string>();
+      filesToDelete.add("test/testen/");
+
+      await deleteFiles({
+        client: bunnyClient,
+        filesToDelete,
+        concurrency: 10,
+      });
+
+      expect(deleteSpy).toHaveBeenCalledWith("test/testen/");
+    });
+  });
 });

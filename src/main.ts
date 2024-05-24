@@ -34,6 +34,7 @@ const runStorageZoneActions = async () => {
   const fileInfo = await getFileInfo({
     client: edgeStorageClient,
     directoryToUpload,
+    targetDirectory,
     storageZoneName,
     concurrency,
     disableTypeValidation,

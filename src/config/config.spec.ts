@@ -115,14 +115,73 @@ describe("config", () => {
     const testConfig = {
       "storage-zone-password": "test-storage-zone-password",
       "storage-zone-name": "test-zone",
-      "target-directory": "/test/target",
+      "target-directory": "test/target",
       "storage-endpoint": "https://example.com",
       concurrency: "5",
       "directory-to-upload": __dirname,
     };
+
     beforeEach(() => {
       Object.entries(testConfig).forEach(([key, value]) => {
         process.env[`INPUT_${key.toUpperCase()}`] = value;
+      });
+    });
+
+    describe("target-directory", () => {
+      describe("starts with a slash", () => {
+        it("should remove the leading slash", async () => {
+          process.env[`INPUT_TARGET-DIRECTORY`] = "/test/target";
+
+          const config = await getEdgeStorageConfig();
+
+          expect(config).toEqual(
+            expect.objectContaining({
+              targetDirectory: "test/target",
+            }),
+          );
+        });
+      });
+
+      describe("ends with a slash", async () => {
+        it("should remove the end slash", async () => {
+          process.env[`INPUT_TARGET-DIRECTORY`] = "test/target/";
+
+          const config = await getEdgeStorageConfig();
+
+          expect(config).toEqual(
+            expect.objectContaining({
+              targetDirectory: "test/target",
+            }),
+          );
+        });
+      });
+
+      describe("starts and ends with a slash", async () => {
+        it("should remove the leading and end slash", async () => {
+          process.env[`INPUT_TARGET-DIRECTORY`] = "/test/target/";
+
+          const config = await getEdgeStorageConfig();
+
+          expect(config).toEqual(
+            expect.objectContaining({
+              targetDirectory: "test/target",
+            }),
+          );
+        });
+      });
+
+      describe("has no slash", async () => {
+        it("should stay the same", async () => {
+          process.env[`INPUT_TARGET-DIRECTORY`] = "test";
+
+          const config = await getEdgeStorageConfig();
+
+          expect(config).toEqual(
+            expect.objectContaining({
+              targetDirectory: "test",
+            }),
+          );
+        });
       });
     });
 
@@ -133,7 +192,7 @@ describe("config", () => {
         concurrency: 5,
         directoryToUpload: __dirname,
         storageZoneName: "test-zone",
-        targetDirectory: "test/target", // Leading slash should be removed
+        targetDirectory: "test/target",
         edgeStorageClient: expect.anything(),
       });
     });

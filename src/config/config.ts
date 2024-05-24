@@ -8,7 +8,11 @@ import {
   validateUrl,
 } from "@/config/validators.js";
 import { getInputWrapper } from "@/config/inputWrapper.js";
-import { transformDirectoryToUploadInput } from "@/config/transformers.js";
+import {
+  removeBeginSlash,
+  removeEndSlash,
+  transformDirectoryToUploadInput,
+} from "@/config/transformers.js";
 import { logDebug } from "@/logger.js";
 import { InvalidStorageZoneNameError } from "@/errors.js";
 
@@ -89,9 +93,8 @@ export const getEdgeStorageConfig = async () => {
     }),
     targetDirectory: await getInputWrapper({
       inputName: "target-directory",
-      transformInput: async (input: string) => {
-        if (input.startsWith("/")) return input.slice(1);
-      },
+      transformInput: async (input: string) =>
+        removeEndSlash(await removeBeginSlash(input)),
     }),
   };
 };

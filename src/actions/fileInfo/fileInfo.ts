@@ -21,11 +21,20 @@ interface GetFileInfoProps {
    * We need it to compare local files with the remote files.
    */
   directoryToUpload: string;
+  /**
+   * An optional parameter, that tells from which remote directory we need to gather the required file info.
+   */
+  targetDirectory?: string;
   storageZoneName: string;
   /**
    * The maximum number of file comparison operations and listFiles requests to run concurrently.
    */
   concurrency?: number;
+  /**
+   * Disables type validation in listFiles request.
+   * In case that Bunny changes their API unexpectedly and the action doesn't break due to the changes,
+   * someone might choose to temporary disable the type validation.
+   */
   disableTypeValidation?: boolean;
 }
 
@@ -42,6 +51,7 @@ export type FileInfo = {
 export const getFileInfo = async ({
   client,
   directoryToUpload,
+  targetDirectory,
   storageZoneName,
   concurrency = 10,
   disableTypeValidation = false,
@@ -55,7 +65,9 @@ export const getFileInfo = async ({
   listFilesResults.add(
     await listFiles({
       client,
-      path: `${storageZoneName}/`,
+      path: targetDirectory
+        ? `${storageZoneName}/${targetDirectory}/`
+        : `${storageZoneName}/`,
       disableTypeValidation,
     }),
   );

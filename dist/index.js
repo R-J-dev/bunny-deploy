@@ -38016,7 +38016,7 @@ const getLocalFilePath = async (directoryToUpload, remoteFile) => {
  *
  * @returns an object that contains unchangedFiles and unknownRemoteFiles
  */
-const getFileInfo = async ({ client, directoryToUpload, storageZoneName, concurrency = 10, disableTypeValidation = false, }) => {
+const getFileInfo = async ({ client, directoryToUpload, targetDirectory, storageZoneName, concurrency = 10, disableTypeValidation = false, }) => {
     const unchangedFiles = new Set();
     // contains remote paths that can directly be used in delete calls
     const unknownRemoteFiles = new Set();
@@ -38024,7 +38024,9 @@ const getFileInfo = async ({ client, directoryToUpload, storageZoneName, concurr
     const listFilesResults = new Set();
     listFilesResults.add(await listFiles({
         client,
-        path: `${storageZoneName}/`,
+        path: targetDirectory
+            ? `${storageZoneName}/${targetDirectory}/`
+            : `${storageZoneName}/`,
         disableTypeValidation,
     }));
     while (listFilesResults.size) {
@@ -45256,6 +45258,8 @@ const transformDirectoryToUploadInput = async (directoryToUpload) => {
         throw new Error("process.env.GITHUB_WORKSPACE is undefined");
     return (0,external_path_.join)(process.env.GITHUB_WORKSPACE, directoryToUpload);
 };
+const removeEndSlash = async (input) => input.endsWith("/") ? input.slice(0, input.length - 1) : input;
+const removeBeginSlash = async (input) => input.startsWith("/") ? input.slice(1) : input;
 
 ;// CONCATENATED MODULE: ./src/config/config.ts
 
@@ -45335,10 +45339,7 @@ const getEdgeStorageConfig = async () => {
         }),
         targetDirectory: await getInputWrapper({
             inputName: "target-directory",
-            transformInput: async (input) => {
-                if (input.startsWith("/"))
-                    return input.slice(1);
-            },
+            transformInput: async (input) => removeEndSlash(await removeBeginSlash(input)),
         }),
     };
 };
@@ -45365,6 +45366,7 @@ const runStorageZoneActions = async () => {
     const fileInfo = await getFileInfo({
         client: edgeStorageClient,
         directoryToUpload,
+        targetDirectory,
         storageZoneName,
         concurrency,
         disableTypeValidation,

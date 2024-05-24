@@ -8,6 +8,7 @@ import { Got } from "got";
 import { NoReadAccessToFileError } from "@/actions/fileInfo/errors.js";
 import { asyncForEach } from "modern-async";
 import { getLocalFilePath } from "./utils.js";
+import { join as posixJoin } from "node:path/posix";
 
 interface GetFileInfoProps {
   /**
@@ -66,7 +67,7 @@ export const getFileInfo = async ({
     await listFiles({
       client,
       path: targetDirectory
-        ? `${storageZoneName}/${targetDirectory}/`
+        ? posixJoin(storageZoneName, targetDirectory)
         : `${storageZoneName}/`,
       disableTypeValidation,
     }),
@@ -122,7 +123,7 @@ export const getFileInfo = async ({
 };
 
 const getRemoteFileEndpoint = (remoteFile: ListFileItem) => {
-  const remoteFileEndpoint = `${remoteFile.Path}${remoteFile.ObjectName}`;
+  const remoteFileEndpoint = posixJoin(remoteFile.Path, remoteFile.ObjectName);
   if (remoteFile.IsDirectory && !remoteFile.ObjectName.endsWith("/")) {
     return `${remoteFileEndpoint}/`;
   }

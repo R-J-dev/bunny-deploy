@@ -1,5 +1,6 @@
 import { Got } from "got";
-import { join, relative } from "path";
+import { sep as posixSep } from "node:path/posix";
+import { join, relative, sep } from "path";
 import { readdir } from "node:fs/promises";
 import { logError, logInfo } from "@/logger.js";
 import { asyncForEach } from "modern-async";
@@ -60,13 +61,13 @@ export const uploadDirectoryToStorageZone = async ({
           logInfo(`Skipped uploading unchanged file: ${filePath}`);
           return;
         }
-        const uploadPath = getUploadPath(
-          filePath,
+        const uploadPath = getUploadPath({
+          absoluteFilePath: filePath,
           directoryToUpload,
-          targetDirectory
+          targetDirectory: targetDirectory
             ? join(storageZoneName, targetDirectory)
             : storageZoneName,
-        );
+        });
         await uploadFile(client, uploadPath, filePath);
       },
       concurrency,
@@ -77,6 +78,12 @@ export const uploadDirectoryToStorageZone = async ({
   }
 };
 
+interface GetUploadPath {
+  absoluteFilePath: string;
+  directoryToUpload: string;
+  targetDirectory: string;
+}
+
 /**
  * Get the upload path that is later needed to upload a file to a specific place inside a storage zone.
  *
@@ -85,15 +92,11 @@ export const uploadDirectoryToStorageZone = async ({
  * @param targetDirectory - The path of the remote directory where the file should be uploaded to (starting with the storageZoneName)
  * @returns upload path
  */
-const getUploadPath = (
-  absoluteFilePath: string,
-  directoryToUpload: string,
-  targetDirectory: string,
-) => {
-  // Use replaceAll to remove backslashes on Windows
-  const relativeFilePath = relative(
-    directoryToUpload,
-    absoluteFilePath,
-  ).replaceAll("\\", "/");
-  return join(targetDirectory, relativeFilePath).replaceAll("\\", "/");
+const getUploadPath = ({
+  absoluteFilePath,
+  directoryToUpload,
+  targetDirectory,
+}: GetUploadPath) => {
+  const relativeFilePath = relative(directoryToUpload, absoluteFilePath);
+  return join(targetDirectory, relativeFilePath).split(sep).join(posixSep);
 };

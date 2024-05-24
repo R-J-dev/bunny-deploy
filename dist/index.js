@@ -31434,6 +31434,8 @@ var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 (() => {
 
+;// CONCATENATED MODULE: external "node:path/posix"
+const posix_namespaceObject = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:path/posix");
 // EXTERNAL MODULE: external "path"
 var external_path_ = __nccwpck_require__(1017);
 ;// CONCATENATED MODULE: external "node:fs/promises"
@@ -33835,6 +33837,7 @@ const uploadFile = async (client, uploadPath, filePath) => {
 
 
 
+
 /**
  * Uploads a directory to a storage zone with parallel requests.
  * This function recursively traverses the specified directory, uploading each file to the storage zone in parallel batches.
@@ -33855,9 +33858,13 @@ const uploadDirectoryToStorageZone = async ({ client, directoryToUpload, targetD
                 logInfo(`Skipped uploading unchanged file: ${filePath}`);
                 return;
             }
-            const uploadPath = getUploadPath(filePath, directoryToUpload, targetDirectory
-                ? (0,external_path_.join)(storageZoneName, targetDirectory)
-                : storageZoneName);
+            const uploadPath = getUploadPath({
+                absoluteFilePath: filePath,
+                directoryToUpload,
+                targetDirectory: targetDirectory
+                    ? (0,external_path_.join)(storageZoneName, targetDirectory)
+                    : storageZoneName,
+            });
             await uploadFile(client, uploadPath, filePath);
         }, concurrency);
     }
@@ -33874,10 +33881,9 @@ const uploadDirectoryToStorageZone = async ({ client, directoryToUpload, targetD
  * @param targetDirectory - The path of the remote directory where the file should be uploaded to (starting with the storageZoneName)
  * @returns upload path
  */
-const getUploadPath = (absoluteFilePath, directoryToUpload, targetDirectory) => {
-    // Use replaceAll to remove backslashes on Windows
-    const relativeFilePath = (0,external_path_.relative)(directoryToUpload, absoluteFilePath).replaceAll("\\", "/");
-    return (0,external_path_.join)(targetDirectory, relativeFilePath).replaceAll("\\", "/");
+const getUploadPath = ({ absoluteFilePath, directoryToUpload, targetDirectory, }) => {
+    const relativeFilePath = (0,external_path_.relative)(directoryToUpload, absoluteFilePath);
+    return (0,external_path_.join)(targetDirectory, relativeFilePath).split(external_path_.sep).join(posix_namespaceObject.sep);
 };
 
 ;// CONCATENATED MODULE: ./src/utils/path/path.ts
@@ -37926,15 +37932,16 @@ const ListFileItem = z.object({
     ReplicatedZones: z.string().nullable(),
 });
 const ListFileResponseSchema = z.array(ListFileItem);
+const listFilesRequestOptions = {
+    headers: { "Content-Type": "application/json" },
+    resolveBodyOnly: true,
+    responseType: "json",
+};
 const listFiles = async ({ client, path, disableTypeValidation = false, }) => {
     logDebug(`Retrieving file info for: ${path}`);
     // Remote paths received from this request starts with a slash, which is not allowed to pass as an url to got (when a prefixUrl is defined).
     // See for more info: https://github.com/sindresorhus/got/blob/main/documentation/2-options.md#note-2
-    const response = await client.get(getPathWithoutLeadingSlash(path), {
-        headers: { "Content-Type": "application/json" },
-        resolveBodyOnly: true,
-        responseType: "json",
-    });
+    const response = await client.get(getPathWithoutLeadingSlash(path), listFilesRequestOptions);
     return disableTypeValidation
         ? response
         : ListFileResponseSchema.parse(response);
@@ -38011,6 +38018,7 @@ const getLocalFilePath = async (directoryToUpload, remoteFile) => {
 
 
 
+
 /**
  * Collects file info to determine which files are unchanged and which remote files are locally not found.
  *
@@ -38025,7 +38033,7 @@ const getFileInfo = async ({ client, directoryToUpload, targetDirectory, storage
     listFilesResults.add(await listFiles({
         client,
         path: targetDirectory
-            ? `${storageZoneName}/${targetDirectory}/`
+            ? (0,posix_namespaceObject.join)(storageZoneName, targetDirectory)
             : `${storageZoneName}/`,
         disableTypeValidation,
     }));
@@ -38068,7 +38076,7 @@ const getFileInfo = async ({ client, directoryToUpload, targetDirectory, storage
     return fileInfo;
 };
 const getRemoteFileEndpoint = (remoteFile) => {
-    const remoteFileEndpoint = `${remoteFile.Path}${remoteFile.ObjectName}`;
+    const remoteFileEndpoint = (0,posix_namespaceObject.join)(remoteFile.Path, remoteFile.ObjectName);
     if (remoteFile.IsDirectory && !remoteFile.ObjectName.endsWith("/")) {
         return `${remoteFileEndpoint}/`;
     }

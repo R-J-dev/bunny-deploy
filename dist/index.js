@@ -1939,133 +1939,6 @@ module.exports["default"] = deferToConnect;
 
 /***/ }),
 
-/***/ 1210:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-
-const {PassThrough: PassThroughStream} = __nccwpck_require__(2781);
-
-module.exports = options => {
-	options = {...options};
-
-	const {array} = options;
-	let {encoding} = options;
-	const isBuffer = encoding === 'buffer';
-	let objectMode = false;
-
-	if (array) {
-		objectMode = !(encoding || isBuffer);
-	} else {
-		encoding = encoding || 'utf8';
-	}
-
-	if (isBuffer) {
-		encoding = null;
-	}
-
-	const stream = new PassThroughStream({objectMode});
-
-	if (encoding) {
-		stream.setEncoding(encoding);
-	}
-
-	let length = 0;
-	const chunks = [];
-
-	stream.on('data', chunk => {
-		chunks.push(chunk);
-
-		if (objectMode) {
-			length = chunks.length;
-		} else {
-			length += chunk.length;
-		}
-	});
-
-	stream.getBufferedValue = () => {
-		if (array) {
-			return chunks;
-		}
-
-		return isBuffer ? Buffer.concat(chunks, length) : chunks.join('');
-	};
-
-	stream.getBufferedLength = () => length;
-
-	return stream;
-};
-
-
-/***/ }),
-
-/***/ 1798:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-
-const {constants: BufferConstants} = __nccwpck_require__(4300);
-const stream = __nccwpck_require__(2781);
-const {promisify} = __nccwpck_require__(3837);
-const bufferStream = __nccwpck_require__(1210);
-
-const streamPipelinePromisified = promisify(stream.pipeline);
-
-class MaxBufferError extends Error {
-	constructor() {
-		super('maxBuffer exceeded');
-		this.name = 'MaxBufferError';
-	}
-}
-
-async function getStream(inputStream, options) {
-	if (!inputStream) {
-		throw new Error('Expected a stream');
-	}
-
-	options = {
-		maxBuffer: Infinity,
-		...options
-	};
-
-	const {maxBuffer} = options;
-	const stream = bufferStream(options);
-
-	await new Promise((resolve, reject) => {
-		const rejectPromise = error => {
-			// Don't retrieve an oversized buffer.
-			if (error && stream.getBufferedLength() <= BufferConstants.MAX_LENGTH) {
-				error.bufferedData = stream.getBufferedValue();
-			}
-
-			reject(error);
-		};
-
-		(async () => {
-			try {
-				await streamPipelinePromisified(inputStream, stream);
-				resolve();
-			} catch (error) {
-				rejectPromise(error);
-			}
-		})();
-
-		stream.on('data', () => {
-			if (stream.getBufferedLength() > maxBuffer) {
-				rejectPromise(new MaxBufferError());
-			}
-		});
-	});
-
-	return stream.getBufferedValue();
-}
-
-module.exports = getStream;
-module.exports.buffer = (stream, options) => getStream(stream, {...options, encoding: 'buffer'});
-module.exports.array = (stream, options) => getStream(stream, {...options, array: true});
-module.exports.MaxBufferError = MaxBufferError;
-
-
-/***/ }),
-
 /***/ 7893:
 /***/ ((module) => {
 
@@ -40317,7 +40190,7 @@ function assertWhitespaceString(value, message) {
 }
 /* harmony default export */ const dist = (is);
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.2.1/node_modules/got/dist/source/core/errors.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.3.0/node_modules/got/dist/source/core/errors.js
 
 // A hacky check to prevent circular references.
 function isRequest(x) {
@@ -41329,7 +41202,7 @@ getContentLength_fn = function() {
 };
 
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.2.1/node_modules/got/dist/source/core/parse-link-header.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.3.0/node_modules/got/dist/source/core/parse-link-header.js
 function parseLinkHeader(link) {
     const parsed = [];
     const items = link.split(',');
@@ -41364,7 +41237,7 @@ function parseLinkHeader(link) {
     return parsed;
 }
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.2.1/node_modules/got/dist/source/core/options.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.3.0/node_modules/got/dist/source/core/options.js
 
 
 
@@ -41541,7 +41414,7 @@ const defaultInternals = {
         shouldContinue: () => true,
         countLimit: Number.POSITIVE_INFINITY,
         backoff: 0,
-        requestLimit: 10000,
+        requestLimit: 10_000,
         stackAllItems: false,
     },
     setHost: true,
@@ -43531,8 +43404,449 @@ function normalizeUrl(urlString, options) {
 	return urlString;
 }
 
-// EXTERNAL MODULE: ./node_modules/.pnpm/get-stream@6.0.1/node_modules/get-stream/index.js
-var get_stream = __nccwpck_require__(1798);
+;// CONCATENATED MODULE: ./node_modules/.pnpm/is-stream@4.0.1/node_modules/is-stream/index.js
+function isStream(stream, {checkOpen = true} = {}) {
+	return stream !== null
+		&& typeof stream === 'object'
+		&& (stream.writable || stream.readable || !checkOpen || (stream.writable === undefined && stream.readable === undefined))
+		&& typeof stream.pipe === 'function';
+}
+
+function isWritableStream(stream, {checkOpen = true} = {}) {
+	return isStream(stream, {checkOpen})
+		&& (stream.writable || !checkOpen)
+		&& typeof stream.write === 'function'
+		&& typeof stream.end === 'function'
+		&& typeof stream.writable === 'boolean'
+		&& typeof stream.writableObjectMode === 'boolean'
+		&& typeof stream.destroy === 'function'
+		&& typeof stream.destroyed === 'boolean';
+}
+
+function isReadableStream(stream, {checkOpen = true} = {}) {
+	return isStream(stream, {checkOpen})
+		&& (stream.readable || !checkOpen)
+		&& typeof stream.read === 'function'
+		&& typeof stream.readable === 'boolean'
+		&& typeof stream.readableObjectMode === 'boolean'
+		&& typeof stream.destroy === 'function'
+		&& typeof stream.destroyed === 'boolean';
+}
+
+function isDuplexStream(stream, options) {
+	return isWritableStream(stream, options)
+		&& isReadableStream(stream, options);
+}
+
+function isTransformStream(stream, options) {
+	return isDuplexStream(stream, options)
+		&& typeof stream._transform === 'function';
+}
+
+;// CONCATENATED MODULE: ./node_modules/.pnpm/@sec-ant+readable-stream@0.4.1/node_modules/@sec-ant/readable-stream/dist/ponyfill/asyncIterator.js
+const a = Object.getPrototypeOf(
+  Object.getPrototypeOf(
+    /* istanbul ignore next */
+    async function* () {
+    }
+  ).prototype
+);
+class c {
+  #t;
+  #n;
+  #r = !1;
+  #e = void 0;
+  constructor(e, t) {
+    this.#t = e, this.#n = t;
+  }
+  next() {
+    const e = () => this.#s();
+    return this.#e = this.#e ? this.#e.then(e, e) : e(), this.#e;
+  }
+  return(e) {
+    const t = () => this.#i(e);
+    return this.#e ? this.#e.then(t, t) : t();
+  }
+  async #s() {
+    if (this.#r)
+      return {
+        done: !0,
+        value: void 0
+      };
+    let e;
+    try {
+      e = await this.#t.read();
+    } catch (t) {
+      throw this.#e = void 0, this.#r = !0, this.#t.releaseLock(), t;
+    }
+    return e.done && (this.#e = void 0, this.#r = !0, this.#t.releaseLock()), e;
+  }
+  async #i(e) {
+    if (this.#r)
+      return {
+        done: !0,
+        value: e
+      };
+    if (this.#r = !0, !this.#n) {
+      const t = this.#t.cancel(e);
+      return this.#t.releaseLock(), await t, {
+        done: !0,
+        value: e
+      };
+    }
+    return this.#t.releaseLock(), {
+      done: !0,
+      value: e
+    };
+  }
+}
+const n = Symbol();
+function i() {
+  return this[n].next();
+}
+Object.defineProperty(i, "name", { value: "next" });
+function o(r) {
+  return this[n].return(r);
+}
+Object.defineProperty(o, "name", { value: "return" });
+const u = Object.create(a, {
+  next: {
+    enumerable: !0,
+    configurable: !0,
+    writable: !0,
+    value: i
+  },
+  return: {
+    enumerable: !0,
+    configurable: !0,
+    writable: !0,
+    value: o
+  }
+});
+function h({ preventCancel: r = !1 } = {}) {
+  const e = this.getReader(), t = new c(
+    e,
+    r
+  ), s = Object.create(u);
+  return s[n] = t, s;
+}
+
+
+;// CONCATENATED MODULE: ./node_modules/.pnpm/@sec-ant+readable-stream@0.4.1/node_modules/@sec-ant/readable-stream/dist/ponyfill/index.js
+
+
+
+
+;// CONCATENATED MODULE: ./node_modules/.pnpm/get-stream@9.0.1/node_modules/get-stream/source/stream.js
+
+
+
+const getAsyncIterable = stream => {
+	if (isReadableStream(stream, {checkOpen: false}) && nodeImports.on !== undefined) {
+		return getStreamIterable(stream);
+	}
+
+	if (typeof stream?.[Symbol.asyncIterator] === 'function') {
+		return stream;
+	}
+
+	// `ReadableStream[Symbol.asyncIterator]` support is missing in multiple browsers, so we ponyfill it
+	if (stream_toString.call(stream) === '[object ReadableStream]') {
+		return h.call(stream);
+	}
+
+	throw new TypeError('The first argument must be a Readable, a ReadableStream, or an async iterable.');
+};
+
+const {toString: stream_toString} = Object.prototype;
+
+// The default iterable for Node.js streams does not allow for multiple readers at once, so we re-implement it
+const getStreamIterable = async function * (stream) {
+	const controller = new AbortController();
+	const state = {};
+	handleStreamEnd(stream, controller, state);
+
+	try {
+		for await (const [chunk] of nodeImports.on(stream, 'data', {signal: controller.signal})) {
+			yield chunk;
+		}
+	} catch (error) {
+		// Stream failure, for example due to `stream.destroy(error)`
+		if (state.error !== undefined) {
+			throw state.error;
+		// `error` event directly emitted on stream
+		} else if (!controller.signal.aborted) {
+			throw error;
+		// Otherwise, stream completed successfully
+		}
+		// The `finally` block also runs when the caller throws, for example due to the `maxBuffer` option
+	} finally {
+		stream.destroy();
+	}
+};
+
+const handleStreamEnd = async (stream, controller, state) => {
+	try {
+		await nodeImports.finished(stream, {
+			cleanup: true,
+			readable: true,
+			writable: false,
+			error: false,
+		});
+	} catch (error) {
+		state.error = error;
+	} finally {
+		controller.abort();
+	}
+};
+
+// Loaded by the Node entrypoint, but not by the browser one.
+// This prevents using dynamic imports.
+const nodeImports = {};
+
+;// CONCATENATED MODULE: ./node_modules/.pnpm/get-stream@9.0.1/node_modules/get-stream/source/contents.js
+
+
+const contents_getStreamContents = async (stream, {init, convertChunk, getSize, truncateChunk, addChunk, getFinalChunk, finalize}, {maxBuffer = Number.POSITIVE_INFINITY} = {}) => {
+	const asyncIterable = getAsyncIterable(stream);
+
+	const state = init();
+	state.length = 0;
+
+	try {
+		for await (const chunk of asyncIterable) {
+			const chunkType = getChunkType(chunk);
+			const convertedChunk = convertChunk[chunkType](chunk, state);
+			appendChunk({
+				convertedChunk,
+				state,
+				getSize,
+				truncateChunk,
+				addChunk,
+				maxBuffer,
+			});
+		}
+
+		appendFinalChunk({
+			state,
+			convertChunk,
+			getSize,
+			truncateChunk,
+			addChunk,
+			getFinalChunk,
+			maxBuffer,
+		});
+		return finalize(state);
+	} catch (error) {
+		const normalizedError = typeof error === 'object' && error !== null ? error : new Error(error);
+		normalizedError.bufferedData = finalize(state);
+		throw normalizedError;
+	}
+};
+
+const appendFinalChunk = ({state, getSize, truncateChunk, addChunk, getFinalChunk, maxBuffer}) => {
+	const convertedChunk = getFinalChunk(state);
+	if (convertedChunk !== undefined) {
+		appendChunk({
+			convertedChunk,
+			state,
+			getSize,
+			truncateChunk,
+			addChunk,
+			maxBuffer,
+		});
+	}
+};
+
+const appendChunk = ({convertedChunk, state, getSize, truncateChunk, addChunk, maxBuffer}) => {
+	const chunkSize = getSize(convertedChunk);
+	const newLength = state.length + chunkSize;
+
+	if (newLength <= maxBuffer) {
+		addNewChunk(convertedChunk, state, addChunk, newLength);
+		return;
+	}
+
+	const truncatedChunk = truncateChunk(convertedChunk, maxBuffer - state.length);
+
+	if (truncatedChunk !== undefined) {
+		addNewChunk(truncatedChunk, state, addChunk, maxBuffer);
+	}
+
+	throw new MaxBufferError();
+};
+
+const addNewChunk = (convertedChunk, state, addChunk, newLength) => {
+	state.contents = addChunk(convertedChunk, state, newLength);
+	state.length = newLength;
+};
+
+const getChunkType = chunk => {
+	const typeOfChunk = typeof chunk;
+
+	if (typeOfChunk === 'string') {
+		return 'string';
+	}
+
+	if (typeOfChunk !== 'object' || chunk === null) {
+		return 'others';
+	}
+
+	if (globalThis.Buffer?.isBuffer(chunk)) {
+		return 'buffer';
+	}
+
+	const prototypeName = objectToString.call(chunk);
+
+	if (prototypeName === '[object ArrayBuffer]') {
+		return 'arrayBuffer';
+	}
+
+	if (prototypeName === '[object DataView]') {
+		return 'dataView';
+	}
+
+	if (
+		Number.isInteger(chunk.byteLength)
+		&& Number.isInteger(chunk.byteOffset)
+		&& objectToString.call(chunk.buffer) === '[object ArrayBuffer]'
+	) {
+		return 'typedArray';
+	}
+
+	return 'others';
+};
+
+const {toString: objectToString} = Object.prototype;
+
+class MaxBufferError extends Error {
+	name = 'MaxBufferError';
+
+	constructor() {
+		super('maxBuffer exceeded');
+	}
+}
+
+;// CONCATENATED MODULE: ./node_modules/.pnpm/get-stream@9.0.1/node_modules/get-stream/source/utils.js
+const identity = value => value;
+
+const noop = () => undefined;
+
+const getContentsProperty = ({contents}) => contents;
+
+const throwObjectStream = chunk => {
+	throw new Error(`Streams in object mode are not supported: ${String(chunk)}`);
+};
+
+const getLengthProperty = convertedChunk => convertedChunk.length;
+
+;// CONCATENATED MODULE: ./node_modules/.pnpm/get-stream@9.0.1/node_modules/get-stream/source/array-buffer.js
+
+
+
+async function getStreamAsArrayBuffer(stream, options) {
+	return contents_getStreamContents(stream, arrayBufferMethods, options);
+}
+
+const initArrayBuffer = () => ({contents: new ArrayBuffer(0)});
+
+const useTextEncoder = chunk => textEncoder.encode(chunk);
+const textEncoder = new TextEncoder();
+
+const useUint8Array = chunk => new Uint8Array(chunk);
+
+const useUint8ArrayWithOffset = chunk => new Uint8Array(chunk.buffer, chunk.byteOffset, chunk.byteLength);
+
+const truncateArrayBufferChunk = (convertedChunk, chunkSize) => convertedChunk.slice(0, chunkSize);
+
+// `contents` is an increasingly growing `Uint8Array`.
+const addArrayBufferChunk = (convertedChunk, {contents, length: previousLength}, length) => {
+	const newContents = hasArrayBufferResize() ? resizeArrayBuffer(contents, length) : resizeArrayBufferSlow(contents, length);
+	new Uint8Array(newContents).set(convertedChunk, previousLength);
+	return newContents;
+};
+
+// Without `ArrayBuffer.resize()`, `contents` size is always a power of 2.
+// This means its last bytes are zeroes (not stream data), which need to be
+// trimmed at the end with `ArrayBuffer.slice()`.
+const resizeArrayBufferSlow = (contents, length) => {
+	if (length <= contents.byteLength) {
+		return contents;
+	}
+
+	const arrayBuffer = new ArrayBuffer(getNewContentsLength(length));
+	new Uint8Array(arrayBuffer).set(new Uint8Array(contents), 0);
+	return arrayBuffer;
+};
+
+// With `ArrayBuffer.resize()`, `contents` size matches exactly the size of
+// the stream data. It does not include extraneous zeroes to trim at the end.
+// The underlying `ArrayBuffer` does allocate a number of bytes that is a power
+// of 2, but those bytes are only visible after calling `ArrayBuffer.resize()`.
+const resizeArrayBuffer = (contents, length) => {
+	if (length <= contents.maxByteLength) {
+		contents.resize(length);
+		return contents;
+	}
+
+	const arrayBuffer = new ArrayBuffer(length, {maxByteLength: getNewContentsLength(length)});
+	new Uint8Array(arrayBuffer).set(new Uint8Array(contents), 0);
+	return arrayBuffer;
+};
+
+// Retrieve the closest `length` that is both >= and a power of 2
+const getNewContentsLength = length => SCALE_FACTOR ** Math.ceil(Math.log(length) / Math.log(SCALE_FACTOR));
+
+const SCALE_FACTOR = 2;
+
+const finalizeArrayBuffer = ({contents, length}) => hasArrayBufferResize() ? contents : contents.slice(0, length);
+
+// `ArrayBuffer.slice()` is slow. When `ArrayBuffer.resize()` is available
+// (Node >=20.0.0, Safari >=16.4 and Chrome), we can use it instead.
+// eslint-disable-next-line no-warning-comments
+// TODO: remove after dropping support for Node 20.
+// eslint-disable-next-line no-warning-comments
+// TODO: use `ArrayBuffer.transferToFixedLength()` instead once it is available
+const hasArrayBufferResize = () => 'resize' in ArrayBuffer.prototype;
+
+const arrayBufferMethods = {
+	init: initArrayBuffer,
+	convertChunk: {
+		string: useTextEncoder,
+		buffer: useUint8Array,
+		arrayBuffer: useUint8Array,
+		dataView: useUint8ArrayWithOffset,
+		typedArray: useUint8ArrayWithOffset,
+		others: throwObjectStream,
+	},
+	getSize: getLengthProperty,
+	truncateChunk: truncateArrayBufferChunk,
+	addChunk: addArrayBufferChunk,
+	getFinalChunk: noop,
+	finalize: finalizeArrayBuffer,
+};
+
+;// CONCATENATED MODULE: ./node_modules/.pnpm/get-stream@9.0.1/node_modules/get-stream/source/buffer.js
+
+
+async function getStreamAsBuffer(stream, options) {
+	if (!('Buffer' in globalThis)) {
+		throw new Error('getStreamAsBuffer() is only supported in Node.js');
+	}
+
+	try {
+		return arrayBufferToNodeBuffer(await getStreamAsArrayBuffer(stream, options));
+	} catch (error) {
+		if (error.bufferedData !== undefined) {
+			error.bufferedData = arrayBufferToNodeBuffer(error.bufferedData);
+		}
+
+		throw error;
+	}
+}
+
+const arrayBufferToNodeBuffer = arrayBuffer => globalThis.Buffer.from(arrayBuffer);
+
 // EXTERNAL MODULE: ./node_modules/.pnpm/http-cache-semantics@4.1.1/node_modules/http-cache-semantics/index.js
 var http_cache_semantics = __nccwpck_require__(7893);
 ;// CONCATENATED MODULE: ./node_modules/.pnpm/responselike@3.0.0/node_modules/responselike/index.js
@@ -43655,7 +43969,7 @@ function mimicResponse(fromStream, toStream) {
 	return toStream;
 }
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/cacheable-request@10.2.14/node_modules/cacheable-request/dist/types.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/cacheable-request@12.0.1/node_modules/cacheable-request/dist/types.js
 // Type definitions for cacheable-request 6.0
 // Project: https://github.com/lukechilds/cacheable-request#readme
 // Definitions by: BendingBender <https://github.com/BendingBender>
@@ -43675,7 +43989,7 @@ class types_CacheError extends Error {
     }
 }
 //# sourceMappingURL=types.js.map
-;// CONCATENATED MODULE: ./node_modules/.pnpm/cacheable-request@10.2.14/node_modules/cacheable-request/dist/index.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/cacheable-request@12.0.1/node_modules/cacheable-request/dist/index.js
 
 
 
@@ -43690,7 +44004,7 @@ class types_CacheError extends Error {
 class CacheableRequest {
     constructor(cacheRequest, cacheAdapter) {
         this.hooks = new Map();
-        this.request = () => (options, cb) => {
+        this.request = () => (options, callback) => {
             let url;
             if (typeof options === 'string') {
                 url = normalizeUrlObject(external_node_url_namespaceObject.parse(options));
@@ -43719,7 +44033,7 @@ class CacheableRequest {
             options.headers = Object.fromEntries(entries(options.headers).map(([key, value]) => [key.toLowerCase(), value]));
             const ee = new external_node_events_();
             const normalizedUrlString = normalizeUrl(external_node_url_namespaceObject.format(url), {
-                stripWWW: false,
+                stripWWW: false, // eslint-disable-line @typescript-eslint/naming-convention
                 removeTrailingSlash: false,
                 stripAuthentication: false,
             });
@@ -43764,7 +44078,9 @@ class CacheableRequest {
                                     .once('end', resolve);
                             });
                             const headers = convertHeaders(revalidatedPolicy.policy.responseHeaders());
-                            response = new Response({ statusCode: revalidate.statusCode, headers, body: revalidate.body, url: revalidate.url });
+                            response = new Response({
+                                statusCode: revalidate.statusCode, headers, body: revalidate.body, url: revalidate.url,
+                            });
                             response.cachePolicy = revalidatedPolicy.policy;
                             response.fromCache = true;
                         }
@@ -43778,10 +44094,10 @@ class CacheableRequest {
                         clonedResponse = cloneResponse(response);
                         (async () => {
                             try {
-                                const bodyPromise = get_stream.buffer(response);
+                                const bodyPromise = getStreamAsBuffer(response);
                                 await Promise.race([
                                     requestErrorPromise,
-                                    new Promise(resolve => response.once('end', resolve)),
+                                    new Promise(resolve => response.once('end', resolve)), // eslint-disable-line no-promise-executor-return
                                     new Promise(resolve => response.once('close', resolve)), // eslint-disable-line no-promise-executor-return
                                 ]);
                                 const body = await bodyPromise;
@@ -43820,8 +44136,8 @@ class CacheableRequest {
                         })();
                     }
                     ee.emit('response', clonedResponse ?? response);
-                    if (typeof cb === 'function') {
-                        cb(clonedResponse ?? response);
+                    if (typeof callback === 'function') {
+                        callback(clonedResponse ?? response);
                     }
                 };
                 try {
@@ -43846,12 +44162,14 @@ class CacheableRequest {
                     const policy = http_cache_semantics.fromObject(cacheEntry.cachePolicy);
                     if (policy.satisfiesWithoutRevalidation(options_) && !options_.forceRefresh) {
                         const headers = convertHeaders(policy.responseHeaders());
-                        const response = new Response({ statusCode: cacheEntry.statusCode, headers, body: cacheEntry.body, url: cacheEntry.url });
+                        const response = new Response({
+                            statusCode: cacheEntry.statusCode, headers, body: cacheEntry.body, url: cacheEntry.url,
+                        });
                         response.cachePolicy = policy;
                         response.fromCache = true;
                         ee.emit('response', response);
-                        if (typeof cb === 'function') {
-                            cb(response);
+                        if (typeof callback === 'function') {
+                            callback(response);
                         }
                     }
                     else if (policy.satisfiesWithoutRevalidation(options_) && Date.now() >= policy.timeToLive() && options_.forceRefresh) {
@@ -43884,14 +44202,14 @@ class CacheableRequest {
             })();
             return ee;
         };
-        this.addHook = (name, fn) => {
+        this.addHook = (name, function_) => {
             if (!this.hooks.has(name)) {
-                this.hooks.set(name, fn);
+                this.hooks.set(name, function_);
             }
         };
         this.removeHook = (name) => this.hooks.delete(name);
         this.getHook = (name) => this.hooks.get(name);
-        this.runHook = async (name, ...args) => this.hooks.get(name)?.(...args);
+        this.runHook = async (name, ...arguments_) => this.hooks.get(name)?.(...arguments_);
         if (cacheAdapter instanceof src) {
             this.cache = cacheAdapter;
         }
@@ -43954,7 +44272,7 @@ const onResponse = 'onResponse';
 // EXTERNAL MODULE: ./node_modules/.pnpm/decompress-response@6.0.0/node_modules/decompress-response/index.js
 var decompress_response = __nccwpck_require__(7748);
 ;// CONCATENATED MODULE: ./node_modules/.pnpm/get-stream@8.0.1/node_modules/get-stream/source/contents.js
-const contents_getStreamContents = async (stream, {init, convertChunk, getSize, truncateChunk, addChunk, getFinalChunk, finalize}, {maxBuffer = Number.POSITIVE_INFINITY} = {}) => {
+const source_contents_getStreamContents = async (stream, {init, convertChunk, getSize, truncateChunk, addChunk, getFinalChunk, finalize}, {maxBuffer = Number.POSITIVE_INFINITY} = {}) => {
 	if (!contents_isAsyncIterable(stream)) {
 		throw new Error('The first argument must be a Readable, a ReadableStream, or an async iterable.');
 	}
@@ -43964,12 +44282,12 @@ const contents_getStreamContents = async (stream, {init, convertChunk, getSize, 
 
 	try {
 		for await (const chunk of stream) {
-			const chunkType = getChunkType(chunk);
+			const chunkType = contents_getChunkType(chunk);
 			const convertedChunk = convertChunk[chunkType](chunk, state);
-			appendChunk({convertedChunk, state, getSize, truncateChunk, addChunk, maxBuffer});
+			contents_appendChunk({convertedChunk, state, getSize, truncateChunk, addChunk, maxBuffer});
 		}
 
-		appendFinalChunk({state, convertChunk, getSize, truncateChunk, addChunk, getFinalChunk, maxBuffer});
+		contents_appendFinalChunk({state, convertChunk, getSize, truncateChunk, addChunk, getFinalChunk, maxBuffer});
 		return finalize(state);
 	} catch (error) {
 		error.bufferedData = finalize(state);
@@ -43977,39 +44295,39 @@ const contents_getStreamContents = async (stream, {init, convertChunk, getSize, 
 	}
 };
 
-const appendFinalChunk = ({state, getSize, truncateChunk, addChunk, getFinalChunk, maxBuffer}) => {
+const contents_appendFinalChunk = ({state, getSize, truncateChunk, addChunk, getFinalChunk, maxBuffer}) => {
 	const convertedChunk = getFinalChunk(state);
 	if (convertedChunk !== undefined) {
-		appendChunk({convertedChunk, state, getSize, truncateChunk, addChunk, maxBuffer});
+		contents_appendChunk({convertedChunk, state, getSize, truncateChunk, addChunk, maxBuffer});
 	}
 };
 
-const appendChunk = ({convertedChunk, state, getSize, truncateChunk, addChunk, maxBuffer}) => {
+const contents_appendChunk = ({convertedChunk, state, getSize, truncateChunk, addChunk, maxBuffer}) => {
 	const chunkSize = getSize(convertedChunk);
 	const newLength = state.length + chunkSize;
 
 	if (newLength <= maxBuffer) {
-		addNewChunk(convertedChunk, state, addChunk, newLength);
+		contents_addNewChunk(convertedChunk, state, addChunk, newLength);
 		return;
 	}
 
 	const truncatedChunk = truncateChunk(convertedChunk, maxBuffer - state.length);
 
 	if (truncatedChunk !== undefined) {
-		addNewChunk(truncatedChunk, state, addChunk, maxBuffer);
+		contents_addNewChunk(truncatedChunk, state, addChunk, maxBuffer);
 	}
 
-	throw new MaxBufferError();
+	throw new contents_MaxBufferError();
 };
 
-const addNewChunk = (convertedChunk, state, addChunk, newLength) => {
+const contents_addNewChunk = (convertedChunk, state, addChunk, newLength) => {
 	state.contents = addChunk(convertedChunk, state, newLength);
 	state.length = newLength;
 };
 
 const contents_isAsyncIterable = stream => typeof stream === 'object' && stream !== null && typeof stream[Symbol.asyncIterator] === 'function';
 
-const getChunkType = chunk => {
+const contents_getChunkType = chunk => {
 	const typeOfChunk = typeof chunk;
 
 	if (typeOfChunk === 'string') {
@@ -44025,7 +44343,7 @@ const getChunkType = chunk => {
 		return 'buffer';
 	}
 
-	const prototypeName = objectToString.call(chunk);
+	const prototypeName = contents_objectToString.call(chunk);
 
 	if (prototypeName === '[object ArrayBuffer]') {
 		return 'arrayBuffer';
@@ -44038,7 +44356,7 @@ const getChunkType = chunk => {
 	if (
 		Number.isInteger(chunk.byteLength)
 		&& Number.isInteger(chunk.byteOffset)
-		&& objectToString.call(chunk.buffer) === '[object ArrayBuffer]'
+		&& contents_objectToString.call(chunk.buffer) === '[object ArrayBuffer]'
 	) {
 		return 'typedArray';
 	}
@@ -44046,9 +44364,9 @@ const getChunkType = chunk => {
 	return 'others';
 };
 
-const {toString: objectToString} = Object.prototype;
+const {toString: contents_objectToString} = Object.prototype;
 
-class MaxBufferError extends Error {
+class contents_MaxBufferError extends Error {
 	name = 'MaxBufferError';
 
 	constructor() {
@@ -44057,13 +44375,13 @@ class MaxBufferError extends Error {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/.pnpm/get-stream@8.0.1/node_modules/get-stream/source/utils.js
-const identity = value => value;
+const utils_identity = value => value;
 
-const noop = () => undefined;
+const utils_noop = () => undefined;
 
 const getContentsProp = ({contents}) => contents;
 
-const throwObjectStream = chunk => {
+const utils_throwObjectStream = chunk => {
 	throw new Error(`Streams in object mode are not supported: ${String(chunk)}`);
 };
 
@@ -44089,17 +44407,17 @@ const addArrayChunk = (convertedChunk, {contents}) => {
 const arrayMethods = {
 	init: initArray,
 	convertChunk: {
-		string: identity,
-		buffer: identity,
-		arrayBuffer: identity,
-		dataView: identity,
-		typedArray: identity,
-		others: identity,
+		string: utils_identity,
+		buffer: utils_identity,
+		arrayBuffer: utils_identity,
+		dataView: utils_identity,
+		typedArray: utils_identity,
+		others: utils_identity,
 	},
 	getSize: increment,
-	truncateChunk: noop,
+	truncateChunk: utils_noop,
 	addChunk: addArrayChunk,
-	getFinalChunk: noop,
+	getFinalChunk: utils_noop,
 	finalize: getContentsProp,
 };
 
@@ -44107,24 +44425,24 @@ const arrayMethods = {
 
 
 
-async function getStreamAsArrayBuffer(stream, options) {
-	return contents_getStreamContents(stream, arrayBufferMethods, options);
+async function array_buffer_getStreamAsArrayBuffer(stream, options) {
+	return source_contents_getStreamContents(stream, array_buffer_arrayBufferMethods, options);
 }
 
-const initArrayBuffer = () => ({contents: new ArrayBuffer(0)});
+const array_buffer_initArrayBuffer = () => ({contents: new ArrayBuffer(0)});
 
-const useTextEncoder = chunk => textEncoder.encode(chunk);
-const textEncoder = new TextEncoder();
+const array_buffer_useTextEncoder = chunk => array_buffer_textEncoder.encode(chunk);
+const array_buffer_textEncoder = new TextEncoder();
 
-const useUint8Array = chunk => new Uint8Array(chunk);
+const array_buffer_useUint8Array = chunk => new Uint8Array(chunk);
 
-const useUint8ArrayWithOffset = chunk => new Uint8Array(chunk.buffer, chunk.byteOffset, chunk.byteLength);
+const array_buffer_useUint8ArrayWithOffset = chunk => new Uint8Array(chunk.buffer, chunk.byteOffset, chunk.byteLength);
 
-const truncateArrayBufferChunk = (convertedChunk, chunkSize) => convertedChunk.slice(0, chunkSize);
+const array_buffer_truncateArrayBufferChunk = (convertedChunk, chunkSize) => convertedChunk.slice(0, chunkSize);
 
 // `contents` is an increasingly growing `Uint8Array`.
-const addArrayBufferChunk = (convertedChunk, {contents, length: previousLength}, length) => {
-	const newContents = hasArrayBufferResize() ? resizeArrayBuffer(contents, length) : resizeArrayBufferSlow(contents, length);
+const array_buffer_addArrayBufferChunk = (convertedChunk, {contents, length: previousLength}, length) => {
+	const newContents = array_buffer_hasArrayBufferResize() ? array_buffer_resizeArrayBuffer(contents, length) : array_buffer_resizeArrayBufferSlow(contents, length);
 	new Uint8Array(newContents).set(convertedChunk, previousLength);
 	return newContents;
 };
@@ -44132,12 +44450,12 @@ const addArrayBufferChunk = (convertedChunk, {contents, length: previousLength},
 // Without `ArrayBuffer.resize()`, `contents` size is always a power of 2.
 // This means its last bytes are zeroes (not stream data), which need to be
 // trimmed at the end with `ArrayBuffer.slice()`.
-const resizeArrayBufferSlow = (contents, length) => {
+const array_buffer_resizeArrayBufferSlow = (contents, length) => {
 	if (length <= contents.byteLength) {
 		return contents;
 	}
 
-	const arrayBuffer = new ArrayBuffer(getNewContentsLength(length));
+	const arrayBuffer = new ArrayBuffer(array_buffer_getNewContentsLength(length));
 	new Uint8Array(arrayBuffer).set(new Uint8Array(contents), 0);
 	return arrayBuffer;
 };
@@ -44146,23 +44464,23 @@ const resizeArrayBufferSlow = (contents, length) => {
 // the stream data. It does not include extraneous zeroes to trim at the end.
 // The underlying `ArrayBuffer` does allocate a number of bytes that is a power
 // of 2, but those bytes are only visible after calling `ArrayBuffer.resize()`.
-const resizeArrayBuffer = (contents, length) => {
+const array_buffer_resizeArrayBuffer = (contents, length) => {
 	if (length <= contents.maxByteLength) {
 		contents.resize(length);
 		return contents;
 	}
 
-	const arrayBuffer = new ArrayBuffer(length, {maxByteLength: getNewContentsLength(length)});
+	const arrayBuffer = new ArrayBuffer(length, {maxByteLength: array_buffer_getNewContentsLength(length)});
 	new Uint8Array(arrayBuffer).set(new Uint8Array(contents), 0);
 	return arrayBuffer;
 };
 
 // Retrieve the closest `length` that is both >= and a power of 2
-const getNewContentsLength = length => SCALE_FACTOR ** Math.ceil(Math.log(length) / Math.log(SCALE_FACTOR));
+const array_buffer_getNewContentsLength = length => array_buffer_SCALE_FACTOR ** Math.ceil(Math.log(length) / Math.log(array_buffer_SCALE_FACTOR));
 
-const SCALE_FACTOR = 2;
+const array_buffer_SCALE_FACTOR = 2;
 
-const finalizeArrayBuffer = ({contents, length}) => hasArrayBufferResize() ? contents : contents.slice(0, length);
+const array_buffer_finalizeArrayBuffer = ({contents, length}) => array_buffer_hasArrayBufferResize() ? contents : contents.slice(0, length);
 
 // `ArrayBuffer.slice()` is slow. When `ArrayBuffer.resize()` is available
 // (Node >=20.0.0, Safari >=16.4 and Chrome), we can use it instead.
@@ -44170,38 +44488,38 @@ const finalizeArrayBuffer = ({contents, length}) => hasArrayBufferResize() ? con
 // TODO: remove after dropping support for Node 20.
 // eslint-disable-next-line no-warning-comments
 // TODO: use `ArrayBuffer.transferToFixedLength()` instead once it is available
-const hasArrayBufferResize = () => 'resize' in ArrayBuffer.prototype;
+const array_buffer_hasArrayBufferResize = () => 'resize' in ArrayBuffer.prototype;
 
-const arrayBufferMethods = {
-	init: initArrayBuffer,
+const array_buffer_arrayBufferMethods = {
+	init: array_buffer_initArrayBuffer,
 	convertChunk: {
-		string: useTextEncoder,
-		buffer: useUint8Array,
-		arrayBuffer: useUint8Array,
-		dataView: useUint8ArrayWithOffset,
-		typedArray: useUint8ArrayWithOffset,
-		others: throwObjectStream,
+		string: array_buffer_useTextEncoder,
+		buffer: array_buffer_useUint8Array,
+		arrayBuffer: array_buffer_useUint8Array,
+		dataView: array_buffer_useUint8ArrayWithOffset,
+		typedArray: array_buffer_useUint8ArrayWithOffset,
+		others: utils_throwObjectStream,
 	},
 	getSize: getLengthProp,
-	truncateChunk: truncateArrayBufferChunk,
-	addChunk: addArrayBufferChunk,
-	getFinalChunk: noop,
-	finalize: finalizeArrayBuffer,
+	truncateChunk: array_buffer_truncateArrayBufferChunk,
+	addChunk: array_buffer_addArrayBufferChunk,
+	getFinalChunk: utils_noop,
+	finalize: array_buffer_finalizeArrayBuffer,
 };
 
 ;// CONCATENATED MODULE: ./node_modules/.pnpm/get-stream@8.0.1/node_modules/get-stream/source/buffer.js
 
 
-async function getStreamAsBuffer(stream, options) {
+async function buffer_getStreamAsBuffer(stream, options) {
 	if (!('Buffer' in globalThis)) {
 		throw new Error('getStreamAsBuffer() is only supported in Node.js');
 	}
 
 	try {
-		return arrayBufferToNodeBuffer(await getStreamAsArrayBuffer(stream, options));
+		return buffer_arrayBufferToNodeBuffer(await array_buffer_getStreamAsArrayBuffer(stream, options));
 	} catch (error) {
 		if (error.bufferedData !== undefined) {
-			error.bufferedData = arrayBufferToNodeBuffer(error.bufferedData);
+			error.bufferedData = buffer_arrayBufferToNodeBuffer(error.bufferedData);
 		}
 
 		throw error;
@@ -44209,7 +44527,7 @@ async function getStreamAsBuffer(stream, options) {
 }
 
 // eslint-disable-next-line n/prefer-global/buffer
-const arrayBufferToNodeBuffer = arrayBuffer => globalThis.Buffer.from(arrayBuffer);
+const buffer_arrayBufferToNodeBuffer = arrayBuffer => globalThis.Buffer.from(arrayBuffer);
 
 ;// CONCATENATED MODULE: ./node_modules/.pnpm/get-stream@8.0.1/node_modules/get-stream/source/string.js
 
@@ -44235,12 +44553,12 @@ const getFinalStringChunk = ({textDecoder}) => {
 const stringMethods = {
 	init: initString,
 	convertChunk: {
-		string: identity,
+		string: utils_identity,
 		buffer: useTextDecoder,
 		arrayBuffer: useTextDecoder,
 		dataView: useTextDecoder,
 		typedArray: useTextDecoder,
-		others: throwObjectStream,
+		others: utils_throwObjectStream,
 	},
 	getSize: getLengthProp,
 	truncateChunk: truncateStringChunk,
@@ -44256,13 +44574,13 @@ const stringMethods = {
 
 
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.2.1/node_modules/got/dist/source/core/utils/is-form-data.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.3.0/node_modules/got/dist/source/core/utils/is-form-data.js
 
 function is_form_data_isFormData(body) {
     return dist.nodeStream(body) && dist.function_(body.getBoundary);
 }
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.2.1/node_modules/got/dist/source/core/utils/get-body-size.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.3.0/node_modules/got/dist/source/core/utils/get-body-size.js
 
 
 
@@ -44286,12 +44604,12 @@ async function getBodySize(body, headers) {
     return undefined;
 }
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.2.1/node_modules/got/dist/source/core/utils/proxy-events.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.3.0/node_modules/got/dist/source/core/utils/proxy-events.js
 function proxyEvents(from, to, events) {
     const eventFunctions = {};
     for (const event of events) {
-        const eventFunction = (...args) => {
-            to.emit(event, ...args);
+        const eventFunction = (...arguments_) => {
+            to.emit(event, ...arguments_);
         };
         eventFunctions[event] = eventFunction;
         from.on(event, eventFunction);
@@ -44305,7 +44623,7 @@ function proxyEvents(from, to, events) {
 
 ;// CONCATENATED MODULE: external "node:net"
 const external_node_net_namespaceObject = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:net");
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.2.1/node_modules/got/dist/source/core/utils/unhandle.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.3.0/node_modules/got/dist/source/core/utils/unhandle.js
 // When attaching listeners, it's very easy to forget about them.
 // Especially if you do error handling and set timeouts.
 // So instead of checking if it's proper to throw an error on every timeout ever,
@@ -44313,9 +44631,9 @@ const external_node_net_namespaceObject = __WEBPACK_EXTERNAL_createRequire(impor
 function unhandle() {
     const handlers = [];
     return {
-        once(origin, event, fn) {
-            origin.once(event, fn);
-            handlers.push({ origin, event, fn });
+        once(origin, event, function_) {
+            origin.once(event, function_);
+            handlers.push({ origin, event, fn: function_ });
         },
         unhandleAll() {
             for (const handler of handlers) {
@@ -44327,7 +44645,7 @@ function unhandle() {
     };
 }
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.2.1/node_modules/got/dist/source/core/timed-out.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.3.0/node_modules/got/dist/source/core/timed-out.js
 
 
 const reentry = Symbol('reentry');
@@ -44458,7 +44776,7 @@ function timedOut(request, delays, options) {
     return cancelTimeouts;
 }
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.2.1/node_modules/got/dist/source/core/utils/url-to-options.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.3.0/node_modules/got/dist/source/core/utils/url-to-options.js
 
 function urlToOptions(url) {
     // Cast to URL
@@ -44482,7 +44800,7 @@ function urlToOptions(url) {
     return options;
 }
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.2.1/node_modules/got/dist/source/core/utils/weakable-map.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.3.0/node_modules/got/dist/source/core/utils/weakable-map.js
 class WeakableMap {
     weakMap;
     map;
@@ -44512,7 +44830,7 @@ class WeakableMap {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.2.1/node_modules/got/dist/source/core/calculate-retry-delay.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.3.0/node_modules/got/dist/source/core/calculate-retry-delay.js
 const calculateRetryDelay = ({ attemptCount, retryOptions, error, retryAfter, computedValue, }) => {
     if (error.name === 'RetryError') {
         return 1;
@@ -44543,7 +44861,7 @@ const calculateRetryDelay = ({ attemptCount, retryOptions, error, retryAfter, co
 };
 /* harmony default export */ const calculate_retry_delay = (calculateRetryDelay);
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.2.1/node_modules/got/dist/source/core/response.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.3.0/node_modules/got/dist/source/core/response.js
 
 const isResponseOk = (response) => {
     const { statusCode } = response;
@@ -44586,19 +44904,19 @@ const parseBody = (response, responseType, parseJson, encoding) => {
     }, response);
 };
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.2.1/node_modules/got/dist/source/core/utils/is-client-request.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.3.0/node_modules/got/dist/source/core/utils/is-client-request.js
 function isClientRequest(clientRequest) {
     return clientRequest.writable && !clientRequest.writableEnded;
 }
 /* harmony default export */ const is_client_request = (isClientRequest);
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.2.1/node_modules/got/dist/source/core/utils/is-unix-socket-url.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.3.0/node_modules/got/dist/source/core/utils/is-unix-socket-url.js
 // eslint-disable-next-line @typescript-eslint/naming-convention
 function isUnixSocketURL(url) {
     return url.protocol === 'unix:' || url.hostname === 'unix';
 }
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.2.1/node_modules/got/dist/source/core/index.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.3.0/node_modules/got/dist/source/core/index.js
 
 
 
@@ -45228,7 +45546,7 @@ class Request extends external_node_stream_.Duplex {
         }
         try {
             // Errors are emitted via the `error` event
-            const rawBody = await getStreamAsBuffer(from);
+            const rawBody = await buffer_getStreamAsBuffer(from);
             // TODO: Switch to this:
             // let rawBody = await from.toArray();
             // rawBody = Buffer.concat(rawBody);
@@ -45425,9 +45743,7 @@ class Request extends external_node_stream_.Duplex {
                 break;
             }
         }
-        if (!request) {
-            request = options.getRequestFunction();
-        }
+        request ||= options.getRequestFunction();
         const url = options.url;
         this._requestOptions = options.createNativeRequestOptions();
         if (options.cache) {
@@ -45437,11 +45753,11 @@ class Request extends external_node_stream_.Duplex {
             this._prepareCache(options.cache);
         }
         // Cache support
-        const fn = options.cache ? this._createCacheableRequest : request;
+        const function_ = options.cache ? this._createCacheableRequest : request;
         try {
             // We can't do `await fn(...)`,
             // because stream `error` event can be emitted before `Promise.resolve()`.
-            let requestOrResponse = fn(url, this._requestOptions);
+            let requestOrResponse = function_(url, this._requestOptions);
             if (dist.promise(requestOrResponse)) {
                 requestOrResponse = await requestOrResponse;
             }
@@ -45604,7 +45920,7 @@ class Request extends external_node_stream_.Duplex {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.2.1/node_modules/got/dist/source/as-promise/types.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.3.0/node_modules/got/dist/source/as-promise/types.js
 
 /**
 An error to be thrown when the request is aborted with `.cancel()`.
@@ -45623,7 +45939,7 @@ class types_CancelError extends RequestError {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.2.1/node_modules/got/dist/source/as-promise/index.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.3.0/node_modules/got/dist/source/as-promise/index.js
 
 
 
@@ -45756,12 +46072,12 @@ function asPromise(firstRequest) {
         };
         makeRequest(0);
     });
-    promise.on = (event, fn) => {
-        emitter.on(event, fn);
+    promise.on = (event, function_) => {
+        emitter.on(event, function_);
         return promise;
     };
-    promise.off = (event, fn) => {
-        emitter.off(event, fn);
+    promise.off = (event, function_) => {
+        emitter.off(event, function_);
         return promise;
     };
     const shortcut = (responseType) => {
@@ -45789,7 +46105,7 @@ function asPromise(firstRequest) {
     return promise;
 }
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.2.1/node_modules/got/dist/source/create.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.3.0/node_modules/got/dist/source/create.js
 
 
 
@@ -45830,9 +46146,7 @@ const create = (defaults) => {
             if (normalized.isStream) {
                 return request;
             }
-            if (!promise) {
-                promise = asPromise(request);
-            }
+            promise ||= asPromise(request);
             return promise;
         };
         let iteration = 0;
@@ -45840,9 +46154,7 @@ const create = (defaults) => {
             const handler = defaults.handlers[iteration++] ?? lastHandler;
             const result = handler(newOptions, iterateHandlers);
             if (dist.promise(result) && !request.options.isStream) {
-                if (!promise) {
-                    promise = asPromise(request);
-                }
+                promise ||= asPromise(request);
                 if (result !== promise) {
                     const descriptors = Object.getOwnPropertyDescriptors(promise);
                     for (const key in descriptors) {
@@ -45978,7 +46290,7 @@ const create = (defaults) => {
 };
 /* harmony default export */ const source_create = (create);
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.2.1/node_modules/got/dist/source/index.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.3.0/node_modules/got/dist/source/index.js
 
 
 const defaults = {

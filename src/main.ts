@@ -41,7 +41,7 @@ const runStorageZoneActions = async () => {
   });
   endGroup();
 
-  if (enableDeleteAction) {
+  if (enableDeleteAction && fileInfo.unknownRemoteFiles.size) {
     startGroup("Deleting unknown remote files");
     await deleteFiles({
       client: edgeStorageClient,

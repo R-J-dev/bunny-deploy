@@ -51,7 +51,7 @@ describe("main", () => {
       pullZoneId: 12345,
       replicationTimeout: 15,
     });
-    fileInfoSpy.mockResolvedValueOnce({
+    fileInfoSpy.mockResolvedValue({
       unknownRemoteFiles: new Set<string>(),
       unchangedFiles: new Set<string>(),
     });
@@ -108,6 +108,10 @@ describe("main", () => {
       deleteSpy.mockResolvedValueOnce(undefined);
       uploadSpy.mockResolvedValueOnce(undefined);
       purgeSpy.mockResolvedValueOnce(undefined);
+      fileInfoSpy.mockResolvedValueOnce({
+        unknownRemoteFiles: new Set<string>(["test"]),
+        unchangedFiles: new Set<string>(),
+      });
 
       await run();
 
@@ -127,6 +131,10 @@ describe("main", () => {
       });
       deleteSpy.mockResolvedValueOnce(undefined);
       uploadSpy.mockResolvedValueOnce(undefined);
+      fileInfoSpy.mockResolvedValueOnce({
+        unknownRemoteFiles: new Set<string>(["test"]),
+        unchangedFiles: new Set<string>(),
+      });
 
       await run();
 

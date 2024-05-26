@@ -51,18 +51,24 @@ jobs:
       - name: Test actions
         run: pnpm test:ci
   build:
+    permissions:
+      contents: write
     runs-on: ubuntu-22.04
     timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.6
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.ref }}
       - name: Install dependencies
         uses: ./.github/actions/install-dependencies
       - name: Build
         run: pnpm build
-      - name: Check build
-        run: |
-          if ! git diff --quiet; then
-            echo "Build output is different from the existing dist directory. Try running 'pnpm build' and commit the changes."
-            exit 1
-          fi
+      - name: Commit changes
+        uses: EndBug/add-and-commit@v9.1.4
+        with:
+          author_name: ${{ github.event.pull_request.user.login }}
+          author_email: ${{ github.event.pull_request.user.email }}
+          message: "build: update build"
+          add: "dist/**"

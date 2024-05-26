@@ -67,7 +67,7 @@ export const getFileInfo = async ({
     await listFiles({
       client,
       path: targetDirectory
-        ? posixJoin(storageZoneName, targetDirectory)
+        ? posixJoin(storageZoneName, `${targetDirectory}/`)
         : `${storageZoneName}/`,
       disableTypeValidation,
     }),

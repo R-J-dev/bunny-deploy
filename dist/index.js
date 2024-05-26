@@ -38809,7 +38809,7 @@ const getFileInfo = async ({ client, directoryToUpload, targetDirectory, storage
     listFilesResults.add(await listFiles({
         client,
         path: targetDirectory
-            ? (0,posix_namespaceObject.join)(storageZoneName, targetDirectory)
+            ? (0,posix_namespaceObject.join)(storageZoneName, `${targetDirectory}/`)
             : `${storageZoneName}/`,
         disableTypeValidation,
     }));
@@ -46610,7 +46610,7 @@ const runStorageZoneActions = async () => {
         disableTypeValidation,
     });
     (0,core.endGroup)();
-    if (enableDeleteAction) {
+    if (enableDeleteAction && fileInfo.unknownRemoteFiles.size) {
         (0,core.startGroup)("Deleting unknown remote files");
         await deleteFiles({
             client: edgeStorageClient,

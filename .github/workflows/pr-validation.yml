@@ -74,12 +74,16 @@ jobs:
           message: "build: update build"
           add: "dist/**"
   e2e-test:
+    strategy:
+      max-parallel: 1
+      matrix:
+        os: [ubuntu-24.04, ubuntu-22.04, ubuntu-20.04]
     concurrency:
       group: e2e-test
       cancel-in-progress: false
     permissions:
       contents: write
-    runs-on: ubuntu-22.04
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 5
     needs: build
     steps:

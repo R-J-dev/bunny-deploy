@@ -2,6 +2,7 @@ name: PR validation
 
 on:
   pull_request:
+    types: [synchronize]
     branches:
       - main
 
@@ -72,3 +73,38 @@ jobs:
           author_email: ${{ github.event.pull_request.user.email }}
           message: "build: update build"
           add: "dist/**"
+  e2e-test:
+    strategy:
+      max-parallel: 1
+      matrix:
+        os: [ubuntu-24.04, ubuntu-22.04, ubuntu-20.04]
+    concurrency:
+      group: e2e-test
+      cancel-in-progress: false
+    permissions:
+      contents: write
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 5
+    needs: build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.6
+      - name: Generate random files to upload
+        run: |
+          set -euo pipefail
+          random_dir=$(openssl rand -base64 32 | tr -dc 'a-zA-Z0-9' | fold -w 10 | head -n 1)
+          mkdir -p ./.github/e2e-test-dir/$random_dir
+          echo "test" > ./.github/e2e-test-dir/$random_dir/file1.txt
+          random_nested_dir=$(openssl rand -base64 32 | tr -dc 'a-zA-Z0-9' | fold -w 10 | head -n 1)
+          mkdir -p ./.github/e2e-test-dir/$random_dir/$random_nested_dir
+          echo "test" > ./.github/e2e-test-dir/$random_dir/$random_nested_dir/file2.txt
+      - name: Deploy to Bunny
+        uses: ./
+        with:
+          storage-zone-password: ${{ secrets.BUNNY_STORAGE_ZONE_PASSWORD }}
+          directory-to-upload: "./.github/e2e-test-dir/"
+          storage-endpoint: "https://storage.bunnycdn.com"
+          storage-zone-name: "r-j-dev-bunny-deploy-test"
+          concurrency: "50"
+          enable-delete-action: true
+          target-directory: "/e2e-test/"

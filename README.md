@@ -1,4 +1,4 @@
-# bunny-deploy (Alpha)
+# bunny-deploy
 
 GitHub action for deploying your static app to Bunny CDN 🚀
 
@@ -12,29 +12,38 @@ The default action for this GitHub action, is that it uploads a given directory 
 It also provides some extra features, which are listed under [Feature flags](#feature-flags-optional).
 The required inputs could be different depending on the feature flag(s) that you enable. See for more info: [Config](#config).
 
-> **Warning** ⚠️
+> **Warnings (2)** ⚠️
 >
-> There is no option yet to rollback the changes that you can make with this GitHub Action.
-> When something fails while running this action, you might have to manually fix it yourself.
+> 1. There is no option yet to rollback the changes that you can make with this GitHub Action.
+>    When something fails while running this action, you might have to manually fix it yourself.
+> 2. This action has only been tested on GitHub-hosted Ubuntu runners, other operating systems will be tested in a future version.
 
 ## Example upload with delete and purge
 
 See for more examples: [Examples](#examples)
 
 ```yaml
-- name: Deploy to Bunny
-  uses: R-J-dev/bunny-deploy@v1
-  with:
-    access-key: ${{ secrets.BUNNY_ACCESS_KEY }}
-    directory-to-upload: "./build"
-    storage-endpoint: "storage.bunnycdn.com"
-    storage-zone-name: "my-storage-zone"
-    storage-zone-password: ${{ secrets.BUNNY_STORAGE_ZONE_PASSWORD }}
-    concurrency: "50"
-    enable-delete-action: true
-    enable-purge-pull-zone: true
-    pull-zone-id: "12345"
-    replication-timeout: "15"
+deploy:
+  runs-on: ubuntu-22.04
+  permissions:
+    contents: read
+  timeout-minutes: 5 # Depending on the size of your project
+  steps:
+    # Checkout repo
+    # Build your code or download build cache
+    - name: Deploy to Bunny
+      uses: R-J-dev/bunny-deploy@v1
+      with:
+        access-key: ${{ secrets.BUNNY_ACCESS_KEY }}
+        directory-to-upload: "./build"
+        storage-endpoint: "https://storage.bunnycdn.com"
+        storage-zone-name: "my-storage-zone"
+        storage-zone-password: ${{ secrets.BUNNY_STORAGE_ZONE_PASSWORD }}
+        concurrency: "50" # See docs below for more info
+        enable-delete-action: true
+        enable-purge-pull-zone: true
+        pull-zone-id: "12345"
+        replication-timeout: "15"
 ```
 
 ## Config
@@ -140,43 +149,67 @@ See for more examples: [Examples](#examples)
 ### Basic upload
 
 ```yaml
-- name: Upload build to Bunny
-  uses: R-J-dev/bunny-deploy@v1
-  with:
-    storage-zone-password: ${{ secrets.BUNNY_STORAGE_ZONE_PASSWORD }}
-    directory-to-upload: "./build"
-    storage-endpoint: "https://storage.bunnycdn.com"
-    storage-zone-name: "my-storage-zone"
-    concurrency: "50"
+deploy:
+  runs-on: ubuntu-22.04
+  permissions:
+    contents: read
+  timeout-minutes: 5 # Depending on the size of your project
+  steps:
+    # Checkout repo
+    # Build your code or download build cache
+    - name: Deploy to Bunny
+      uses: R-J-dev/bunny-deploy@v1
+      with:
+        storage-zone-password: ${{ secrets.BUNNY_STORAGE_ZONE_PASSWORD }}
+        directory-to-upload: "./build"
+        storage-endpoint: "https://storage.bunnycdn.com"
+        storage-zone-name: "my-storage-zone"
+        concurrency: "50"
 ```
 
 ### Upload with delete and purge
 
 ```yaml
-- name: Deploy to Bunny
-  uses: R-J-dev/bunny-deploy@v1
-  with:
-    access-key: ${{ secrets.BUNNY_ACCESS_KEY }}
-    directory-to-upload: "./build"
-    storage-endpoint: "https://storage.bunnycdn.com"
-    storage-zone-name: "my-storage-zone"
-    storage-zone-password: ${{ secrets.BUNNY_STORAGE_ZONE_PASSWORD }}
-    concurrency: "50"
-    enable-delete-action: true
-    enable-purge-pull-zone: true
-    pull-zone-id: "12345"
-    replication-timeout: "15"
+deploy:
+  runs-on: ubuntu-22.04
+  permissions:
+    contents: read
+  timeout-minutes: 5 # Depending on the size of your project
+  steps:
+    # Checkout repo
+    # Build your code or download build cache
+    - name: Deploy to Bunny
+      uses: R-J-dev/bunny-deploy@v1
+      with:
+        access-key: ${{ secrets.BUNNY_ACCESS_KEY }}
+        directory-to-upload: "./build"
+        storage-endpoint: "https://storage.bunnycdn.com"
+        storage-zone-name: "my-storage-zone"
+        storage-zone-password: ${{ secrets.BUNNY_STORAGE_ZONE_PASSWORD }}
+        concurrency: "50"
+        enable-delete-action: true
+        enable-purge-pull-zone: true
+        pull-zone-id: "12345"
+        replication-timeout: "15"
 ```
 
 ### Purge only
 
 ```yaml
-- name: Deploy to Bunny
-  uses: R-J-dev/bunny-deploy@v1
-  with:
-    access-key: ${{ secrets.BUNNY_ACCESS_KEY }}
-    disable-upload: true
-    enable-purge-pull-zone: true
-    pull-zone-id: "12345"
-    replication-timeout: "15"
+purge:
+  runs-on: ubuntu-22.04
+  permissions:
+    contents: read
+  timeout-minutes: 5 # Depending on the size of your project
+  steps:
+    # Checkout repo
+    # Build your code or download build cache
+    - name: Purge pull zone
+      uses: R-J-dev/bunny-deploy@v1
+      with:
+        access-key: ${{ secrets.BUNNY_ACCESS_KEY }}
+        disable-upload: true
+        enable-purge-pull-zone: true
+        pull-zone-id: "12345"
+        replication-timeout: "15"
 ```

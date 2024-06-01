@@ -11,9 +11,22 @@ permissions:
   contents: read
 
 jobs:
+  dependency-check:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.6
+      - name: Install dependencies
+        uses: ./.github/actions/install-dependencies
+      - name: Checking dependency licenses
+        uses: ./.github/actions/license-check
+      - name: Checking dependencies for security issues
+        run: pnpm audit
   release:
     name: Release
     runs-on: ubuntu-22.04
+    needs: [dependency-check]
     permissions:
       contents: write # necessary to publish a GitHub release
       issues: write # necessary to comment on released issues

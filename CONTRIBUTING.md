@@ -65,10 +65,9 @@ Tests should be added for new features or fixed bugs.
 
 ### Commits
 
-Commit messages are written according to the Conventional Commits specification. \
-A quick summary of the specification, can be found here: <https://www.conventionalcommits.org/en/v1.0.0/#summary>
+Commit messages are written according to the [Angular Commit Message Conventions](https://github.com/angular/angular.js/blob/master/DEVELOPERS.md#-git-commit-guidelines).
 
-Prefer to have a clean git history.
+The git history needs to be clean, that means having no commits with messages like fix formatting or linting.
 When you need to fix a linting error for example that occurred in an earlier commit, use a fixup commit (in combination with a rebase) inside your branch.
 
 For example:

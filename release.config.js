@@ -11,7 +11,7 @@ const config = {
       },
     },
   ],
-  dryRun: true,
+  dryRun: false,
   ci: true,
 };
 

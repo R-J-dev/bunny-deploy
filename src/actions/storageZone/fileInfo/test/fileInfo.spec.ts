@@ -9,12 +9,12 @@ import {
   inject,
   beforeAll,
 } from "vitest";
-import { getFileInfo } from "@/actions/fileInfo/fileInfo.js";
-import * as listFilesModule from "@/actions/fileInfo/services/listfiles/listFiles.js";
+import { getFileInfo } from "@/actions/storageZone/fileInfo/fileInfo.js";
+import * as listFilesModule from "@/actions/storageZone/fileInfo/services/listfiles/listFiles.js";
 import path, { join } from "path";
 import { getBunnyClient } from "@/bunnyClient/bunnyClient.js";
-import * as utils from "@/actions/fileInfo/utils.js";
-import { getLocalFilePath } from "@/actions/fileInfo/utils.js";
+import * as utils from "@/actions/storageZone/fileInfo/utils.js";
+import { getLocalFilePath } from "@/actions/storageZone/fileInfo/utils.js";
 import type { Got } from "got";
 
 const baseListFileItemMock = {

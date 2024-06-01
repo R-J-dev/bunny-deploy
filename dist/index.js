@@ -34363,7 +34363,7 @@ var external_node_stream_ = __nccwpck_require__(4492);
 var external_node_stream_default = /*#__PURE__*/__nccwpck_require__.n(external_node_stream_);
 ;// CONCATENATED MODULE: external "node:stream/promises"
 const external_node_stream_promises_namespaceObject = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:stream/promises");
-;// CONCATENATED MODULE: ./src/actions/upload/uploadFile.ts
+;// CONCATENATED MODULE: ./src/actions/storageZone/upload/uploadFile.ts
 
 
 
@@ -34388,7 +34388,7 @@ const uploadFile = async (client, uploadPath, filePath) => {
     logInfo(`File: '${uploadPath}' uploaded successfully to Bunny`);
 };
 
-;// CONCATENATED MODULE: ./src/actions/upload/uploadDirectory.ts
+;// CONCATENATED MODULE: ./src/actions/storageZone/upload/uploadDirectory.ts
 
 
 
@@ -38686,7 +38686,7 @@ var z = /*#__PURE__*/Object.freeze({
 
 
 
-;// CONCATENATED MODULE: ./src/actions/fileInfo/services/listfiles/listFiles.ts
+;// CONCATENATED MODULE: ./src/actions/storageZone/fileInfo/services/listfiles/listFiles.ts
 
 
 
@@ -38752,7 +38752,7 @@ const getFileChecksum = async (filePath) => {
     });
 };
 
-;// CONCATENATED MODULE: ./src/actions/fileInfo/errors.ts
+;// CONCATENATED MODULE: ./src/actions/storageZone/fileInfo/errors.ts
 class NoReadAccessToFileError extends Error {
     constructor(message) {
         super(message);
@@ -38762,7 +38762,7 @@ class NoReadAccessToFileError extends Error {
 
 ;// CONCATENATED MODULE: external "node:constants"
 const external_node_constants_namespaceObject = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:constants");
-;// CONCATENATED MODULE: ./src/actions/fileInfo/utils.ts
+;// CONCATENATED MODULE: ./src/actions/storageZone/fileInfo/utils.ts
 
 
 
@@ -38787,7 +38787,7 @@ const getLocalFilePath = async (directoryToUpload, remoteFile) => {
     return filePath;
 };
 
-;// CONCATENATED MODULE: ./src/actions/fileInfo/fileInfo.ts
+;// CONCATENATED MODULE: ./src/actions/storageZone/fileInfo/fileInfo.ts
 
 
 
@@ -38859,7 +38859,7 @@ const getRemoteFileEndpoint = (remoteFile) => {
     return remoteFileEndpoint;
 };
 
-;// CONCATENATED MODULE: ./src/actions/delete/delete.ts
+;// CONCATENATED MODULE: ./src/actions/storageZone/delete/delete.ts
 
 
 

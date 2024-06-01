@@ -1,11 +1,11 @@
 import {
   ListFileItem,
   listFiles,
-} from "@/actions/fileInfo/services/listfiles/listFiles.js";
+} from "@/actions/storageZone/fileInfo/services/listfiles/listFiles.js";
 import { logDebug, logInfo } from "@/logger.js";
 import { getFileChecksum } from "@/utils/checksum/checksum.js";
 import { Got } from "got";
-import { NoReadAccessToFileError } from "@/actions/fileInfo/errors.js";
+import { NoReadAccessToFileError } from "@/actions/storageZone/fileInfo/errors.js";
 import { asyncForEach } from "modern-async";
 import { getLocalFilePath } from "./utils.js";
 import { join as posixJoin } from "node:path/posix";

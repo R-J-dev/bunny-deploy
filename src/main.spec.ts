@@ -9,17 +9,17 @@ import {
 } from "vitest";
 import { run } from "@/main.js";
 import * as configModule from "@/config/config.js";
-import * as uploadModule from "@/actions/upload/uploadDirectory.js";
-import * as deleteModule from "@/actions/delete/delete.js";
+import * as uploadModule from "@/actions/storageZone/upload/uploadDirectory.js";
+import * as deleteModule from "@/actions/storageZone/delete/delete.js";
 import * as purgeModule from "@/actions/pullZone/purge/purgeCache.js";
-import * as fileInfoModule from "@/actions/fileInfo/fileInfo.js";
+import * as fileInfoModule from "@/actions/storageZone/fileInfo/fileInfo.js";
 import { setFailed } from "@actions/core";
 
 vi.mock("@actions/core");
 vi.mock("@/config/config.js");
-vi.mock("@/actions/upload/uploadDirectory.js");
-vi.mock("@/actions/delete/delete.js");
-vi.mock("@/actions/fileInfo/fileInfo.js");
+vi.mock("@/actions/storageZone/upload/uploadDirectory.js");
+vi.mock("@/actions/storageZone/delete/delete.js");
+vi.mock("@/actions/storageZone/fileInfo/fileInfo.js");
 vi.mock("@/actions/pullZone/purge/purgeCache.js");
 
 describe("main", () => {

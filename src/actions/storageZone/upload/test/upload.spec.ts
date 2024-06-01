@@ -8,14 +8,14 @@ import {
   inject,
   beforeEach,
 } from "vitest";
-import { uploadDirectoryToStorageZone } from "@/actions/upload/uploadDirectory.js";
-import * as upload from "@/actions/upload/uploadFile.js";
+import { uploadDirectoryToStorageZone } from "@/actions/storageZone/upload/uploadDirectory.js";
+import * as upload from "@/actions/storageZone/upload/uploadFile.js";
 import { normalize, join } from "path";
 import { getBunnyClient } from "@/bunnyClient/bunnyClient.js";
 import { readdir } from "node:fs/promises";
 import { testUploadResultDirectory } from "@/testSetup/testServer.js";
 import { removeSync } from "fs-extra";
-import { uploadFileHeaders } from "@/actions/upload/uploadFile.js";
+import { uploadFileHeaders } from "@/actions/storageZone/upload/uploadFile.js";
 import type { Got } from "got";
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -99,7 +99,7 @@ describe("uploadDirectoryToStorageZone", () => {
       // Assuming there are 3 files in the directory
       expect(putSpy).toHaveBeenCalledTimes(3);
       const files = await readdir(
-        join(__dirname, "../../../testSetup/result/upload-with-stream"),
+        join(__dirname, "../../../../testSetup/result/upload-with-stream"),
         {
           encoding: "utf8",
           recursive: true,

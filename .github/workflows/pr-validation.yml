@@ -2,7 +2,7 @@ name: PR validation
 
 on:
   pull_request:
-    types: [synchronize]
+    types: [opened, reopened, synchronize]
     branches:
       - main
 
@@ -52,6 +52,7 @@ jobs:
       - name: Test actions
         run: pnpm test:ci
   build:
+    needs: [license-check, format, lint, test]
     permissions:
       contents: write
     runs-on: ubuntu-22.04

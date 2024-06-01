@@ -9,7 +9,7 @@ import {
   beforeAll,
   beforeEach,
 } from "vitest";
-import { deleteFiles } from "@/actions/delete/delete.js";
+import { deleteFiles } from "@/actions/storageZone/delete/delete.js";
 import type { Got } from "got";
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));

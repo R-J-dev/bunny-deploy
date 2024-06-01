@@ -1,7 +1,7 @@
 import {
   listFiles,
   listFilesRequestOptions,
-} from "@/actions/fileInfo/services/listfiles/listFiles.js";
+} from "@/actions/storageZone/fileInfo/services/listfiles/listFiles.js";
 import { getBunnyClient } from "@/bunnyClient/bunnyClient.js";
 import type { Got } from "got";
 import { describe, it, expect, vi, afterEach, inject, beforeAll } from "vitest";

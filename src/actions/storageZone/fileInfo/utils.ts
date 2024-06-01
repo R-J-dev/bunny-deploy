@@ -1,8 +1,8 @@
-import { ListFileItem } from "@/actions/fileInfo/services/listfiles/listFiles.js";
+import { ListFileItem } from "@/actions/storageZone/fileInfo/services/listfiles/listFiles.js";
 import { R_OK } from "node:constants";
 import { access } from "node:fs/promises";
 import { join } from "path";
-import { NoReadAccessToFileError } from "@/actions/fileInfo/errors.js";
+import { NoReadAccessToFileError } from "@/actions/storageZone/fileInfo/errors.js";
 
 /**
  * Retrieves the local file path corresponding to a remote file for comparison or processing.

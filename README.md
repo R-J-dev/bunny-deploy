@@ -39,7 +39,7 @@ deploy:
         storage-endpoint: "https://storage.bunnycdn.com"
         storage-zone-name: "my-storage-zone"
         storage-zone-password: ${{ secrets.BUNNY_STORAGE_ZONE_PASSWORD }}
-        concurrency: "50" # See docs below for more info
+        concurrency: "50" # Make sure to check the docs about concurrency before choosing this setting
         enable-delete-action: true
         enable-purge-pull-zone: true
         pull-zone-id: "12345"
@@ -58,7 +58,7 @@ deploy:
   <tr>
     <td>storage-zone-password</td>
     <td>
-      Your bunny.net storage zone password, you can find this in the storage zone details page FTP & API Access. It should have read & write access, otherwise it can't upload files for example. This is necessary for edge storage API requests that needs to be made to Bunny. See for more info: <a href="https://docs.bunny.net/reference/storage-api#header-name-accesskey">authentication header</a> in the docs. This will be read in src/config/config.ts, setSecret is used to mask it from logs (in case it will be logged by accident in your action run). Do not set this as plain text, save this as a secret in GitHub and reference here the secret id. See for more info: <a href="https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions#using-secrets-in-a-workflow">Using secrets in a workflow</a>. In case you still have doubts, check the source code and pin this action to a full length commit SHA. See for more info: <a href="https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-third-party-actions">Using third-party actions</a> about pinning an action to a full length commit SHA.
+      Your bunny.net storage zone password, you can find this in the storage zone details page FTP & API Access. It should have read & write access, otherwise it can't upload files for example. This is necessary for edge storage API requests that needs to be made to Bunny. See for more info: <a href="https://docs.bunny.net/reference/storage-api#header-name-accesskey">authentication header</a> in the docs. This will be read in src/config/config.ts, setSecret is used to mask it from logs (in case it will be logged by accident in your action run). Do not set this as plain text, save this as a secret in GitHub and reference here the secret id. See for more info: <a href="https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions#using-secrets-in-a-workflow">Using secrets in a workflow</a>. </br></br> In case you still have doubts, check the source code and pin this action to a full length commit SHA. See for more info: <a href="https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-third-party-actions">Using third-party actions</a> about pinning an action to a full length commit SHA.
     </td>
   </tr>
   <tr>
@@ -89,7 +89,7 @@ deploy:
   <tr>
     <td>access-key</td>
     <td>
-      Your bunny.net storage zone API key. This is necessary for the network requests that needs to be made to Bunny. See for more info: <a href="https://docs.bunny.net/reference/bunnynet-api-overview#header-name-accesskey">authentication header</a> in the docs. This will be read in src/config/config.ts, setSecret is used to mask it from logs (in case it will be logged by accident in your action run). Do not set this as plain text, save this as a secret in GitHub and reference here the secret id. See for more info: <a href="https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions#using-secrets-in-a-workflow">Using secrets in a workflow</a>. In case you still have doubts, check the source code and pin this action to a full length commit SHA. See for more info: <a href="https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-third-party-actions">Using third-party actions</a> about pinning an action to a full length commit SHA.
+      Your bunny.net storage zone API key. This is necessary for the network requests that needs to be made to Bunny. See for more info: <a href="https://docs.bunny.net/reference/bunnynet-api-overview#header-name-accesskey">authentication header</a> in the docs. This will be read in src/config/config.ts, setSecret is used to mask it from logs (in case it will be logged by accident in your action run). Do not set this as plain text, save this as a secret in GitHub and reference here the secret id. See for more info: <a href="https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions#using-secrets-in-a-workflow">Using secrets in a workflow</a>. </br></br> In case you still have doubts, check the source code and pin this action to a full length commit SHA. See for more info: <a href="https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-third-party-actions">Using third-party actions</a> about pinning an action to a full length commit SHA.
     </td>
   </tr>
   <tr>
@@ -164,7 +164,7 @@ deploy:
         directory-to-upload: "./build"
         storage-endpoint: "https://storage.bunnycdn.com"
         storage-zone-name: "my-storage-zone"
-        concurrency: "50"
+        concurrency: "50" # Make sure to check the docs about concurrency before choosing this setting
 ```
 
 ### Upload with delete and purge
@@ -186,7 +186,7 @@ deploy:
         storage-endpoint: "https://storage.bunnycdn.com"
         storage-zone-name: "my-storage-zone"
         storage-zone-password: ${{ secrets.BUNNY_STORAGE_ZONE_PASSWORD }}
-        concurrency: "50"
+        concurrency: "50" # Make sure to check the docs about concurrency before choosing this setting
         enable-delete-action: true
         enable-purge-pull-zone: true
         pull-zone-id: "12345"

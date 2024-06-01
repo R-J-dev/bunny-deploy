@@ -44,7 +44,7 @@ pnpm is used to manage the used packages in this project.
 You can run below corepack command, which will automatically install the configured pnpm version when you run a pnpm command.
 
 ```bash
-corepack enable
+corepack enable pnpm
 ```
 
 To install the required dependencies, run:

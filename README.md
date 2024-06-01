@@ -32,7 +32,7 @@ deploy:
     # Checkout repo
     # Build your code or download build cache
     - name: Deploy to Bunny
-      uses: R-J-dev/bunny-deploy@v1
+      uses: R-J-dev/bunny-deploy@vx.x.x # Select the version you wish to use
       with:
         access-key: ${{ secrets.BUNNY_ACCESS_KEY }}
         directory-to-upload: "./build"
@@ -158,7 +158,7 @@ deploy:
     # Checkout repo
     # Build your code or download build cache
     - name: Deploy to Bunny
-      uses: R-J-dev/bunny-deploy@v1
+      uses: R-J-dev/bunny-deploy@vx.x.x # Select the version you wish to use
       with:
         storage-zone-password: ${{ secrets.BUNNY_STORAGE_ZONE_PASSWORD }}
         directory-to-upload: "./build"
@@ -179,7 +179,7 @@ deploy:
     # Checkout repo
     # Build your code or download build cache
     - name: Deploy to Bunny
-      uses: R-J-dev/bunny-deploy@v1
+      uses: R-J-dev/bunny-deploy@vx.x.x # Select the version you wish to use
       with:
         access-key: ${{ secrets.BUNNY_ACCESS_KEY }}
         directory-to-upload: "./build"
@@ -205,7 +205,7 @@ purge:
     # Checkout repo
     # Build your code or download build cache
     - name: Purge pull zone
-      uses: R-J-dev/bunny-deploy@v1
+      uses: R-J-dev/bunny-deploy@vx.x.x # Select the version you wish to use
       with:
         access-key: ${{ secrets.BUNNY_ACCESS_KEY }}
         disable-upload: true

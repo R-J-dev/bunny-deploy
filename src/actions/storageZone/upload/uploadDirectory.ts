@@ -4,8 +4,8 @@ import { join, relative, sep } from "path";
 import { readdir } from "node:fs/promises";
 import { logError, logInfo } from "@/logger.js";
 import { asyncForEach } from "modern-async";
-import { uploadFile } from "@/actions/upload/uploadFile.js";
-import { FileInfo } from "@/actions/fileInfo/fileInfo.js";
+import { uploadFile } from "@/actions/storageZone/upload/uploadFile.js";
+import { FileInfo } from "@/actions/storageZone/fileInfo/fileInfo.js";
 
 interface UploadDirectoryToStorageZoneProps {
   /*

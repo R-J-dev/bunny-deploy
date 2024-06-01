@@ -1,7 +1,7 @@
-import { uploadDirectoryToStorageZone } from "@/actions/upload/uploadDirectory.js";
+import { uploadDirectoryToStorageZone } from "@/actions/storageZone/upload/uploadDirectory.js";
 import { endGroup, setFailed, startGroup } from "@actions/core";
-import { getFileInfo } from "@/actions/fileInfo/fileInfo.js";
-import { deleteFiles } from "@/actions/delete/delete.js";
+import { getFileInfo } from "@/actions/storageZone/fileInfo/fileInfo.js";
+import { deleteFiles } from "@/actions/storageZone/delete/delete.js";
 import { purgeCache } from "@/actions/pullZone/purge/purgeCache.js";
 import {
   getEdgeStorageConfig,

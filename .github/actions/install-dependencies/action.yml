@@ -4,9 +4,10 @@ runs:
   using: "composite"
   steps:
     - name: Install pnpm
-      uses: pnpm/action-setup@v2.4.0
+      shell: bash
+      run: corepack enable pnpm && pnpm -v
     - name: Setup Node.js environment
-      uses: actions/setup-node@v4.0.1
+      uses: actions/setup-node@v4.0.2
       with:
         node-version-file: ".nvmrc"
         cache: "pnpm"

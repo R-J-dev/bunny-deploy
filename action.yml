@@ -63,9 +63,7 @@ inputs:
   enable-delete-action:
     required: false
     default: false
-    description:
-      "Removes directories and files from your storage zone that do not exist in the specified directory-to-upload.
-      This action compares the contents of the storage zone against the local directory and deletes any files that are present in the storage zone but absent from the local directory."
+    description: "Removes directories and files from your storage zone that doesn't exists or doesn't have read access in the local specified directory-to-upload."
   enable-purge-pull-zone:
     required: false
     default: false

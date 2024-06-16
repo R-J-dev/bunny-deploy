@@ -4,7 +4,7 @@ GitHub action for deploying your static app to Bunny CDN 🚀
 
 ✔️ Uploads a given directory to a storage zone on Bunny \
 ✔️ Doesn't upload unchanged files \
-✔️ Optionally deletes directories and files from your storage zone that do not exist in the specified directory-to-upload \
+✔️ Optionally deletes directories and files from your storage zone that doesn't exist in the specified directory-to-upload \
 ✔️ Optionally purges the cache of a given pull zone \
 ✔️ Optionally use concurrency to make it fast
 
@@ -127,7 +127,7 @@ deploy:
   <tr>
     <td>enable-delete-action</td>
     <td>
-      Removes directories and files from your storage zone that do not exist in the specified directory-to-upload. This action compares the contents of the storage zone against the local directory and deletes any files that are present in the storage zone but absent from the local directory.
+      Removes directories and files from your storage zone that doesn't exists or doesn't have read access in the local specified directory-to-upload.
     </td>
   </tr>
   <tr>
@@ -213,3 +213,17 @@ purge:
         pull-zone-id: "12345"
         replication-timeout: "15"
 ```
+
+## More detailed information about how this action works
+
+### How does this action determine which files can be skipped uploading?
+
+The [list files API endpoint](https://docs.bunny.net/reference/get_-storagezonename-path-) from Bunny is used to do checksum comparisons with all the local files (also nested files in child directories) that are located in the given `directory-to-upload`. This way the action knows if a file has been changed or not.
+
+> **Note**: The process of checking which files are unchanged is always enabled when you choose to upload or delete files with this action. In case deleting files is enabled, but `disable-upload` is true, unchanged files are still logged.
+
+### How does this action determine which files can be deleted from the storage zone?
+
+Files from the [list files API endpoint](https://docs.bunny.net/reference/get_-storagezonename-path-) from Bunny, including those in nested directories, are checked for local read access using Node.js's [access method](https://nodejs.org/api/fs.html#fspromisesaccesspath-mode). Files without local read access are marked as unknown remote files, because they either doesn't exist or doesn't have read access. When a local file doesn't have read access it also couldn't be uploaded, so it would make sense to delete it from the storage zone. If `enable-delete-action` is set to true, these files will be deleted from the storage zone.
+
+> **Note**: The process of checking which files are unknown is always enabled when you choose to upload or delete files with this action. In case uploading files is enabled, but `enable-delete-action` is false, unknown or unreadable files are still logged.

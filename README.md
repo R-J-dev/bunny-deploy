@@ -12,11 +12,13 @@ The default action for this GitHub action, is that it uploads a given directory 
 It also provides some extra features, which are listed under [Feature flags](#feature-flags-optional).
 The required inputs could be different depending on the feature flag(s) that you enable. See for more info: [Config](#config).
 
-> **Warnings (2)** ⚠️
+> **Warnings (4)** ⚠️
 >
 > 1. There is no option yet to rollback the changes that you can make with this GitHub Action.
 >    When something fails while running this action, you might have to manually fix it yourself.
 > 2. This action has only been tested on GitHub-hosted Ubuntu runners, other operating systems will be tested in a future version.
+> 3. Ensure this action is not executed concurrently, otherwise it could result in unexpected errors and/or conflicting results. This might happen for example when you trigger this action on push. The action from the first push might still be running when you trigger the action again by the second push.
+> 4. Ensure this action isn't cancelled in the middle of a run, because that could result in a broken static app.
 
 ## Example upload with delete and purge
 

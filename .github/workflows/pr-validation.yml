@@ -76,15 +76,15 @@ jobs:
           author_email: ${{ github.event.pull_request.user.email }}
           message: "build: update build"
           add: "dist/**"
-  e2e-test:
+  e2e-test-unix:
     strategy:
       max-parallel: 1
       matrix:
         os:
           [
-            ubuntu-24.04,
-            ubuntu-22.04,
             ubuntu-20.04,
+            ubuntu-22.04,
+            ubuntu-24.04,
             macos-12,
             macos-13,
             macos-14,
@@ -109,6 +109,44 @@ jobs:
           random_nested_dir=$(openssl rand -base64 32 | tr -dc 'a-zA-Z0-9' | fold -w 10 | head -n 1)
           mkdir -p ./.github/e2e-test-dir/$random_dir/$random_nested_dir
           echo "test" > ./.github/e2e-test-dir/$random_dir/$random_nested_dir/file2.txt
+      - name: Deploy to Bunny
+        uses: ./
+        with:
+          storage-zone-password: ${{ secrets.BUNNY_STORAGE_ZONE_PASSWORD }}
+          directory-to-upload: "./.github/e2e-test-dir/"
+          storage-endpoint: "https://storage.bunnycdn.com"
+          storage-zone-name: "r-j-dev-bunny-deploy-test"
+          concurrency: "50"
+          enable-delete-action: true
+          target-directory: "/e2e-test/"
+  e2e-test-windows:
+    strategy:
+      max-parallel: 1
+      matrix:
+        os: [windows-2019, windows-2022]
+    concurrency:
+      group: e2e-test
+      cancel-in-progress: false
+    permissions:
+      contents: write
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 5
+    needs: build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.6
+      - name: Generate random files to upload
+        run: |
+          # This PowerShell command generates a random string of 10 characters consisting of both uppercase (A-Z) and lowercase (a-z) letters.
+          # It first creates a range of ASCII values for uppercase (65..90) and lowercase (97..122) letters,
+          # combines these ranges, selects 10 random values from this combined range,
+          # and then converts each ASCII value to its corresponding character to form the string.
+          $random_dir = -join ((65..90) + (97..122) | Get-Random -Count 10 | % {[char]$_})
+          New-Item -ItemType Directory -Path ".\.github\e2e-test-dir\$random_dir"
+          "test" | Out-File ".\.github\e2e-test-dir\$random_dir\file1.txt"
+          $random_nested_dir = -join ((65..90) + (97..122) | Get-Random -Count 10 | % {[char]$_})
+          New-Item -ItemType Directory -Path ".\.github\e2e-test-dir\$random_dir\$random_nested_dir"
+          "test" | Out-File ".\.github\e2e-test-dir\$random_dir\$random_nested_dir\file2.txt"
       - name: Deploy to Bunny
         uses: ./
         with:

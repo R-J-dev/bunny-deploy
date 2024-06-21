@@ -18,15 +18,18 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.7
+        with:
+          persist-credentials: false
       - name: Install dependencies
         uses: ./.github/actions/install-dependencies
+      - name: Checking dependencies for disallowed licenses
+        uses: ./.github/actions/license-check
       - name: Review new dependencies
         uses: actions/dependency-review-action@v4.3.3
         with:
-          allow-licenses: MIT
           fail-on-severity: low
           fail-on-scopes: runtime
-          license-check: true
+          license-check: false
           vulnerability-check: true
           comment-summary-in-pr: always
       - name: Checking dependencies for security issues
@@ -37,6 +40,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.7
+        with:
+          persist-credentials: false
       - name: Install dependencies
         uses: ./.github/actions/install-dependencies
       - name: Validate formatting
@@ -47,6 +52,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.7
+        with:
+          persist-credentials: false
       - name: Install dependencies
         uses: ./.github/actions/install-dependencies
       - name: Validate linting rules
@@ -57,6 +64,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.7
+        with:
+          persist-credentials: false
       - name: Install dependencies
         uses: ./.github/actions/install-dependencies
       - name: Test actions

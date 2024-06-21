@@ -1,7 +1,0 @@
-name: "Checkout"
-description: "Wraps the checkout action. This way it's easier to update the actual action."
-runs:
-  using: "composite"
-  steps:
-    - name: Checkout
-      uses: actions/checkout@v4.1.6

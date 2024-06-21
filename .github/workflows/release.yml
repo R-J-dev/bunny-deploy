@@ -17,11 +17,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.7
+        with:
+          persist-credentials: false
       - name: Install dependencies
         uses: ./.github/actions/install-dependencies
       - name: Checking dependencies for disallowed licenses
-        shell: bash
-        run: pnpm license-checker-rseidelsohn --onlyAllow 'MIT' --production --excludePackages 'bunny-deploy@0.0.0-semantically-released'
+        uses: ./.github/actions/license-check
       - name: Checking dependencies for security issues
         run: pnpm audit
   release:

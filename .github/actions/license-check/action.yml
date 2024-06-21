@@ -1,8 +1,0 @@
-name: "License check"
-description: "Checks if all production licenses comply with the licenses that are marked as allowed in the project"
-runs:
-  using: "composite"
-  steps:
-    - name: Check all production licenses
-      shell: bash
-      run: pnpm license-checker-rseidelsohn --onlyAllow 'MIT' --production --excludePackages 'bunny-deploy@0.0.0-semantically-released'

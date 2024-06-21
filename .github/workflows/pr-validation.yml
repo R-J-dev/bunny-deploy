@@ -18,6 +18,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.7
+        with:
+          persist-credentials: false
       - name: Install dependencies
         uses: ./.github/actions/install-dependencies
       - name: Checking dependencies for disallowed licenses
@@ -38,6 +40,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.7
+        with:
+          persist-credentials: false
       - name: Install dependencies
         uses: ./.github/actions/install-dependencies
       - name: Validate formatting
@@ -48,6 +52,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.7
+        with:
+          persist-credentials: false
       - name: Install dependencies
         uses: ./.github/actions/install-dependencies
       - name: Validate linting rules
@@ -58,6 +64,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.7
+        with:
+          persist-credentials: false
       - name: Install dependencies
         uses: ./.github/actions/install-dependencies
       - name: Test actions

@@ -1,5 +1,7 @@
 # bunny-deploy
 
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/R-J-dev/bunny-deploy/badge)](https://scorecard.dev/viewer/?uri=github.com/R-J-dev/bunny-deploy)
+
 GitHub action for deploying your static app to Bunny CDN 🚀
 
 ✔️ Uploads a given directory to a storage zone on Bunny \

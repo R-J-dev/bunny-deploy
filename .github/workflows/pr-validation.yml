@@ -17,7 +17,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.7
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # pin@v4.1.7
         with:
           persist-credentials: false
       - name: Install dependencies
@@ -25,7 +25,7 @@ jobs:
       - name: Checking dependencies for disallowed licenses
         uses: ./.github/actions/license-check
       - name: Review new dependencies
-        uses: actions/dependency-review-action@v4.3.3
+        uses: actions/dependency-review-action@72eb03d02c7872a771aacd928f3123ac62ad6d3a # pin@v4.3.3
         with:
           fail-on-severity: low
           fail-on-scopes: runtime
@@ -39,7 +39,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.7
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # pin@v4.1.7
         with:
           persist-credentials: false
       - name: Install dependencies
@@ -51,7 +51,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.7
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # pin@v4.1.7
         with:
           persist-credentials: false
       - name: Install dependencies
@@ -63,7 +63,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.7
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # pin@v4.1.7
         with:
           persist-credentials: false
       - name: Install dependencies
@@ -78,7 +78,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.7
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # pin@v4.1.7
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           ref: ${{ github.event.pull_request.head.ref }}
@@ -87,7 +87,7 @@ jobs:
       - name: Build
         run: pnpm build
       - name: Commit changes
-        uses: EndBug/add-and-commit@v9.1.4
+        uses: EndBug/add-and-commit@a94899bca583c204427a224a7af87c02f9b325d5 # pin@v9.1.4
         with:
           author_name: ${{ github.event.pull_request.user.login }}
           author_email: ${{ github.event.pull_request.user.email }}
@@ -116,7 +116,7 @@ jobs:
     needs: build
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.7
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # pin@v4.1.7
       - name: Generate random files to upload
         run: |
           set -euo pipefail
@@ -151,7 +151,7 @@ jobs:
     needs: build
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.7
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # pin@v4.1.7
       - name: Generate random files to upload
         run: |
           # This PowerShell command generates a random string of 10 characters consisting of both uppercase (A-Z) and lowercase (a-z) letters.

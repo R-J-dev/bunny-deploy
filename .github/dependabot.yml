@@ -5,7 +5,11 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
+    reviewers:
+      - "R-J-dev"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
+    reviewers:
+      - "R-J-dev"

@@ -58,6 +58,19 @@ jobs:
         uses: ./.github/actions/install-dependencies
       - name: Validate linting rules
         run: pnpm lint
+  commitlint:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # pin@v4.1.7
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Install dependencies
+        uses: ./.github/actions/install-dependencies
+      - name: Validate PR commits with commitlint
+        run: pnpm commitlint --from ${{ github.event.pull_request.head.sha }}~${{ github.event.pull_request.commits }} --to ${{ github.event.pull_request.head.sha }} --verbose
   test:
     runs-on: ubuntu-22.04
     timeout-minutes: 5
@@ -71,7 +84,7 @@ jobs:
       - name: Test actions
         run: pnpm test:ci
   build:
-    needs: [dependency-check, format, lint, test]
+    needs: [commitlint, dependency-check, format, lint, test]
     permissions:
       contents: write
     runs-on: ubuntu-22.04

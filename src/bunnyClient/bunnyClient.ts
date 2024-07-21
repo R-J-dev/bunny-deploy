@@ -7,6 +7,17 @@ const logRetry = (error: RequestError, retryCount: number) => {
 };
 
 export const retryStatusCodes = [408, 500, 502, 503, 504, 521, 522, 524];
+export const retryErrorCodes = [
+  "ETIMEDOUT",
+  "ECONNRESET",
+  "EADDRINUSE",
+  "ECONNREFUSED",
+  "EPIPE",
+  "ENOTFOUND",
+  "ENETUNREACH",
+  "EAI_AGAIN",
+];
+// NOTE: PUT streams are also being retried, but in a different way. See uploadFile.ts for more info.
 export const retryMethods: Method[] = ["GET", "DELETE"];
 export const getBunnyClient = (accessKey: string, baseUrl: string) => {
   if (!accessKey) throw new MissingAccessKeyError();
@@ -24,16 +35,7 @@ export const getBunnyClient = (accessKey: string, baseUrl: string) => {
       limit: 3,
       methods: retryMethods,
       statusCodes: retryStatusCodes,
-      errorCodes: [
-        "ETIMEDOUT",
-        "ECONNRESET",
-        "EADDRINUSE",
-        "ECONNREFUSED",
-        "EPIPE",
-        "ENOTFOUND",
-        "ENETUNREACH",
-        "EAI_AGAIN",
-      ],
+      errorCodes: retryErrorCodes,
     },
     hooks: {
       beforeRetry: [logRetry],

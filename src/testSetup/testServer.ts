@@ -53,6 +53,11 @@ export const startTestServer = (port: number) => {
     });
   });
 
+  app.put("/test/retry-upload/:status", (req, res) => {
+    const status = parseInt(req.params.status);
+    res.status(status).send("mock upload response");
+  });
+
   app.get("*", (req, res) => {
     res.status(404).send("404");
   });

@@ -12,7 +12,7 @@
     "url": "https://github.com/R-J-dev/bunny-deploy/issues"
   },
   "private": true,
-  "packageManager": "pnpm@8.15.5",
+  "packageManager": "pnpm@9.6.0",
   "scripts": {
     "test": "vitest",
     "test:ci": "vitest --no-watch",

@@ -31,7 +31,7 @@
     "Action"
   ],
   "engines": {
-    "node": "~20"
+    "node": "~22"
   },
   "author": "R-J-dev",
   "license": "MIT",

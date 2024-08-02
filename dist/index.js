@@ -34639,7 +34639,7 @@ async function asyncTimeoutPrecise (fct, amount) {
 
 
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/@sindresorhus+is@6.3.1/node_modules/@sindresorhus/is/dist/index.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/@sindresorhus+is@7.0.0/node_modules/@sindresorhus/is/distribution/index.js
 const typedArrayTypeNames = [
     'Int8Array',
     'Uint8Array',
@@ -34825,14 +34825,10 @@ const is = Object.assign(detect, {
     boundFunction: isBoundFunction,
     buffer: isBuffer,
     class: isClass,
-    /** @deprecated Renamed to `class`. */
-    class_: isClass,
     dataView: isDataView,
     date: isDate,
     detect,
     directInstanceOf: isDirectInstanceOf,
-    /** @deprecated Renamed to `htmlElement` */
-    domElement: isHtmlElement,
     emptyArray: isEmptyArray,
     emptyMap: isEmptyMap,
     emptyObject: isEmptyObject,
@@ -34847,8 +34843,6 @@ const is = Object.assign(detect, {
     float64Array: isFloat64Array,
     formData: isFormData,
     function: isFunction,
-    /** @deprecated Renamed to `function`. */
-    function_: isFunction,
     generator: isGenerator,
     generatorFunction: isGeneratorFunction,
     htmlElement: isHtmlElement,
@@ -34871,8 +34865,6 @@ const is = Object.assign(detect, {
     nonEmptyString: isNonEmptyString,
     nonEmptyStringAndNotWhitespace: isNonEmptyStringAndNotWhitespace,
     null: isNull,
-    /** @deprecated Renamed to `null`. */
-    null_: isNull,
     nullOrUndefined: isNullOrUndefined,
     number: isNumber,
     numericString: isNumericString,
@@ -34908,7 +34900,7 @@ const is = Object.assign(detect, {
     weakSet: isWeakSet,
     whitespaceString: isWhitespaceString,
 });
-function isAbsoluteMod2(remainder) {
+function isAbsoluteModule2(remainder) {
     return (value) => isInteger(value) && Math.abs(value % 2) === remainder;
 }
 function isAll(predicate, ...values) {
@@ -34963,8 +34955,11 @@ function isBoolean(value) {
 }
 // eslint-disable-next-line @typescript-eslint/ban-types
 function isBoundFunction(value) {
-    return isFunction(value) && !Object.prototype.hasOwnProperty.call(value, 'prototype');
+    return isFunction(value) && !Object.hasOwn(value, 'prototype');
 }
+/**
+Note: [Prefer using `Uint8Array` instead of `Buffer`.](https://sindresorhus.com/blog/goodbye-nodejs-buffer)
+*/
 function isBuffer(value) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
     return value?.constructor?.isBuffer?.(value) ?? false;
@@ -35010,7 +35005,7 @@ function isError(value) {
     return getObjectType(value) === 'Error';
 }
 function isEvenInteger(value) {
-    return isAbsoluteMod2(0)(value);
+    return isAbsoluteModule2(0)(value);
 }
 // Example: `is.falsy = (value: unknown): value is (not true | 0 | '' | undefined | null) => Boolean(value);`
 function isFalsy(value) {
@@ -35149,7 +35144,7 @@ function isObservable(value) {
     return false;
 }
 function isOddInteger(value) {
-    return isAbsoluteMod2(1)(value);
+    return isAbsoluteModule2(1)(value);
 }
 function isPlainObject(value) {
     // From: https://github.com/sindresorhus/is-plain-obj/blob/main/index.js
@@ -35249,7 +35244,7 @@ function isValidLength(value) {
 function isWeakMap(value) {
     return getObjectType(value) === 'WeakMap';
 }
-// eslint-disable-next-line @typescript-eslint/ban-types
+// eslint-disable-next-line @typescript-eslint/ban-types, unicorn/prevent-abbreviations
 function isWeakRef(value) {
     return getObjectType(value) === 'WeakRef';
 }
@@ -35283,7 +35278,7 @@ function typeErrorMessageMultipleValues(expectedType, values) {
     const uniqueValueTypes = unique(values.map(value => `\`${is(value)}\``));
     return `Expected values which are ${orFormatter.format(uniqueExpectedTypes)}. Received values of type${uniqueValueTypes.length > 1 ? 's' : ''} ${andFormatter.format(uniqueValueTypes)}.`;
 }
-const dist_assert = {
+const distribution_assert = {
     all: assertAll,
     any: assertAny,
     array: assertArray,
@@ -35301,11 +35296,9 @@ const dist_assert = {
     boundFunction: assertBoundFunction,
     buffer: assertBuffer,
     class: assertClass,
-    class_: assertClass,
     dataView: assertDataView,
     date: assertDate,
     directInstanceOf: assertDirectInstanceOf,
-    domElement: assertHtmlElement,
     emptyArray: assertEmptyArray,
     emptyMap: assertEmptyMap,
     emptyObject: assertEmptyObject,
@@ -35320,7 +35313,6 @@ const dist_assert = {
     float64Array: assertFloat64Array,
     formData: assertFormData,
     function: assertFunction,
-    function_: assertFunction,
     generator: assertGenerator,
     generatorFunction: assertGeneratorFunction,
     htmlElement: assertHtmlElement,
@@ -35343,7 +35335,6 @@ const dist_assert = {
     nonEmptyString: assertNonEmptyString,
     nonEmptyStringAndNotWhitespace: assertNonEmptyStringAndNotWhitespace,
     null: assertNull,
-    null_: assertNull,
     nullOrUndefined: assertNullOrUndefined,
     number: assertNumber,
     numericString: assertNumericString,
@@ -35398,8 +35389,6 @@ const methodTypeMap = {
     isDataView: 'DataView',
     isDate: 'Date',
     isDirectInstanceOf: 'T',
-    /** @deprecated */
-    isDomElement: 'HTMLElement',
     isEmptyArray: 'empty array',
     isEmptyMap: 'empty map',
     isEmptyObject: 'empty object',
@@ -35562,6 +35551,9 @@ function assertBoundFunction(value, message) {
         throw new TypeError(message ?? typeErrorMessage('Function', value));
     }
 }
+/**
+Note: [Prefer using `Uint8Array` instead of `Buffer`.](https://sindresorhus.com/blog/goodbye-nodejs-buffer)
+*/
 function assertBuffer(value, message) {
     if (!isBuffer(value)) {
         throw new TypeError(message ?? typeErrorMessage('Buffer', value));
@@ -35928,7 +35920,7 @@ function assertWeakMap(value, message) {
         throw new TypeError(message ?? typeErrorMessage('WeakMap', value));
     }
 }
-// eslint-disable-next-line @typescript-eslint/ban-types
+// eslint-disable-next-line @typescript-eslint/ban-types, unicorn/prevent-abbreviations
 function assertWeakRef(value, message) {
     if (!isWeakRef(value)) {
         throw new TypeError(message ?? typeErrorMessage('WeakRef', value));
@@ -35945,13 +35937,13 @@ function assertWhitespaceString(value, message) {
         throw new TypeError(message ?? typeErrorMessage('whitespace string', value));
     }
 }
-/* harmony default export */ const dist = (is);
+/* harmony default export */ const distribution = (is);
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.1/node_modules/got/dist/source/core/errors.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.2/node_modules/got/dist/source/core/errors.js
 
 // A hacky check to prevent circular references.
 function isRequest(x) {
-    return dist.object(x) && '_onResponse' in x;
+    return distribution.object(x) && '_onResponse' in x;
 }
 /**
 An error to be thrown when a request fails.
@@ -35986,7 +35978,7 @@ class RequestError extends Error {
         }
         this.timings = this.request?.timings;
         // Recover the original stacktrace
-        if (dist.string(error.stack) && dist.string(this.stack)) {
+        if (distribution.string(error.stack) && distribution.string(this.stack)) {
             const indexOfMessage = this.stack.indexOf(this.message) + this.message.length;
             const thisStackTrace = this.stack.slice(indexOfMessage).split('\n').reverse();
             const errorStackTrace = error.stack.slice(error.stack.indexOf(error.message) + error.message.length).split('\n').reverse();
@@ -41656,7 +41648,7 @@ getContentLength_fn = function() {
 };
 
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.1/node_modules/got/dist/source/core/parse-link-header.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.2/node_modules/got/dist/source/core/parse-link-header.js
 function parseLinkHeader(link) {
     const parsed = [];
     const items = link.split(',');
@@ -41691,7 +41683,7 @@ function parseLinkHeader(link) {
     return parsed;
 }
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.1/node_modules/got/dist/source/core/options.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.2/node_modules/got/dist/source/core/options.js
 
 
 
@@ -41709,7 +41701,7 @@ function validateSearchParameters(searchParameters) {
     // eslint-disable-next-line guard-for-in
     for (const key in searchParameters) {
         const value = searchParameters[key];
-        dist_assert.any([dist.string, dist.number, dist.boolean, dist.null_, dist.undefined], value);
+        distribution_assert.any([distribution.string, distribution.number, distribution.boolean, distribution["null"], distribution.undefined], value);
     }
 }
 const globalCache = new Map();
@@ -41911,64 +41903,64 @@ const cloneInternals = (internals) => {
 const cloneRaw = (raw) => {
     const { hooks, retry } = raw;
     const result = { ...raw };
-    if (dist.object(raw.context)) {
+    if (distribution.object(raw.context)) {
         result.context = { ...raw.context };
     }
-    if (dist.object(raw.cacheOptions)) {
+    if (distribution.object(raw.cacheOptions)) {
         result.cacheOptions = { ...raw.cacheOptions };
     }
-    if (dist.object(raw.https)) {
+    if (distribution.object(raw.https)) {
         result.https = { ...raw.https };
     }
-    if (dist.object(raw.cacheOptions)) {
+    if (distribution.object(raw.cacheOptions)) {
         result.cacheOptions = { ...result.cacheOptions };
     }
-    if (dist.object(raw.agent)) {
+    if (distribution.object(raw.agent)) {
         result.agent = { ...raw.agent };
     }
-    if (dist.object(raw.headers)) {
+    if (distribution.object(raw.headers)) {
         result.headers = { ...raw.headers };
     }
-    if (dist.object(retry)) {
+    if (distribution.object(retry)) {
         result.retry = { ...retry };
-        if (dist.array(retry.errorCodes)) {
+        if (distribution.array(retry.errorCodes)) {
             result.retry.errorCodes = [...retry.errorCodes];
         }
-        if (dist.array(retry.methods)) {
+        if (distribution.array(retry.methods)) {
             result.retry.methods = [...retry.methods];
         }
-        if (dist.array(retry.statusCodes)) {
+        if (distribution.array(retry.statusCodes)) {
             result.retry.statusCodes = [...retry.statusCodes];
         }
     }
-    if (dist.object(raw.timeout)) {
+    if (distribution.object(raw.timeout)) {
         result.timeout = { ...raw.timeout };
     }
-    if (dist.object(hooks)) {
+    if (distribution.object(hooks)) {
         result.hooks = {
             ...hooks,
         };
-        if (dist.array(hooks.init)) {
+        if (distribution.array(hooks.init)) {
             result.hooks.init = [...hooks.init];
         }
-        if (dist.array(hooks.beforeRequest)) {
+        if (distribution.array(hooks.beforeRequest)) {
             result.hooks.beforeRequest = [...hooks.beforeRequest];
         }
-        if (dist.array(hooks.beforeError)) {
+        if (distribution.array(hooks.beforeError)) {
             result.hooks.beforeError = [...hooks.beforeError];
         }
-        if (dist.array(hooks.beforeRedirect)) {
+        if (distribution.array(hooks.beforeRedirect)) {
             result.hooks.beforeRedirect = [...hooks.beforeRedirect];
         }
-        if (dist.array(hooks.beforeRetry)) {
+        if (distribution.array(hooks.beforeRetry)) {
             result.hooks.beforeRetry = [...hooks.beforeRetry];
         }
-        if (dist.array(hooks.afterResponse)) {
+        if (distribution.array(hooks.afterResponse)) {
             result.hooks.afterResponse = [...hooks.afterResponse];
         }
     }
     // TODO: raw.searchParams
-    if (dist.object(raw.pagination)) {
+    if (distribution.object(raw.pagination)) {
         result.pagination = { ...raw.pagination };
     }
     return result;
@@ -41994,9 +41986,9 @@ class Options {
     _merging;
     _init;
     constructor(input, options, defaults) {
-        dist_assert.any([dist.string, dist.urlInstance, dist.object, dist.undefined], input);
-        dist_assert.any([dist.object, dist.undefined], options);
-        dist_assert.any([dist.object, dist.undefined], defaults);
+        distribution_assert.any([distribution.string, distribution.urlInstance, distribution.object, distribution.undefined], input);
+        distribution_assert.any([distribution.object, distribution.undefined], options);
+        distribution_assert.any([distribution.object, distribution.undefined], defaults);
         if (input instanceof Options || options instanceof Options) {
             throw new TypeError('The defaults must be passed as the third argument');
         }
@@ -42014,7 +42006,7 @@ class Options {
         //
         /* eslint-disable no-unsafe-finally */
         try {
-            if (dist.plainObject(input)) {
+            if (distribution.plainObject(input)) {
                 try {
                     this.merge(input);
                     this.merge(options);
@@ -42107,7 +42099,7 @@ class Options {
         return this._internals.request;
     }
     set request(value) {
-        dist_assert.any([dist.function_, dist.undefined], value);
+        distribution_assert.any([distribution["function"], distribution.undefined], value);
         this._internals.request = value;
     }
     /**
@@ -42136,14 +42128,14 @@ class Options {
         return this._internals.agent;
     }
     set agent(value) {
-        dist_assert.plainObject(value);
+        distribution_assert.plainObject(value);
         // eslint-disable-next-line guard-for-in
         for (const key in value) {
             if (!(key in this._internals.agent)) {
                 throw new TypeError(`Unexpected agent option: ${key}`);
             }
             // @ts-expect-error - No idea why `value[key]` doesn't work here.
-            dist_assert.any([dist.object, dist.undefined], value[key]);
+            distribution_assert.any([distribution.object, distribution.undefined], value[key]);
         }
         if (this._merging) {
             Object.assign(this._internals.agent, value);
@@ -42172,7 +42164,7 @@ class Options {
         return this._internals.decompress;
     }
     set decompress(value) {
-        dist_assert.boolean(value);
+        distribution_assert.boolean(value);
         this._internals.decompress = value;
     }
     /**
@@ -42196,14 +42188,14 @@ class Options {
         return this._internals.timeout;
     }
     set timeout(value) {
-        dist_assert.plainObject(value);
+        distribution_assert.plainObject(value);
         // eslint-disable-next-line guard-for-in
         for (const key in value) {
             if (!(key in this._internals.timeout)) {
                 throw new Error(`Unexpected timeout option: ${key}`);
             }
             // @ts-expect-error - No idea why `value[key]` doesn't work here.
-            dist_assert.any([dist.number, dist.undefined], value[key]);
+            distribution_assert.any([distribution.number, distribution.undefined], value[key]);
         }
         if (this._merging) {
             Object.assign(this._internals.timeout, value);
@@ -42257,7 +42249,7 @@ class Options {
         return this._internals.prefixUrl;
     }
     set prefixUrl(value) {
-        dist_assert.any([dist.string, dist.urlInstance], value);
+        distribution_assert.any([distribution.string, distribution.urlInstance], value);
         if (value === '') {
             this._internals.prefixUrl = '';
             return;
@@ -42289,13 +42281,13 @@ class Options {
         return this._internals.body;
     }
     set body(value) {
-        dist_assert.any([dist.string, dist.buffer, dist.nodeStream, dist.generator, dist.asyncGenerator, lib_isFormData, dist.undefined], value);
-        if (dist.nodeStream(value)) {
-            dist_assert.truthy(value.readable);
+        distribution_assert.any([distribution.string, distribution.buffer, distribution.nodeStream, distribution.generator, distribution.asyncGenerator, lib_isFormData, distribution.undefined], value);
+        if (distribution.nodeStream(value)) {
+            distribution_assert.truthy(value.readable);
         }
         if (value !== undefined) {
-            dist_assert.undefined(this._internals.form);
-            dist_assert.undefined(this._internals.json);
+            distribution_assert.undefined(this._internals.form);
+            distribution_assert.undefined(this._internals.json);
         }
         this._internals.body = value;
     }
@@ -42312,10 +42304,10 @@ class Options {
         return this._internals.form;
     }
     set form(value) {
-        dist_assert.any([dist.plainObject, dist.undefined], value);
+        distribution_assert.any([distribution.plainObject, distribution.undefined], value);
         if (value !== undefined) {
-            dist_assert.undefined(this._internals.body);
-            dist_assert.undefined(this._internals.json);
+            distribution_assert.undefined(this._internals.body);
+            distribution_assert.undefined(this._internals.json);
         }
         this._internals.form = value;
     }
@@ -42331,8 +42323,8 @@ class Options {
     }
     set json(value) {
         if (value !== undefined) {
-            dist_assert.undefined(this._internals.body);
-            dist_assert.undefined(this._internals.form);
+            distribution_assert.undefined(this._internals.body);
+            distribution_assert.undefined(this._internals.form);
         }
         this._internals.json = value;
     }
@@ -42358,12 +42350,12 @@ class Options {
         return this._internals.url;
     }
     set url(value) {
-        dist_assert.any([dist.string, dist.urlInstance, dist.undefined], value);
+        distribution_assert.any([distribution.string, distribution.urlInstance, distribution.undefined], value);
         if (value === undefined) {
             this._internals.url = undefined;
             return;
         }
-        if (dist.string(value) && value.startsWith('/')) {
+        if (distribution.string(value) && value.startsWith('/')) {
             throw new Error('`url` must not start with a slash');
         }
         const urlString = `${this.prefixUrl}${value.toString()}`;
@@ -42418,14 +42410,14 @@ class Options {
         return this._internals.cookieJar;
     }
     set cookieJar(value) {
-        dist_assert.any([dist.object, dist.undefined], value);
+        distribution_assert.any([distribution.object, distribution.undefined], value);
         if (value === undefined) {
             this._internals.cookieJar = undefined;
             return;
         }
         let { setCookie, getCookieString } = value;
-        dist_assert.function_(setCookie);
-        dist_assert.function_(getCookieString);
+        distribution_assert["function"](setCookie);
+        distribution_assert["function"](getCookieString);
         /* istanbul ignore next: Horrible `tough-cookie` v3 check */
         if (setCookie.length === 4 && getCookieString.length === 0) {
             setCookie = (0,external_node_util_.promisify)(setCookie.bind(value));
@@ -42461,7 +42453,7 @@ class Options {
         return this._internals.signal;
     }
     set signal(value) {
-        dist_assert.object(value);
+        distribution_assert.object(value);
         this._internals.signal = value;
     }
     /**
@@ -42474,7 +42466,7 @@ class Options {
         return this._internals.ignoreInvalidCookies;
     }
     set ignoreInvalidCookies(value) {
-        dist_assert.boolean(value);
+        distribution_assert.boolean(value);
         this._internals.ignoreInvalidCookies = value;
     }
     /**
@@ -42505,7 +42497,7 @@ class Options {
         return this._internals.searchParams;
     }
     set searchParams(value) {
-        dist_assert.any([dist.string, dist.object, dist.undefined], value);
+        distribution_assert.any([distribution.string, distribution.object, distribution.undefined], value);
         const url = this._internals.url;
         if (value === undefined) {
             this._internals.searchParams = undefined;
@@ -42516,7 +42508,7 @@ class Options {
         }
         const searchParameters = this.searchParams;
         let updated;
-        if (dist.string(value)) {
+        if (distribution.string(value)) {
             updated = new URLSearchParams(value);
         }
         else if (value instanceof URLSearchParams) {
@@ -42565,7 +42557,7 @@ class Options {
         return this._internals.dnsLookup;
     }
     set dnsLookup(value) {
-        dist_assert.any([dist.function_, dist.undefined], value);
+        distribution_assert.any([distribution["function"], distribution.undefined], value);
         this._internals.dnsLookup = value;
     }
     /**
@@ -42582,7 +42574,7 @@ class Options {
         return this._internals.dnsCache;
     }
     set dnsCache(value) {
-        dist_assert.any([dist.object, dist.boolean, dist.undefined], value);
+        distribution_assert.any([distribution.object, distribution.boolean, distribution.undefined], value);
         if (value === true) {
             this._internals.dnsCache = getGlobalDnsCache();
         }
@@ -42628,7 +42620,7 @@ class Options {
         return this._internals.context;
     }
     set context(value) {
-        dist_assert.object(value);
+        distribution_assert.object(value);
         if (this._merging) {
             Object.assign(this._internals.context, value);
         }
@@ -42644,7 +42636,7 @@ class Options {
         return this._internals.hooks;
     }
     set hooks(value) {
-        dist_assert.object(value);
+        distribution_assert.object(value);
         // eslint-disable-next-line guard-for-in
         for (const knownHookEvent in value) {
             if (!(knownHookEvent in this._internals.hooks)) {
@@ -42652,10 +42644,10 @@ class Options {
             }
             const typedKnownHookEvent = knownHookEvent;
             const hooks = value[typedKnownHookEvent];
-            dist_assert.any([dist.array, dist.undefined], hooks);
+            distribution_assert.any([distribution.array, distribution.undefined], hooks);
             if (hooks) {
                 for (const hook of hooks) {
-                    dist_assert.function_(hook);
+                    distribution_assert["function"](hook);
                 }
             }
             if (this._merging) {
@@ -42687,7 +42679,7 @@ class Options {
         return this._internals.followRedirect;
     }
     set followRedirect(value) {
-        dist_assert.any([dist.boolean, dist.function_], value);
+        distribution_assert.any([distribution.boolean, distribution["function"]], value);
         this._internals.followRedirect = value;
     }
     get followRedirects() {
@@ -42705,7 +42697,7 @@ class Options {
         return this._internals.maxRedirects;
     }
     set maxRedirects(value) {
-        dist_assert.number(value);
+        distribution_assert.number(value);
         this._internals.maxRedirects = value;
     }
     /**
@@ -42717,7 +42709,7 @@ class Options {
         return this._internals.cache;
     }
     set cache(value) {
-        dist_assert.any([dist.object, dist.string, dist.boolean, dist.undefined], value);
+        distribution_assert.any([distribution.object, distribution.string, distribution.boolean, distribution.undefined], value);
         if (value === true) {
             this._internals.cache = globalCache;
         }
@@ -42740,7 +42732,7 @@ class Options {
         return this._internals.throwHttpErrors;
     }
     set throwHttpErrors(value) {
-        dist_assert.boolean(value);
+        distribution_assert.boolean(value);
         this._internals.throwHttpErrors = value;
     }
     get username() {
@@ -42749,7 +42741,7 @@ class Options {
         return decodeURIComponent(value);
     }
     set username(value) {
-        dist_assert.string(value);
+        distribution_assert.string(value);
         const url = this._internals.url;
         const fixedValue = encodeURIComponent(value);
         if (url) {
@@ -42765,7 +42757,7 @@ class Options {
         return decodeURIComponent(value);
     }
     set password(value) {
-        dist_assert.string(value);
+        distribution_assert.string(value);
         const url = this._internals.url;
         const fixedValue = encodeURIComponent(value);
         if (url) {
@@ -42800,7 +42792,7 @@ class Options {
         return this._internals.http2;
     }
     set http2(value) {
-        dist_assert.boolean(value);
+        distribution_assert.boolean(value);
         this._internals.http2 = value;
     }
     /**
@@ -42816,7 +42808,7 @@ class Options {
         return this._internals.allowGetBody;
     }
     set allowGetBody(value) {
-        dist_assert.boolean(value);
+        distribution_assert.boolean(value);
         this._internals.allowGetBody = value;
     }
     /**
@@ -42830,7 +42822,7 @@ class Options {
         return this._internals.headers;
     }
     set headers(value) {
-        dist_assert.plainObject(value);
+        distribution_assert.plainObject(value);
         if (this._merging) {
             Object.assign(this._internals.headers, lowercaseKeys(value));
         }
@@ -42852,7 +42844,7 @@ class Options {
         return this._internals.methodRewriting;
     }
     set methodRewriting(value) {
-        dist_assert.boolean(value);
+        distribution_assert.boolean(value);
         this._internals.methodRewriting = value;
     }
     /**
@@ -42893,7 +42885,7 @@ class Options {
         return this._internals.parseJson;
     }
     set parseJson(value) {
-        dist_assert.function_(value);
+        distribution_assert["function"](value);
         this._internals.parseJson = value;
     }
     /**
@@ -42941,7 +42933,7 @@ class Options {
         return this._internals.stringifyJson;
     }
     set stringifyJson(value) {
-        dist_assert.function_(value);
+        distribution_assert["function"](value);
         this._internals.stringifyJson = value;
     }
     /**
@@ -42970,14 +42962,14 @@ class Options {
         return this._internals.retry;
     }
     set retry(value) {
-        dist_assert.plainObject(value);
-        dist_assert.any([dist.function_, dist.undefined], value.calculateDelay);
-        dist_assert.any([dist.number, dist.undefined], value.maxRetryAfter);
-        dist_assert.any([dist.number, dist.undefined], value.limit);
-        dist_assert.any([dist.array, dist.undefined], value.methods);
-        dist_assert.any([dist.array, dist.undefined], value.statusCodes);
-        dist_assert.any([dist.array, dist.undefined], value.errorCodes);
-        dist_assert.any([dist.number, dist.undefined], value.noise);
+        distribution_assert.plainObject(value);
+        distribution_assert.any([distribution["function"], distribution.undefined], value.calculateDelay);
+        distribution_assert.any([distribution.number, distribution.undefined], value.maxRetryAfter);
+        distribution_assert.any([distribution.number, distribution.undefined], value.limit);
+        distribution_assert.any([distribution.array, distribution.undefined], value.methods);
+        distribution_assert.any([distribution.array, distribution.undefined], value.statusCodes);
+        distribution_assert.any([distribution.array, distribution.undefined], value.errorCodes);
+        distribution_assert.any([distribution.number, distribution.undefined], value.noise);
         if (value.noise && Math.abs(value.noise) > 100) {
             throw new Error(`The maximum acceptable retry noise is +/- 100ms, got ${value.noise}`);
         }
@@ -43006,7 +42998,7 @@ class Options {
         return this._internals.localAddress;
     }
     set localAddress(value) {
-        dist_assert.any([dist.string, dist.undefined], value);
+        distribution_assert.any([distribution.string, distribution.undefined], value);
         this._internals.localAddress = value;
     }
     /**
@@ -43018,14 +43010,14 @@ class Options {
         return this._internals.method;
     }
     set method(value) {
-        dist_assert.string(value);
+        distribution_assert.string(value);
         this._internals.method = value.toUpperCase();
     }
     get createConnection() {
         return this._internals.createConnection;
     }
     set createConnection(value) {
-        dist_assert.any([dist.function_, dist.undefined], value);
+        distribution_assert.any([distribution["function"], distribution.undefined], value);
         this._internals.createConnection = value;
     }
     /**
@@ -43037,11 +43029,11 @@ class Options {
         return this._internals.cacheOptions;
     }
     set cacheOptions(value) {
-        dist_assert.plainObject(value);
-        dist_assert.any([dist.boolean, dist.undefined], value.shared);
-        dist_assert.any([dist.number, dist.undefined], value.cacheHeuristic);
-        dist_assert.any([dist.number, dist.undefined], value.immutableMinTimeToLive);
-        dist_assert.any([dist.boolean, dist.undefined], value.ignoreCargoCult);
+        distribution_assert.plainObject(value);
+        distribution_assert.any([distribution.boolean, distribution.undefined], value.shared);
+        distribution_assert.any([distribution.number, distribution.undefined], value.cacheHeuristic);
+        distribution_assert.any([distribution.number, distribution.undefined], value.immutableMinTimeToLive);
+        distribution_assert.any([distribution.boolean, distribution.undefined], value.ignoreCargoCult);
         for (const key in value) {
             if (!(key in this._internals.cacheOptions)) {
                 throw new Error(`Cache option \`${key}\` does not exist`);
@@ -43061,24 +43053,24 @@ class Options {
         return this._internals.https;
     }
     set https(value) {
-        dist_assert.plainObject(value);
-        dist_assert.any([dist.boolean, dist.undefined], value.rejectUnauthorized);
-        dist_assert.any([dist.function_, dist.undefined], value.checkServerIdentity);
-        dist_assert.any([dist.string, dist.object, dist.array, dist.undefined], value.certificateAuthority);
-        dist_assert.any([dist.string, dist.object, dist.array, dist.undefined], value.key);
-        dist_assert.any([dist.string, dist.object, dist.array, dist.undefined], value.certificate);
-        dist_assert.any([dist.string, dist.undefined], value.passphrase);
-        dist_assert.any([dist.string, dist.buffer, dist.array, dist.undefined], value.pfx);
-        dist_assert.any([dist.array, dist.undefined], value.alpnProtocols);
-        dist_assert.any([dist.string, dist.undefined], value.ciphers);
-        dist_assert.any([dist.string, dist.buffer, dist.undefined], value.dhparam);
-        dist_assert.any([dist.string, dist.undefined], value.signatureAlgorithms);
-        dist_assert.any([dist.string, dist.undefined], value.minVersion);
-        dist_assert.any([dist.string, dist.undefined], value.maxVersion);
-        dist_assert.any([dist.boolean, dist.undefined], value.honorCipherOrder);
-        dist_assert.any([dist.number, dist.undefined], value.tlsSessionLifetime);
-        dist_assert.any([dist.string, dist.undefined], value.ecdhCurve);
-        dist_assert.any([dist.string, dist.buffer, dist.array, dist.undefined], value.certificateRevocationLists);
+        distribution_assert.plainObject(value);
+        distribution_assert.any([distribution.boolean, distribution.undefined], value.rejectUnauthorized);
+        distribution_assert.any([distribution["function"], distribution.undefined], value.checkServerIdentity);
+        distribution_assert.any([distribution.string, distribution.object, distribution.array, distribution.undefined], value.certificateAuthority);
+        distribution_assert.any([distribution.string, distribution.object, distribution.array, distribution.undefined], value.key);
+        distribution_assert.any([distribution.string, distribution.object, distribution.array, distribution.undefined], value.certificate);
+        distribution_assert.any([distribution.string, distribution.undefined], value.passphrase);
+        distribution_assert.any([distribution.string, distribution.buffer, distribution.array, distribution.undefined], value.pfx);
+        distribution_assert.any([distribution.array, distribution.undefined], value.alpnProtocols);
+        distribution_assert.any([distribution.string, distribution.undefined], value.ciphers);
+        distribution_assert.any([distribution.string, distribution.buffer, distribution.undefined], value.dhparam);
+        distribution_assert.any([distribution.string, distribution.undefined], value.signatureAlgorithms);
+        distribution_assert.any([distribution.string, distribution.undefined], value.minVersion);
+        distribution_assert.any([distribution.string, distribution.undefined], value.maxVersion);
+        distribution_assert.any([distribution.boolean, distribution.undefined], value.honorCipherOrder);
+        distribution_assert.any([distribution.number, distribution.undefined], value.tlsSessionLifetime);
+        distribution_assert.any([distribution.string, distribution.undefined], value.ecdhCurve);
+        distribution_assert.any([distribution.string, distribution.buffer, distribution.array, distribution.undefined], value.certificateRevocationLists);
         for (const key in value) {
             if (!(key in this._internals.https)) {
                 throw new Error(`HTTPS option \`${key}\` does not exist`);
@@ -43108,7 +43100,7 @@ class Options {
         if (value === null) {
             throw new TypeError('To get a Buffer, set `options.responseType` to `buffer` instead');
         }
-        dist_assert.any([dist.string, dist.undefined], value);
+        distribution_assert.any([distribution.string, distribution.undefined], value);
         this._internals.encoding = value;
     }
     /**
@@ -43120,7 +43112,7 @@ class Options {
         return this._internals.resolveBodyOnly;
     }
     set resolveBodyOnly(value) {
-        dist_assert.boolean(value);
+        distribution_assert.boolean(value);
         this._internals.resolveBodyOnly = value;
     }
     /**
@@ -43133,7 +43125,7 @@ class Options {
         return this._internals.isStream;
     }
     set isStream(value) {
-        dist_assert.boolean(value);
+        distribution_assert.boolean(value);
         this._internals.isStream = value;
     }
     /**
@@ -43183,7 +43175,7 @@ class Options {
         return this._internals.pagination;
     }
     set pagination(value) {
-        dist_assert.object(value);
+        distribution_assert.object(value);
         if (this._merging) {
             Object.assign(this._internals.pagination, value);
         }
@@ -43201,21 +43193,21 @@ class Options {
         return this._internals.setHost;
     }
     set setHost(value) {
-        dist_assert.boolean(value);
+        distribution_assert.boolean(value);
         this._internals.setHost = value;
     }
     get maxHeaderSize() {
         return this._internals.maxHeaderSize;
     }
     set maxHeaderSize(value) {
-        dist_assert.any([dist.number, dist.undefined], value);
+        distribution_assert.any([distribution.number, distribution.undefined], value);
         this._internals.maxHeaderSize = value;
     }
     get enableUnixSockets() {
         return this._internals.enableUnixSockets;
     }
     set enableUnixSockets(value) {
-        dist_assert.boolean(value);
+        distribution_assert.boolean(value);
         this._internals.enableUnixSockets = value;
     }
     // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -43237,7 +43229,7 @@ class Options {
         }
         const { https } = internals;
         let { pfx } = https;
-        if (dist.array(pfx) && dist.plainObject(pfx[0])) {
+        if (distribution.array(pfx) && distribution.plainObject(pfx[0])) {
             pfx = pfx.map(object => ({
                 buf: object.buffer,
                 passphrase: object.passphrase,
@@ -44061,7 +44053,7 @@ const nodeImports = {};
 ;// CONCATENATED MODULE: ./node_modules/.pnpm/get-stream@9.0.1/node_modules/get-stream/source/contents.js
 
 
-const contents_getStreamContents = async (stream, {init, convertChunk, getSize, truncateChunk, addChunk, getFinalChunk, finalize}, {maxBuffer = Number.POSITIVE_INFINITY} = {}) => {
+const getStreamContents = async (stream, {init, convertChunk, getSize, truncateChunk, addChunk, getFinalChunk, finalize}, {maxBuffer = Number.POSITIVE_INFINITY} = {}) => {
 	const asyncIterable = getAsyncIterable(stream);
 
 	const state = init();
@@ -44199,7 +44191,7 @@ const getLengthProperty = convertedChunk => convertedChunk.length;
 
 
 async function getStreamAsArrayBuffer(stream, options) {
-	return contents_getStreamContents(stream, arrayBufferMethods, options);
+	return getStreamContents(stream, arrayBufferMethods, options);
 }
 
 const initArrayBuffer = () => ({contents: new ArrayBuffer(0)});
@@ -44719,322 +44711,19 @@ const convertHeaders = (headers) => {
     }
     return result;
 };
-/* harmony default export */ const cacheable_request_dist = (CacheableRequest);
+/* harmony default export */ const dist = (CacheableRequest);
 
 const onResponse = 'onResponse';
 //# sourceMappingURL=index.js.map
 // EXTERNAL MODULE: ./node_modules/.pnpm/decompress-response@6.0.0/node_modules/decompress-response/index.js
 var decompress_response = __nccwpck_require__(7748);
-;// CONCATENATED MODULE: ./node_modules/.pnpm/get-stream@8.0.1/node_modules/get-stream/source/contents.js
-const source_contents_getStreamContents = async (stream, {init, convertChunk, getSize, truncateChunk, addChunk, getFinalChunk, finalize}, {maxBuffer = Number.POSITIVE_INFINITY} = {}) => {
-	if (!contents_isAsyncIterable(stream)) {
-		throw new Error('The first argument must be a Readable, a ReadableStream, or an async iterable.');
-	}
-
-	const state = init();
-	state.length = 0;
-
-	try {
-		for await (const chunk of stream) {
-			const chunkType = contents_getChunkType(chunk);
-			const convertedChunk = convertChunk[chunkType](chunk, state);
-			contents_appendChunk({convertedChunk, state, getSize, truncateChunk, addChunk, maxBuffer});
-		}
-
-		contents_appendFinalChunk({state, convertChunk, getSize, truncateChunk, addChunk, getFinalChunk, maxBuffer});
-		return finalize(state);
-	} catch (error) {
-		error.bufferedData = finalize(state);
-		throw error;
-	}
-};
-
-const contents_appendFinalChunk = ({state, getSize, truncateChunk, addChunk, getFinalChunk, maxBuffer}) => {
-	const convertedChunk = getFinalChunk(state);
-	if (convertedChunk !== undefined) {
-		contents_appendChunk({convertedChunk, state, getSize, truncateChunk, addChunk, maxBuffer});
-	}
-};
-
-const contents_appendChunk = ({convertedChunk, state, getSize, truncateChunk, addChunk, maxBuffer}) => {
-	const chunkSize = getSize(convertedChunk);
-	const newLength = state.length + chunkSize;
-
-	if (newLength <= maxBuffer) {
-		contents_addNewChunk(convertedChunk, state, addChunk, newLength);
-		return;
-	}
-
-	const truncatedChunk = truncateChunk(convertedChunk, maxBuffer - state.length);
-
-	if (truncatedChunk !== undefined) {
-		contents_addNewChunk(truncatedChunk, state, addChunk, maxBuffer);
-	}
-
-	throw new contents_MaxBufferError();
-};
-
-const contents_addNewChunk = (convertedChunk, state, addChunk, newLength) => {
-	state.contents = addChunk(convertedChunk, state, newLength);
-	state.length = newLength;
-};
-
-const contents_isAsyncIterable = stream => typeof stream === 'object' && stream !== null && typeof stream[Symbol.asyncIterator] === 'function';
-
-const contents_getChunkType = chunk => {
-	const typeOfChunk = typeof chunk;
-
-	if (typeOfChunk === 'string') {
-		return 'string';
-	}
-
-	if (typeOfChunk !== 'object' || chunk === null) {
-		return 'others';
-	}
-
-	// eslint-disable-next-line n/prefer-global/buffer
-	if (globalThis.Buffer?.isBuffer(chunk)) {
-		return 'buffer';
-	}
-
-	const prototypeName = source_contents_objectToString.call(chunk);
-
-	if (prototypeName === '[object ArrayBuffer]') {
-		return 'arrayBuffer';
-	}
-
-	if (prototypeName === '[object DataView]') {
-		return 'dataView';
-	}
-
-	if (
-		Number.isInteger(chunk.byteLength)
-		&& Number.isInteger(chunk.byteOffset)
-		&& source_contents_objectToString.call(chunk.buffer) === '[object ArrayBuffer]'
-	) {
-		return 'typedArray';
-	}
-
-	return 'others';
-};
-
-const {toString: source_contents_objectToString} = Object.prototype;
-
-class contents_MaxBufferError extends Error {
-	name = 'MaxBufferError';
-
-	constructor() {
-		super('maxBuffer exceeded');
-	}
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/get-stream@8.0.1/node_modules/get-stream/source/utils.js
-const utils_identity = value => value;
-
-const utils_noop = () => undefined;
-
-const getContentsProp = ({contents}) => contents;
-
-const utils_throwObjectStream = chunk => {
-	throw new Error(`Streams in object mode are not supported: ${String(chunk)}`);
-};
-
-const getLengthProp = convertedChunk => convertedChunk.length;
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/get-stream@8.0.1/node_modules/get-stream/source/array.js
-
-
-
-async function getStreamAsArray(stream, options) {
-	return getStreamContents(stream, arrayMethods, options);
-}
-
-const initArray = () => ({contents: []});
-
-const increment = () => 1;
-
-const addArrayChunk = (convertedChunk, {contents}) => {
-	contents.push(convertedChunk);
-	return contents;
-};
-
-const arrayMethods = {
-	init: initArray,
-	convertChunk: {
-		string: utils_identity,
-		buffer: utils_identity,
-		arrayBuffer: utils_identity,
-		dataView: utils_identity,
-		typedArray: utils_identity,
-		others: utils_identity,
-	},
-	getSize: increment,
-	truncateChunk: utils_noop,
-	addChunk: addArrayChunk,
-	getFinalChunk: utils_noop,
-	finalize: getContentsProp,
-};
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/get-stream@8.0.1/node_modules/get-stream/source/array-buffer.js
-
-
-
-async function array_buffer_getStreamAsArrayBuffer(stream, options) {
-	return source_contents_getStreamContents(stream, array_buffer_arrayBufferMethods, options);
-}
-
-const array_buffer_initArrayBuffer = () => ({contents: new ArrayBuffer(0)});
-
-const array_buffer_useTextEncoder = chunk => array_buffer_textEncoder.encode(chunk);
-const array_buffer_textEncoder = new TextEncoder();
-
-const array_buffer_useUint8Array = chunk => new Uint8Array(chunk);
-
-const array_buffer_useUint8ArrayWithOffset = chunk => new Uint8Array(chunk.buffer, chunk.byteOffset, chunk.byteLength);
-
-const array_buffer_truncateArrayBufferChunk = (convertedChunk, chunkSize) => convertedChunk.slice(0, chunkSize);
-
-// `contents` is an increasingly growing `Uint8Array`.
-const array_buffer_addArrayBufferChunk = (convertedChunk, {contents, length: previousLength}, length) => {
-	const newContents = array_buffer_hasArrayBufferResize() ? array_buffer_resizeArrayBuffer(contents, length) : array_buffer_resizeArrayBufferSlow(contents, length);
-	new Uint8Array(newContents).set(convertedChunk, previousLength);
-	return newContents;
-};
-
-// Without `ArrayBuffer.resize()`, `contents` size is always a power of 2.
-// This means its last bytes are zeroes (not stream data), which need to be
-// trimmed at the end with `ArrayBuffer.slice()`.
-const array_buffer_resizeArrayBufferSlow = (contents, length) => {
-	if (length <= contents.byteLength) {
-		return contents;
-	}
-
-	const arrayBuffer = new ArrayBuffer(array_buffer_getNewContentsLength(length));
-	new Uint8Array(arrayBuffer).set(new Uint8Array(contents), 0);
-	return arrayBuffer;
-};
-
-// With `ArrayBuffer.resize()`, `contents` size matches exactly the size of
-// the stream data. It does not include extraneous zeroes to trim at the end.
-// The underlying `ArrayBuffer` does allocate a number of bytes that is a power
-// of 2, but those bytes are only visible after calling `ArrayBuffer.resize()`.
-const array_buffer_resizeArrayBuffer = (contents, length) => {
-	if (length <= contents.maxByteLength) {
-		contents.resize(length);
-		return contents;
-	}
-
-	const arrayBuffer = new ArrayBuffer(length, {maxByteLength: array_buffer_getNewContentsLength(length)});
-	new Uint8Array(arrayBuffer).set(new Uint8Array(contents), 0);
-	return arrayBuffer;
-};
-
-// Retrieve the closest `length` that is both >= and a power of 2
-const array_buffer_getNewContentsLength = length => array_buffer_SCALE_FACTOR ** Math.ceil(Math.log(length) / Math.log(array_buffer_SCALE_FACTOR));
-
-const array_buffer_SCALE_FACTOR = 2;
-
-const array_buffer_finalizeArrayBuffer = ({contents, length}) => array_buffer_hasArrayBufferResize() ? contents : contents.slice(0, length);
-
-// `ArrayBuffer.slice()` is slow. When `ArrayBuffer.resize()` is available
-// (Node >=20.0.0, Safari >=16.4 and Chrome), we can use it instead.
-// eslint-disable-next-line no-warning-comments
-// TODO: remove after dropping support for Node 20.
-// eslint-disable-next-line no-warning-comments
-// TODO: use `ArrayBuffer.transferToFixedLength()` instead once it is available
-const array_buffer_hasArrayBufferResize = () => 'resize' in ArrayBuffer.prototype;
-
-const array_buffer_arrayBufferMethods = {
-	init: array_buffer_initArrayBuffer,
-	convertChunk: {
-		string: array_buffer_useTextEncoder,
-		buffer: array_buffer_useUint8Array,
-		arrayBuffer: array_buffer_useUint8Array,
-		dataView: array_buffer_useUint8ArrayWithOffset,
-		typedArray: array_buffer_useUint8ArrayWithOffset,
-		others: utils_throwObjectStream,
-	},
-	getSize: getLengthProp,
-	truncateChunk: array_buffer_truncateArrayBufferChunk,
-	addChunk: array_buffer_addArrayBufferChunk,
-	getFinalChunk: utils_noop,
-	finalize: array_buffer_finalizeArrayBuffer,
-};
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/get-stream@8.0.1/node_modules/get-stream/source/buffer.js
-
-
-async function buffer_getStreamAsBuffer(stream, options) {
-	if (!('Buffer' in globalThis)) {
-		throw new Error('getStreamAsBuffer() is only supported in Node.js');
-	}
-
-	try {
-		return buffer_arrayBufferToNodeBuffer(await array_buffer_getStreamAsArrayBuffer(stream, options));
-	} catch (error) {
-		if (error.bufferedData !== undefined) {
-			error.bufferedData = buffer_arrayBufferToNodeBuffer(error.bufferedData);
-		}
-
-		throw error;
-	}
-}
-
-// eslint-disable-next-line n/prefer-global/buffer
-const buffer_arrayBufferToNodeBuffer = arrayBuffer => globalThis.Buffer.from(arrayBuffer);
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/get-stream@8.0.1/node_modules/get-stream/source/string.js
-
-
-
-async function getStreamAsString(stream, options) {
-	return getStreamContents(stream, stringMethods, options);
-}
-
-const initString = () => ({contents: '', textDecoder: new TextDecoder()});
-
-const useTextDecoder = (chunk, {textDecoder}) => textDecoder.decode(chunk, {stream: true});
-
-const addStringChunk = (convertedChunk, {contents}) => contents + convertedChunk;
-
-const truncateStringChunk = (convertedChunk, chunkSize) => convertedChunk.slice(0, chunkSize);
-
-const getFinalStringChunk = ({textDecoder}) => {
-	const finalChunk = textDecoder.decode();
-	return finalChunk === '' ? undefined : finalChunk;
-};
-
-const stringMethods = {
-	init: initString,
-	convertChunk: {
-		string: utils_identity,
-		buffer: useTextDecoder,
-		arrayBuffer: useTextDecoder,
-		dataView: useTextDecoder,
-		typedArray: useTextDecoder,
-		others: utils_throwObjectStream,
-	},
-	getSize: getLengthProp,
-	truncateChunk: truncateStringChunk,
-	addChunk: addStringChunk,
-	getFinalChunk: getFinalStringChunk,
-	finalize: getContentsProp,
-};
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/get-stream@8.0.1/node_modules/get-stream/source/index.js
-
-
-
-
-
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.1/node_modules/got/dist/source/core/utils/is-form-data.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.2/node_modules/got/dist/source/core/utils/is-form-data.js
 
 function is_form_data_isFormData(body) {
-    return dist.nodeStream(body) && dist.function_(body.getBoundary);
+    return distribution.nodeStream(body) && distribution["function"](body.getBoundary);
 }
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.1/node_modules/got/dist/source/core/utils/get-body-size.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.2/node_modules/got/dist/source/core/utils/get-body-size.js
 
 
 
@@ -45046,10 +44735,10 @@ async function getBodySize(body, headers) {
     if (!body) {
         return 0;
     }
-    if (dist.string(body)) {
+    if (distribution.string(body)) {
         return external_node_buffer_namespaceObject.Buffer.byteLength(body);
     }
-    if (dist.buffer(body)) {
+    if (distribution.buffer(body)) {
         return body.length;
     }
     if (is_form_data_isFormData(body)) {
@@ -45058,7 +44747,7 @@ async function getBodySize(body, headers) {
     return undefined;
 }
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.1/node_modules/got/dist/source/core/utils/proxy-events.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.2/node_modules/got/dist/source/core/utils/proxy-events.js
 function proxyEvents(from, to, events) {
     const eventFunctions = {};
     for (const event of events) {
@@ -45077,7 +44766,7 @@ function proxyEvents(from, to, events) {
 
 ;// CONCATENATED MODULE: external "node:net"
 const external_node_net_namespaceObject = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:net");
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.1/node_modules/got/dist/source/core/utils/unhandle.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.2/node_modules/got/dist/source/core/utils/unhandle.js
 // When attaching listeners, it's very easy to forget about them.
 // Especially if you do error handling and set timeouts.
 // So instead of checking if it's proper to throw an error on every timeout ever,
@@ -45099,7 +44788,7 @@ function unhandle() {
     };
 }
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.1/node_modules/got/dist/source/core/timed-out.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.2/node_modules/got/dist/source/core/timed-out.js
 
 
 const reentry = Symbol('reentry');
@@ -45230,14 +44919,14 @@ function timedOut(request, delays, options) {
     return cancelTimeouts;
 }
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.1/node_modules/got/dist/source/core/utils/url-to-options.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.2/node_modules/got/dist/source/core/utils/url-to-options.js
 
 function urlToOptions(url) {
     // Cast to URL
     url = url;
     const options = {
         protocol: url.protocol,
-        hostname: dist.string(url.hostname) && url.hostname.startsWith('[') ? url.hostname.slice(1, -1) : url.hostname,
+        hostname: distribution.string(url.hostname) && url.hostname.startsWith('[') ? url.hostname.slice(1, -1) : url.hostname,
         host: url.host,
         hash: url.hash,
         search: url.search,
@@ -45245,7 +44934,7 @@ function urlToOptions(url) {
         href: url.href,
         path: `${url.pathname || ''}${url.search || ''}`,
     };
-    if (dist.string(url.port) && url.port.length > 0) {
+    if (distribution.string(url.port) && url.port.length > 0) {
         options.port = Number(url.port);
     }
     if (url.username || url.password) {
@@ -45254,7 +44943,7 @@ function urlToOptions(url) {
     return options;
 }
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.1/node_modules/got/dist/source/core/utils/weakable-map.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.2/node_modules/got/dist/source/core/utils/weakable-map.js
 class WeakableMap {
     weakMap;
     map;
@@ -45284,7 +44973,7 @@ class WeakableMap {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.1/node_modules/got/dist/source/core/calculate-retry-delay.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.2/node_modules/got/dist/source/core/calculate-retry-delay.js
 const calculateRetryDelay = ({ attemptCount, retryOptions, error, retryAfter, computedValue, }) => {
     if (error.name === 'RetryError') {
         return 1;
@@ -45315,7 +45004,7 @@ const calculateRetryDelay = ({ attemptCount, retryOptions, error, retryAfter, co
 };
 /* harmony default export */ const calculate_retry_delay = (calculateRetryDelay);
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.1/node_modules/got/dist/source/core/response.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.2/node_modules/got/dist/source/core/response.js
 
 const isResponseOk = (response) => {
     const { statusCode } = response;
@@ -45358,19 +45047,19 @@ const parseBody = (response, responseType, parseJson, encoding) => {
     }, response);
 };
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.1/node_modules/got/dist/source/core/utils/is-client-request.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.2/node_modules/got/dist/source/core/utils/is-client-request.js
 function isClientRequest(clientRequest) {
     return clientRequest.writable && !clientRequest.writableEnded;
 }
 /* harmony default export */ const is_client_request = (isClientRequest);
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.1/node_modules/got/dist/source/core/utils/is-unix-socket-url.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.2/node_modules/got/dist/source/core/utils/is-unix-socket-url.js
 // eslint-disable-next-line @typescript-eslint/naming-convention
 function isUnixSocketURL(url) {
     return url.protocol === 'unix:' || url.hostname === 'unix';
 }
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.1/node_modules/got/dist/source/core/index.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.2/node_modules/got/dist/source/core/index.js
 
 
 
@@ -45392,8 +45081,7 @@ function isUnixSocketURL(url) {
 
 
 
-
-const supportsBrotli = dist.string(external_node_process_namespaceObject.versions.brotli);
+const supportsBrotli = distribution.string(external_node_process_namespaceObject.versions.brotli);
 const methodsWithoutBody = new Set(['GET', 'HEAD']);
 const cacheableStore = new WeakableMap();
 const redirectCodes = new Set([300, 301, 302, 303, 304, 307, 308]);
@@ -45491,7 +45179,7 @@ class Request extends external_node_stream_.Duplex {
         // Important! If you replace `body` in a handler with another stream, make sure it's readable first.
         // The below is run only once.
         const { body } = this.options;
-        if (dist.nodeStream(body)) {
+        if (distribution.nodeStream(body)) {
             body.once('error', error => {
                 if (this._flushed) {
                     this._beforeError(new UploadError(error, this));
@@ -45717,14 +45405,14 @@ class Request extends external_node_stream_.Duplex {
         this._removeListeners();
         if (this.options) {
             const { body } = this.options;
-            if (dist.nodeStream(body)) {
+            if (distribution.nodeStream(body)) {
                 body.destroy();
             }
         }
         if (this._request) {
             this._request.destroy();
         }
-        if (error !== null && !dist.undefined(error) && !(error instanceof RequestError)) {
+        if (error !== null && !distribution.undefined(error) && !(error instanceof RequestError)) {
             error = new RequestError(error.message, error, this);
         }
         callback(error);
@@ -45745,10 +45433,10 @@ class Request extends external_node_stream_.Duplex {
     async _finalizeBody() {
         const { options } = this;
         const { headers } = options;
-        const isForm = !dist.undefined(options.form);
+        const isForm = !distribution.undefined(options.form);
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        const isJSON = !dist.undefined(options.json);
-        const isBody = !dist.undefined(options.body);
+        const isJSON = !distribution.undefined(options.json);
+        const isBody = !distribution.undefined(options.body);
         const cannotHaveBody = methodsWithoutBody.has(options.method) && !(options.method === 'GET' && options.allowGetBody);
         this._cannotHaveBody = cannotHaveBody;
         if (isForm || isJSON || isBody) {
@@ -45756,7 +45444,7 @@ class Request extends external_node_stream_.Duplex {
                 throw new TypeError(`The \`${options.method}\` method cannot be used with a body`);
             }
             // Serialize body
-            const noContentType = !dist.string(headers['content-type']);
+            const noContentType = !distribution.string(headers['content-type']);
             if (isBody) {
                 // Body is spec-compliant FormData
                 if (lib_isFormData(options.body)) {
@@ -45800,7 +45488,7 @@ class Request extends external_node_stream_.Duplex {
             // Content-Length header field when the request message does not contain
             // a payload body and the method semantics do not anticipate such a
             // body.
-            if (dist.undefined(headers['content-length']) && dist.undefined(headers['transfer-encoding']) && !cannotHaveBody && !dist.undefined(uploadBodySize)) {
+            if (distribution.undefined(headers['content-length']) && distribution.undefined(headers['transfer-encoding']) && !cannotHaveBody && !distribution.undefined(uploadBodySize)) {
                 headers['content-length'] = String(uploadBodySize);
             }
         }
@@ -45855,7 +45543,7 @@ class Request extends external_node_stream_.Duplex {
         });
         this.emit('downloadProgress', this.downloadProgress);
         const rawCookies = response.headers['set-cookie'];
-        if (dist.object(options.cookieJar) && rawCookies) {
+        if (distribution.object(options.cookieJar) && rawCookies) {
             let promises = rawCookies.map(async (rawCookie) => options.cookieJar.setCookie(rawCookie, url.toString()));
             if (options.ignoreInvalidCookies) {
                 // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -46000,10 +45688,8 @@ class Request extends external_node_stream_.Duplex {
         }
         try {
             // Errors are emitted via the `error` event
-            const rawBody = await buffer_getStreamAsBuffer(from);
-            // TODO: Switch to this:
-            // let rawBody = await from.toArray();
-            // rawBody = Buffer.concat(rawBody);
+            const fromArray = await from.toArray();
+            const rawBody = isBuffer(fromArray.at(0)) ? external_node_buffer_namespaceObject.Buffer.concat(fromArray) : external_node_buffer_namespaceObject.Buffer.from(fromArray.join(''));
             // On retry Request is destroyed with no error, therefore the above will successfully resolve.
             // So in order to check if this was really successfull, we need to check if it has been properly ended.
             if (!this.isAborted) {
@@ -46064,10 +45750,10 @@ class Request extends external_node_stream_.Duplex {
         // Send body
         const { body } = this.options;
         const currentRequest = this.redirectUrls.length === 0 ? this : this._request ?? this;
-        if (dist.nodeStream(body)) {
+        if (distribution.nodeStream(body)) {
             body.pipe(currentRequest);
         }
-        else if (dist.generator(body) || dist.asyncGenerator(body)) {
+        else if (distribution.generator(body) || distribution.asyncGenerator(body)) {
             (async () => {
                 try {
                     for await (const chunk of body) {
@@ -46080,7 +45766,7 @@ class Request extends external_node_stream_.Duplex {
                 }
             })();
         }
-        else if (!dist.undefined(body)) {
+        else if (!distribution.undefined(body)) {
             this._writeRequest(body, undefined, () => { });
             currentRequest.end();
         }
@@ -46090,10 +45776,10 @@ class Request extends external_node_stream_.Duplex {
     }
     _prepareCache(cache) {
         if (!cacheableStore.has(cache)) {
-            const cacheableRequest = new cacheable_request_dist(((requestOptions, handler) => {
+            const cacheableRequest = new dist(((requestOptions, handler) => {
                 const result = requestOptions._request(requestOptions, handler);
                 // TODO: remove this when `cacheable-request` supports async request functions.
-                if (dist.promise(result)) {
+                if (distribution.promise(result)) {
                     // We only need to implement the error handler in order to support HTTP2 caching.
                     // The result will be a promise anyway.
                     // @ts-expect-error ignore
@@ -46163,15 +45849,15 @@ class Request extends external_node_stream_.Duplex {
         const { headers, username, password } = options;
         const cookieJar = options.cookieJar;
         for (const key in headers) {
-            if (dist.undefined(headers[key])) {
+            if (distribution.undefined(headers[key])) {
                 // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
                 delete headers[key];
             }
-            else if (dist.null_(headers[key])) {
+            else if (distribution["null"](headers[key])) {
                 throw new TypeError(`Use \`undefined\` instead of \`null\` to delete the \`${key}\` header`);
             }
         }
-        if (options.decompress && dist.undefined(headers['accept-encoding'])) {
+        if (options.decompress && distribution.undefined(headers['accept-encoding'])) {
             headers['accept-encoding'] = supportsBrotli ? 'gzip, deflate, br' : 'gzip, deflate';
         }
         if (username || password) {
@@ -46181,7 +45867,7 @@ class Request extends external_node_stream_.Duplex {
         // Set cookies
         if (cookieJar) {
             const cookieString = await cookieJar.getCookieString(options.url.toString());
-            if (dist.nonEmptyString(cookieString)) {
+            if (distribution.nonEmptyString(cookieString)) {
                 headers.cookie = cookieString;
             }
         }
@@ -46191,7 +45877,7 @@ class Request extends external_node_stream_.Duplex {
         for (const hook of options.hooks.beforeRequest) {
             // eslint-disable-next-line no-await-in-loop
             const result = await hook(options);
-            if (!dist.undefined(result)) {
+            if (!distribution.undefined(result)) {
                 // @ts-expect-error Skip the type mismatch to support abstract responses
                 request = () => result;
                 break;
@@ -46212,13 +45898,13 @@ class Request extends external_node_stream_.Duplex {
             // We can't do `await fn(...)`,
             // because stream `error` event can be emitted before `Promise.resolve()`.
             let requestOrResponse = function_(url, this._requestOptions);
-            if (dist.promise(requestOrResponse)) {
+            if (distribution.promise(requestOrResponse)) {
                 requestOrResponse = await requestOrResponse;
             }
             // Fallback
-            if (dist.undefined(requestOrResponse)) {
+            if (distribution.undefined(requestOrResponse)) {
                 requestOrResponse = options.getFallbackRequestFunction()(url, this._requestOptions);
-                if (dist.promise(requestOrResponse)) {
+                if (distribution.promise(requestOrResponse)) {
                     requestOrResponse = await requestOrResponse;
                 }
             }
@@ -46374,7 +46060,7 @@ class Request extends external_node_stream_.Duplex {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.1/node_modules/got/dist/source/as-promise/types.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.2/node_modules/got/dist/source/as-promise/types.js
 
 /**
 An error to be thrown when the request is aborted with `.cancel()`.
@@ -46393,7 +46079,7 @@ class types_CancelError extends RequestError {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.1/node_modules/got/dist/source/as-promise/index.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.2/node_modules/got/dist/source/as-promise/index.js
 
 
 
@@ -46474,7 +46160,7 @@ function asPromise(firstRequest) {
                             options.hooks.afterResponse = options.hooks.afterResponse.slice(0, index);
                             throw new RetryError(request);
                         });
-                        if (!(dist.object(response) && dist.number(response.statusCode) && !dist.nullOrUndefined(response.body))) {
+                        if (!(distribution.object(response) && distribution.number(response.statusCode) && !distribution.nullOrUndefined(response.body))) {
                             throw new TypeError('The `afterResponse` hook returned an invalid value');
                         }
                     }
@@ -46509,7 +46195,7 @@ function asPromise(firstRequest) {
             request.once('retry', (newRetryCount, error) => {
                 firstRequest = undefined;
                 const newBody = request.options.body;
-                if (previousBody === newBody && dist.nodeStream(newBody)) {
+                if (previousBody === newBody && distribution.nodeStream(newBody)) {
                     error.message = 'Cannot retry with consumed body stream';
                     onError(error);
                     return;
@@ -46520,7 +46206,7 @@ function asPromise(firstRequest) {
                 makeRequest(newRetryCount);
             });
             proxyEvents(request, emitter, as_promise_proxiedRequestEvents);
-            if (dist.undefined(firstRequest)) {
+            if (distribution.undefined(firstRequest)) {
                 void request.flush();
             }
         };
@@ -46559,7 +46245,7 @@ function asPromise(firstRequest) {
     return promise;
 }
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.1/node_modules/got/dist/source/create.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.2/node_modules/got/dist/source/create.js
 
 
 
@@ -46568,7 +46254,7 @@ function asPromise(firstRequest) {
 const delay = async (ms) => new Promise(resolve => {
     setTimeout(resolve, ms);
 });
-const isGotInstance = (value) => dist.function_(value);
+const isGotInstance = (value) => distribution["function"](value);
 const aliases = [
     'get',
     'post',
@@ -46595,9 +46281,9 @@ const create = (defaults) => {
         const lastHandler = (normalized) => {
             // Note: `options` is `undefined` when `new Options(...)` fails
             request.options = normalized;
-            request._noPipe = !normalized.isStream;
+            request._noPipe = !normalized?.isStream;
             void request.flush();
-            if (normalized.isStream) {
+            if (normalized?.isStream) {
                 return request;
             }
             promise ||= asPromise(request);
@@ -46607,7 +46293,7 @@ const create = (defaults) => {
         const iterateHandlers = (newOptions) => {
             const handler = defaults.handlers[iteration++] ?? lastHandler;
             const result = handler(newOptions, iterateHandlers);
-            if (dist.promise(result) && !request.options.isStream) {
+            if (distribution.promise(result) && !request.options?.isStream) {
                 promise ||= asPromise(request);
                 if (result !== promise) {
                     const descriptors = Object.getOwnPropertyDescriptors(promise);
@@ -46655,13 +46341,13 @@ const create = (defaults) => {
         let normalizedOptions = new Options(url, options, defaults.options);
         normalizedOptions.resolveBodyOnly = false;
         const { pagination } = normalizedOptions;
-        dist_assert.function_(pagination.transform);
-        dist_assert.function_(pagination.shouldContinue);
-        dist_assert.function_(pagination.filter);
-        dist_assert.function_(pagination.paginate);
-        dist_assert.number(pagination.countLimit);
-        dist_assert.number(pagination.requestLimit);
-        dist_assert.number(pagination.backoff);
+        distribution_assert["function"](pagination.transform);
+        distribution_assert["function"](pagination.shouldContinue);
+        distribution_assert["function"](pagination.filter);
+        distribution_assert["function"](pagination.paginate);
+        distribution_assert.number(pagination.countLimit);
+        distribution_assert.number(pagination.requestLimit);
+        distribution_assert.number(pagination.backoff);
         const allItems = [];
         let { countLimit } = pagination;
         let numberOfRequests = 0;
@@ -46675,7 +46361,7 @@ const create = (defaults) => {
             // eslint-disable-next-line no-await-in-loop
             const parsed = await pagination.transform(response);
             const currentItems = [];
-            dist_assert.array(parsed);
+            distribution_assert.array(parsed);
             for (const item of parsed) {
                 if (pagination.filter({ item, currentItems, allItems })) {
                     if (!pagination.shouldContinue({ item, currentItems, allItems })) {
@@ -46704,7 +46390,7 @@ const create = (defaults) => {
             }
             else {
                 normalizedOptions.merge(optionsToMerge);
-                dist_assert.any([dist.urlInstance, dist.undefined], optionsToMerge.url);
+                distribution_assert.any([distribution.urlInstance, distribution.undefined], optionsToMerge.url);
                 if (optionsToMerge.url !== undefined) {
                     normalizedOptions.prefixUrl = '';
                     normalizedOptions.url = optionsToMerge.url;
@@ -46744,7 +46430,7 @@ const create = (defaults) => {
 };
 /* harmony default export */ const source_create = (create);
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.1/node_modules/got/dist/source/index.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.2/node_modules/got/dist/source/index.js
 
 
 const defaults = {

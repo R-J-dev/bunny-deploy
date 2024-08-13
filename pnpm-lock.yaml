@@ -55,8 +55,8 @@ importers:
         specifier: 0.38.1
         version: 0.38.1
       commitlint:
-        specifier: 19.3.0
-        version: 19.3.0(@types/node@20.14.12)(typescript@5.5.4)
+        specifier: 19.4.0
+        version: 19.4.0(@types/node@20.14.12)(typescript@5.5.4)
       eslint:
         specifier: 8.57.0
         version: 8.57.0
@@ -127,6 +127,11 @@ packages:
     engines: {node: '>=v18'}
     hasBin: true
 
+  '@commitlint/cli@19.4.0':
+    resolution: {integrity: sha512-sJX4J9UioVwZHq7JWM9tjT5bgWYaIN3rC4FP7YwfEwBYiIO+wMyRttRvQLNkow0vCdM0D67r9NEWU0Ui03I4Eg==}
+    engines: {node: '>=v18'}
+    hasBin: true
+
   '@commitlint/config-angular-type-enum@19.1.0':
     resolution: {integrity: sha512-eLjt7vSArP62kpDmmIZNdIBjPzbqY8jss6mVOcSDm4t1KfDw4UmPrtPh/7zcIL3GI5uf/7W8d2s3K0qisf9C+g==}
     engines: {node: '>=v18'}
@@ -163,12 +168,20 @@ packages:
     resolution: {integrity: sha512-I4lCWaEZYQJ1y+Y+gdvbGAx9pYPavqZAZ3/7/8BpWh+QjscAn8AjsUpLV2PycBsEx7gupq5gM4BViV9xwTIJuw==}
     engines: {node: '>=v18'}
 
+  '@commitlint/load@19.4.0':
+    resolution: {integrity: sha512-I4lCWaEZYQJ1y+Y+gdvbGAx9pYPavqZAZ3/7/8BpWh+QjscAn8AjsUpLV2PycBsEx7gupq5gM4BViV9xwTIJuw==}
+    engines: {node: '>=v18'}
+
   '@commitlint/message@19.0.0':
     resolution: {integrity: sha512-c9czf6lU+9oF9gVVa2lmKaOARJvt4soRsVmbR7Njwp9FpbBgste5i7l/2l5o8MmbwGh4yE1snfnsy2qyA2r/Fw==}
     engines: {node: '>=v18'}
 
   '@commitlint/parse@19.0.3':
     resolution: {integrity: sha512-Il+tNyOb8VDxN3P6XoBBwWJtKKGzHlitEuXA5BP6ir/3loWlsSqDr5aecl6hZcC/spjq4pHqNh0qPlfeWu38QA==}
+    engines: {node: '>=v18'}
+
+  '@commitlint/read@19.4.0':
+    resolution: {integrity: sha512-r95jLOEZzKDakXtnQub+zR3xjdnrl2XzerPwm7ch1/cc5JGq04tyaNpa6ty0CRCWdVrk4CZHhqHozb8yZwy2+g==}
     engines: {node: '>=v18'}
 
   '@commitlint/read@19.4.0':
@@ -994,8 +1007,8 @@ packages:
   color-name@1.1.4:
     resolution: {integrity: sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==}
 
-  commitlint@19.3.0:
-    resolution: {integrity: sha512-B8eUVQCjz+1ZAjR3LC3+vzKg7c4/qN4QhSxkjp0u0v7Pi79t9CsnGAluvveKmFh56e885zgToPL5ax+l8BHTPg==}
+  commitlint@19.4.0:
+    resolution: {integrity: sha512-aZU6Y5j918XufTVbm5fOu1xOeUgDcBiVfRpFxkOb83RMsPcYAW6maWRmm6Vs6YhSQbOEZ2+AE+IPoVFvoevQqg==}
     engines: {node: '>=v18'}
     hasBin: true
 
@@ -3081,6 +3094,19 @@ snapshots:
       - '@types/node'
       - typescript
 
+  '@commitlint/cli@19.4.0(@types/node@20.14.12)(typescript@5.5.4)':
+    dependencies:
+      '@commitlint/format': 19.3.0
+      '@commitlint/lint': 19.2.2
+      '@commitlint/load': 19.4.0(@types/node@20.14.12)(typescript@5.5.4)
+      '@commitlint/read': 19.4.0
+      '@commitlint/types': 19.0.3
+      execa: 8.0.1
+      yargs: 17.7.2
+    transitivePeerDependencies:
+      - '@types/node'
+      - typescript
+
   '@commitlint/config-angular-type-enum@19.1.0': {}
 
   '@commitlint/config-angular@19.3.0':
@@ -3136,6 +3162,22 @@ snapshots:
       - '@types/node'
       - typescript
 
+  '@commitlint/load@19.4.0(@types/node@20.14.12)(typescript@5.5.4)':
+    dependencies:
+      '@commitlint/config-validator': 19.0.3
+      '@commitlint/execute-rule': 19.0.0
+      '@commitlint/resolve-extends': 19.1.0
+      '@commitlint/types': 19.0.3
+      chalk: 5.3.0
+      cosmiconfig: 9.0.0(typescript@5.5.4)
+      cosmiconfig-typescript-loader: 5.0.0(@types/node@20.14.12)(cosmiconfig@9.0.0(typescript@5.5.4))(typescript@5.5.4)
+      lodash.isplainobject: 4.0.6
+      lodash.merge: 4.6.2
+      lodash.uniq: 4.5.0
+    transitivePeerDependencies:
+      - '@types/node'
+      - typescript
+
   '@commitlint/message@19.0.0': {}
 
   '@commitlint/parse@19.0.3':
@@ -3143,6 +3185,14 @@ snapshots:
       '@commitlint/types': 19.0.3
       conventional-changelog-angular: 7.0.0
       conventional-commits-parser: 5.0.0
+
+  '@commitlint/read@19.4.0':
+    dependencies:
+      '@commitlint/top-level': 19.0.0
+      '@commitlint/types': 19.0.3
+      execa: 8.0.1
+      git-raw-commits: 4.0.0
+      minimist: 1.2.8
 
   '@commitlint/read@19.4.0':
     dependencies:
@@ -4001,7 +4051,7 @@ snapshots:
 
   color-name@1.1.4: {}
 
-  commitlint@19.3.0(@types/node@20.14.12)(typescript@5.5.4):
+  commitlint@19.4.0(@types/node@20.14.12)(typescript@5.5.4):
     dependencies:
       '@commitlint/cli': 19.4.0(@types/node@20.14.12)(typescript@5.5.4)
       '@commitlint/types': 19.0.3

@@ -39,7 +39,7 @@
     ".": "./dist/index.js"
   },
   "devDependencies": {
-    "@commitlint/cli": "19.3.0",
+    "@commitlint/cli": "19.4.0",
     "@commitlint/config-angular": "19.3.0",
     "@commitlint/format": "19.3.0",
     "@commitlint/types": "19.0.3",

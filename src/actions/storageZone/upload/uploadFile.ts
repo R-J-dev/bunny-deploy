@@ -31,7 +31,7 @@ const retryableUploadFile = async (
     if (error instanceof RequestError) {
       const statusCode = error.response?.statusCode;
       let shouldRetry = statusCode && retryStatusCodes?.includes(statusCode);
-      shouldRetry = shouldRetry || retryErrorCodes?.includes(error.code);
+      shouldRetry ||= !!retryErrorCodes?.includes(error.code);
       if (shouldRetry) {
         throw error; // pRetry should catch the error and check if it can retry the failed stream
       }

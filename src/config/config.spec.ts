@@ -56,6 +56,7 @@ describe("config", () => {
 
       expect(config).toEqual({
         pullZoneId: "12345",
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         pullZoneClient: expect.anything(),
         replicationTimeout: 0,
       });
@@ -73,6 +74,7 @@ describe("config", () => {
       it.each([["access-key"], ["pull-zone-id"], ["replication-timeout"]])(
         "should throw when configParam '%s' is missing",
         async (configParam: string) => {
+          // eslint-disable-next-line @typescript-eslint/no-dynamic-delete -- Test will fail when this goes wrong, so it's not really an issue here.
           delete process.env[`INPUT_${configParam.toUpperCase()}`];
 
           await expect(() => getPullZoneConfig()).rejects.toThrow(
@@ -142,7 +144,7 @@ describe("config", () => {
         });
       });
 
-      describe("ends with a slash", async () => {
+      describe("ends with a slash", () => {
         it("should remove the end slash", async () => {
           process.env[`INPUT_TARGET-DIRECTORY`] = "test/target/";
 
@@ -156,7 +158,7 @@ describe("config", () => {
         });
       });
 
-      describe("starts and ends with a slash", async () => {
+      describe("starts and ends with a slash", () => {
         it("should remove the leading and end slash", async () => {
           process.env[`INPUT_TARGET-DIRECTORY`] = "/test/target/";
 
@@ -170,7 +172,7 @@ describe("config", () => {
         });
       });
 
-      describe("has no slash", async () => {
+      describe("has no slash", () => {
         it("should stay the same", async () => {
           process.env[`INPUT_TARGET-DIRECTORY`] = "test";
 
@@ -193,12 +195,13 @@ describe("config", () => {
         directoryToUpload: __dirname,
         storageZoneName: "test-zone",
         targetDirectory: "test/target",
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         edgeStorageClient: expect.anything(),
       });
     });
 
     it("should format a concurrency to an int", async () => {
-      process.env["INPUT_CONCURRENCY"] = "3.6";
+      process.env.INPUT_CONCURRENCY = "3.6";
 
       const config = await getEdgeStorageConfig();
 
@@ -215,6 +218,7 @@ describe("config", () => {
       ])(
         "should throw when configParam '%s' is missing",
         async (configParam: string) => {
+          // eslint-disable-next-line @typescript-eslint/no-dynamic-delete -- Test will fail when this goes wrong, so it's not really an issue here.
           delete process.env[`INPUT_${configParam.toUpperCase()}`];
 
           await expect(() => getEdgeStorageConfig()).rejects.toThrow(
@@ -246,7 +250,7 @@ describe("config", () => {
 
     describe("Invalid concurrency", () => {
       it("should throw when concurrency is not a number", async () => {
-        process.env["INPUT_CONCURRENCY"] = "test";
+        process.env.INPUT_CONCURRENCY = "test";
 
         await expect(() => getEdgeStorageConfig()).rejects.toThrow(
           InvalidIntegerError,
@@ -254,7 +258,7 @@ describe("config", () => {
       });
 
       it("should throw when concurrency is not a positive integer", async () => {
-        process.env["INPUT_CONCURRENCY"] = "-1";
+        process.env.INPUT_CONCURRENCY = "-1";
 
         await expect(() => getEdgeStorageConfig()).rejects.toThrow(
           InvalidIntegerError,

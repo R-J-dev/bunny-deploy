@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/require-await -- validators should always be async, because the inputWrapper which uses the validators expects an async function */
+
 import { getInput, getBooleanInput, setSecret } from "@actions/core";
 import { getBunnyClient } from "@/bunnyClient/bunnyClient.js";
 import {

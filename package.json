@@ -38,6 +38,13 @@
   "exports": {
     ".": "./dist/index.js"
   },
+  "pnpm": {
+    "auditConfig": {
+      "ignoreCves": [
+        "CVE-2024-4067"
+      ]
+    }
+  },
   "devDependencies": {
     "@commitlint/cli": "19.4.0",
     "@commitlint/config-angular": "19.3.0",

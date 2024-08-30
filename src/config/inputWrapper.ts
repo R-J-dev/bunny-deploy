@@ -74,11 +74,11 @@ export const getInputWrapper = async <T = string>({
   errorLogMessage = `Something went wrong while trying to retrieve the input: '${inputName}'`,
   inputOptions,
   transformInput = async (input: string) => input as unknown as Promise<T>,
-  validator = async () => {},
+  validator,
 }: GetInputWrapperProps<T>): Promise<T> => {
   try {
     const input = await transformInput(getInput(inputName, inputOptions));
-    await validator(input);
+    if (validator) await validator(input);
     return input;
   } catch (error) {
     logError(errorLogMessage);

@@ -59,9 +59,7 @@ export class InvalidPathError extends Error {
 }
 
 export class InvalidStorageZoneNameError extends Error {
-  constructor(
-    message: string = "storage-zone-name should not contain a slash",
-  ) {
+  constructor(message = "storage-zone-name should not contain a slash") {
     super(message);
   }
 }

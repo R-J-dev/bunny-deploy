@@ -56,7 +56,7 @@ export const uploadDirectoryToStorageZone = async ({
       files,
       async (file) => {
         if (file.isDirectory()) return;
-        const filePath = join(file.path, file.name);
+        const filePath = join(file.parentPath, file.name);
         if (fileInfo.unchangedFiles.has(filePath)) {
           logInfo(`Skipped uploading unchanged file: ${filePath}`);
           return;

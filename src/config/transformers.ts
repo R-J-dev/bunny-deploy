@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/require-await -- transformers should always be async, because the inputWrapper which uses the transformers expects an async function */
 import { isAbsolute, join } from "path";
 
 export const transformDirectoryToUploadInput = async (

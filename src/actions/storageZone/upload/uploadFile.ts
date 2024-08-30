@@ -20,18 +20,19 @@ const retryableUploadFile = async (
   filePath: string,
 ) => {
   try {
-    return await streamPipeline(
+    await streamPipeline(
       createReadStream(filePath),
       client.stream.put(uploadPath, uploadFileHeaders),
       new stream.PassThrough(),
     );
+    return;
   } catch (error) {
     const retryStatusCodes = client.defaults.options.retry.statusCodes;
     const retryErrorCodes = client.defaults.options.retry.errorCodes;
     if (error instanceof RequestError) {
       const statusCode = error.response?.statusCode;
       let shouldRetry = statusCode && retryStatusCodes?.includes(statusCode);
-      shouldRetry = shouldRetry || retryErrorCodes?.includes(error.code);
+      shouldRetry ||= !!retryErrorCodes?.includes(error.code);
       if (shouldRetry) {
         throw error; // pRetry should catch the error and check if it can retry the failed stream
       }

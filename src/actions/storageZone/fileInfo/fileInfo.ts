@@ -39,10 +39,10 @@ interface GetFileInfoProps {
   disableTypeValidation?: boolean;
 }
 
-export type FileInfo = {
+export interface FileInfo {
   unchangedFiles: Set<string>;
   unknownRemoteFiles: Set<string>;
-};
+}
 
 /**
  * Collects file info to determine which files are unchanged and which remote files are locally not found.

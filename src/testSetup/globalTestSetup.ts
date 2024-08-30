@@ -42,7 +42,7 @@ export const setup = async ({ provide }: GlobalSetupContext) => {
   await waitUntilTestServerIsUp(port);
 };
 
-export const teardown = async () => {
+export const teardown = () => {
   if (testServer) {
     testServer.close(() => {
       console.log("Test server closed.");

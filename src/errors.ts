@@ -4,10 +4,10 @@ export class MissingAccessKeyError extends Error {
   }
 }
 
-type BaseUrlProtocolErrorParams = {
+interface BaseUrlProtocolErrorParams {
   invalidProtocol: string;
   expectedProtocol: string;
-};
+}
 
 export type InvalidUrlProtocolErrorParams =
   | (BaseUrlProtocolErrorParams & { message?: string })

@@ -15,7 +15,7 @@ export const isServerUp = async (port: number) => {
   try {
     await got(`http://localhost:${port}/`);
     return true;
-  } catch (error) {
+  } catch (_error) {
     return false;
   }
 };
@@ -23,7 +23,7 @@ export const isServerUp = async (port: number) => {
 export const startTestServer = (port: number) => {
   const app = express();
 
-  app.get("/", (req, res) => {
+  app.get("/", (_req, res) => {
     res.status(200).send("ok");
   });
 
@@ -58,7 +58,7 @@ export const startTestServer = (port: number) => {
     res.status(status).send("mock upload response");
   });
 
-  app.get("*", (req, res) => {
+  app.get("*", (_req, res) => {
     res.status(404).send("404");
   });
 

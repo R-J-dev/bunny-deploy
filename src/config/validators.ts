@@ -5,6 +5,7 @@ import {
   InvalidDigitStringError,
   InvalidPathError,
   InvalidUrlProtocolError,
+  InvalidStorageZoneNameError,
 } from "@/errors.js";
 import { lstat } from "node:fs/promises";
 
@@ -56,4 +57,8 @@ export const validateDirectory = async (path: string) => {
   const fileStats = await lstat(path);
   if (!fileStats.isDirectory())
     throw new InvalidPathError({ invalidPath: path });
+};
+
+export const validateStorageZoneName = async (name: string) => {
+  if (!/^[a-zA-Z0-9-]+$/.test(name)) throw new InvalidStorageZoneNameError();
 };

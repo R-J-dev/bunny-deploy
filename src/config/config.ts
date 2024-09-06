@@ -8,6 +8,7 @@ import {
   validateDigitString,
   validatePositiveInteger,
   validateUrl,
+  validateStorageZoneName,
 } from "@/config/validators.js";
 import { getInputWrapper } from "@/config/inputWrapper.js";
 import {
@@ -16,7 +17,6 @@ import {
   transformDirectoryToUploadInput,
 } from "@/config/transformers.js";
 import { logDebug } from "@/logger.js";
-import { InvalidStorageZoneNameError } from "@/errors.js";
 
 export const getSecret = async (secretName: string) => {
   const secret = getInput(secretName, { required: true });
@@ -89,9 +89,7 @@ export const getEdgeStorageConfig = async () => {
     storageZoneName: await getInputWrapper({
       inputName: "storage-zone-name",
       inputOptions: { required: true },
-      validator: async (input: string) => {
-        if (input.includes("/")) throw new InvalidStorageZoneNameError();
-      },
+      validator: validateStorageZoneName,
     }),
     targetDirectory: await getInputWrapper({
       inputName: "target-directory",

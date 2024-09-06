@@ -285,6 +285,21 @@ describe("config", () => {
       );
     });
 
+    describe("Valid storage endpoint", () => {
+      it("should not throw", async () => {
+        await fc.assert(
+          fc.asyncProperty(
+            fc.webUrl({ validSchemes: ["https"] }),
+            async (webUrl) => {
+              process.env["INPUT_STORAGE-ENDPOINT"] = webUrl;
+
+              await getEdgeStorageConfig();
+            },
+          ),
+        );
+      });
+    });
+
     describe("Invalid storage endpoint", () => {
       it("should throw", async () => {
         process.env["INPUT_STORAGE-ENDPOINT"] = "http://example.com";
@@ -295,12 +310,44 @@ describe("config", () => {
       });
     });
 
+    describe("Valid storage-zone-name", () => {
+      it("should not throw", async () => {
+        await fc.assert(
+          fc.asyncProperty(
+            fc.stringMatching(/^[a-zA-Z0-9-]+$/),
+            async (storageZoneName) => {
+              process.env["INPUT_STORAGE-ZONE-NAME"] = storageZoneName;
+
+              const config = await getEdgeStorageConfig();
+
+              expect(config.storageZoneName).toEqual(storageZoneName);
+            },
+          ),
+        );
+      });
+    });
+
     describe("Invalid storage-zone-name", () => {
-      it("should throw when storage-zone-name contains an slash", async () => {
+      it("should throw when storage-zone-name contains a slash", async () => {
         process.env["INPUT_STORAGE-ZONE-NAME"] = "test/";
 
         await expect(() => getEdgeStorageConfig()).rejects.toThrow(
           InvalidStorageZoneNameError,
+        );
+      });
+
+      it("should throw when storage-zone-name contains something different than a letter, number or dash", async () => {
+        await fc.assert(
+          fc.asyncProperty(
+            fc.stringMatching(/^.*[^a-zA-Z0-9-]+.*$/),
+            async (storageZoneName) => {
+              process.env["INPUT_STORAGE-ZONE-NAME"] = storageZoneName;
+
+              await expect(() => getEdgeStorageConfig()).rejects.toThrow(
+                InvalidStorageZoneNameError,
+              );
+            },
+          ),
         );
       });
     });

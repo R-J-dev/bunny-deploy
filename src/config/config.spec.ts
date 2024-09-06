@@ -253,12 +253,16 @@ describe("config", () => {
       });
     });
 
-    it("should format a concurrency to an int", async () => {
-      process.env.INPUT_CONCURRENCY = "3.6";
+    it("should format a concurrency number string to an int", async () => {
+      await fc.assert(
+        fc.asyncProperty(fc.integer({ min: 1 }), async (concurrency) => {
+          process.env.INPUT_CONCURRENCY = concurrency.toString();
 
-      const config = await getEdgeStorageConfig();
+          const config = await getEdgeStorageConfig();
 
-      expect(config.concurrency).toBe(3);
+          expect(config.concurrency).toBe(concurrency);
+        }),
+      );
     });
 
     describe("Missing required config", () => {
@@ -302,19 +306,41 @@ describe("config", () => {
     });
 
     describe("Invalid concurrency", () => {
-      it("should throw when concurrency is not a number", async () => {
-        process.env.INPUT_CONCURRENCY = "test";
+      it("should throw when concurrency is a negative integer", async () => {
+        process.env.INPUT_CONCURRENCY = "-1";
 
         await expect(() => getEdgeStorageConfig()).rejects.toThrow(
           InvalidIntegerError,
         );
       });
 
-      it("should throw when concurrency is not a positive integer", async () => {
-        process.env.INPUT_CONCURRENCY = "-1";
+      it("should throw when concurrency is a string which is not an integer", async () => {
+        await fc.assert(
+          fc.asyncProperty(
+            fc.string().filter((s) => isNaN(Number(s))),
+            async (invalidConcurrency) => {
+              process.env.INPUT_CONCURRENCY = invalidConcurrency;
 
-        await expect(() => getEdgeStorageConfig()).rejects.toThrow(
-          InvalidIntegerError,
+              await expect(() => getEdgeStorageConfig()).rejects.toThrow(
+                InvalidIntegerError,
+              );
+            },
+          ),
+        );
+      });
+
+      it("should throw when concurrency is a number with decimals", async () => {
+        await fc.assert(
+          fc.asyncProperty(
+            fc.double({ noInteger: true }),
+            async (invalidConcurrency) => {
+              process.env.INPUT_CONCURRENCY = invalidConcurrency.toString();
+
+              await expect(() => getEdgeStorageConfig()).rejects.toThrow(
+                InvalidIntegerError,
+              );
+            },
+          ),
         );
       });
     });

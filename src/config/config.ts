@@ -74,7 +74,7 @@ export const getEdgeStorageConfig = async () => {
     concurrency: await getInputWrapper({
       inputName: "concurrency",
       inputOptions: { required: true },
-      transformInput: async (input: string) => parseInt(input, 10),
+      transformInput: async (input: string) => Number(input),
       validator: validatePositiveInteger,
     }),
     directoryToUpload: await getInputWrapper({

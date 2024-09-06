@@ -37471,8 +37471,8 @@ const purgeCache = async ({ client, pullZoneId, replicationTimeout, }) => {
     const whenDidTheErrorOccurred = "while trying to purge the pull zone cache";
     const unexpectedError = `${whenDidTheErrorOccurred}, an unexpected error occurred`;
     try {
-        logInfo(`Waiting ${replicationTimeout} seconds before purging the cache, to make sure that the storage zones has been replicated.`);
-        await (0,external_timers_promises_namespaceObject.setTimeout)(replicationTimeout * 1000);
+        logInfo(`Waiting ${replicationTimeout} milliseconds before purging the cache, to make sure that the storage zones has been replicated.`);
+        await (0,external_timers_promises_namespaceObject.setTimeout)(replicationTimeout);
         logInfo("Purging the pull zone cache.");
         await client.post(`${pullZoneId}/purgeCache`);
         logInfo("Purging completed.");
@@ -43163,7 +43163,7 @@ class InvalidPathError extends Error {
     }
 }
 class InvalidStorageZoneNameError extends Error {
-    constructor(message = "storage-zone-name should not contain a slash") {
+    constructor(message = "storage-zone-name can only contain letters, numbers and dashes") {
         super(message);
     }
 }
@@ -43262,6 +43262,10 @@ const validateDirectory = async (path) => {
     if (!fileStats.isDirectory())
         throw new InvalidPathError({ invalidPath: path });
 };
+const validateStorageZoneName = async (name) => {
+    if (!/^[a-zA-Z0-9-]+$/.test(name))
+        throw new InvalidStorageZoneNameError();
+};
 
 ;// CONCATENATED MODULE: ./src/config/inputWrapper.ts
 
@@ -43333,7 +43337,6 @@ const removeBeginSlash = async (input) => input.startsWith("/") ? input.slice(1)
 
 
 
-
 const getSecret = async (secretName) => {
     const secret = (0,core.getInput)(secretName, { required: true });
     (0,core.setSecret)(secret);
@@ -43361,7 +43364,7 @@ const getPullZoneConfig = async () => {
     const replicationTimeout = await getInputWrapper({
         inputName: "replication-timeout",
         inputOptions: { required: true },
-        transformInput: async (input) => parseInt(input, 10),
+        transformInput: async (input) => Number(input),
         validator: validateInteger,
         errorLogMessage: "The replication-timeout is not a valid integer.",
     });
@@ -43383,7 +43386,7 @@ const getEdgeStorageConfig = async () => {
         concurrency: await getInputWrapper({
             inputName: "concurrency",
             inputOptions: { required: true },
-            transformInput: async (input) => parseInt(input, 10),
+            transformInput: async (input) => Number(input),
             validator: validatePositiveInteger,
         }),
         directoryToUpload: await getInputWrapper({
@@ -43397,10 +43400,7 @@ const getEdgeStorageConfig = async () => {
         storageZoneName: await getInputWrapper({
             inputName: "storage-zone-name",
             inputOptions: { required: true },
-            validator: async (input) => {
-                if (input.includes("/"))
-                    throw new InvalidStorageZoneNameError();
-            },
+            validator: validateStorageZoneName,
         }),
         targetDirectory: await getInputWrapper({
             inputName: "target-directory",

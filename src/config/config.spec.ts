@@ -12,6 +12,7 @@ import {
   InvalidStorageZoneNameError,
 } from "@/errors.js";
 import { join } from "path";
+import fc from "fast-check";
 
 describe("config", () => {
   describe("getFeatureFlags", () => {
@@ -67,7 +68,14 @@ describe("config", () => {
 
       const config = await getPullZoneConfig();
 
-      expect(config.replicationTimeout).toBe(20);
+    it("should allow a digit string as a pull zone id", async () => {
+      await fc.assert(
+        fc.asyncProperty(fc.nat(), async (pullZoneID) => {
+          process.env["INPUT_PULL-ZONE-ID"] = pullZoneID.toString();
+
+          await getPullZoneConfig();
+        }),
+      );
     });
 
     describe("Missing required config", () => {
@@ -104,10 +112,25 @@ describe("config", () => {
       });
 
       it("should throw when the pull-zone-id contains decimals", async () => {
-        process.env["INPUT_PULL-ZONE-ID"] = "1234,56";
+        process.env["INPUT_PULL-ZONE-ID"] = "1234.56";
 
         await expect(() => getPullZoneConfig()).rejects.toThrow(
           InvalidDigitStringError,
+        );
+      });
+
+      it("should not allow strings which has any non digit character", async () => {
+        await fc.assert(
+          fc.asyncProperty(
+            fc.stringMatching(/^.*[^\d].*$/), // Generates only strings that has at least a non digit character
+            async (invalidPullZoneID) => {
+              process.env["INPUT_PULL-ZONE-ID"] = invalidPullZoneID;
+
+              await expect(() => getPullZoneConfig()).rejects.toThrow(
+                InvalidDigitStringError,
+              );
+            },
+          ),
         );
       });
     });

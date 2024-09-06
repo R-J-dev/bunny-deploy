@@ -63,6 +63,7 @@
     "eslint": "9.9.1",
     "eslint-config-prettier": "9.1.0",
     "express": "4.19.2",
+    "fast-check": "3.22.0",
     "fs-extra": "11.2.0",
     "get-port": "7.1.0",
     "globals": "15.9.0",

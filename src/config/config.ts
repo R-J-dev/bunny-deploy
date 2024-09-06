@@ -50,7 +50,7 @@ export const getPullZoneConfig = async () => {
   const replicationTimeout = await getInputWrapper({
     inputName: "replication-timeout",
     inputOptions: { required: true },
-    transformInput: async (input: string) => parseInt(input, 10),
+    transformInput: async (input: string) => Number(input),
     validator: validateInteger,
     errorLogMessage: "The replication-timeout is not a valid integer.",
   });

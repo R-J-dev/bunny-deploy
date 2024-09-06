@@ -63,10 +63,17 @@ describe("config", () => {
       });
     });
 
-    it("should format replication-timeout to an int", async () => {
-      process.env["INPUT_REPLICATION-TIMEOUT"] = "20.6";
+    it("should format replication-timeout to a number", async () => {
+      await fc.assert(
+        fc.asyncProperty(fc.integer(), async (timeout) => {
+          process.env["INPUT_REPLICATION-TIMEOUT"] = timeout.toString();
 
-      const config = await getPullZoneConfig();
+          const config = await getPullZoneConfig();
+
+          expect(config.replicationTimeout).toBe(timeout);
+        }),
+      );
+    });
 
     it("should allow a digit string as a pull zone id", async () => {
       await fc.assert(
@@ -93,11 +100,34 @@ describe("config", () => {
     });
 
     describe("Invalid replication-timeout", () => {
-      it("should throw when replication-timeout is not a number", async () => {
-        process.env["INPUT_REPLICATION-TIMEOUT"] = "test";
+      it("should throw when replication-timeout is a string which is not an integer", async () => {
+        await fc.assert(
+          fc.asyncProperty(
+            fc.string().filter((s) => isNaN(Number(s))),
+            async (invalidTimeout) => {
+              process.env["INPUT_REPLICATION-TIMEOUT"] = invalidTimeout;
 
-        await expect(() => getPullZoneConfig()).rejects.toThrow(
-          InvalidIntegerError,
+              await expect(() => getPullZoneConfig()).rejects.toThrow(
+                InvalidIntegerError,
+              );
+            },
+          ),
+        );
+      });
+
+      it("should throw when replication-timeout is a number with decimals", async () => {
+        await fc.assert(
+          fc.asyncProperty(
+            fc.double({ noInteger: true }),
+            async (invalidTimeout) => {
+              process.env["INPUT_REPLICATION-TIMEOUT"] =
+                invalidTimeout.toString();
+
+              await expect(() => getPullZoneConfig()).rejects.toThrow(
+                InvalidIntegerError,
+              );
+            },
+          ),
         );
       });
     });

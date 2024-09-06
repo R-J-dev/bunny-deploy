@@ -45,7 +45,7 @@ deploy:
         enable-delete-action: true
         enable-purge-pull-zone: true
         pull-zone-id: "12345"
-        replication-timeout: "15"
+        replication-timeout: "15000"
 ```
 
 ## Config
@@ -101,7 +101,7 @@ deploy:
   <tr>
     <td>replication-timeout</td>
     <td>
-      The amount of seconds to wait before purging the cache. Unfortunately Bunny doesn't provide an api endpoint yet to check if the replicated storage zones are on the latest version (equal to main storage zone). See for more info: <a href="https://support.bunny.net/hc/en-us/articles/360020526159-Understanding-Geo-Replication">Understanding Geo-Replication</a>. As you can read in the before mentioned link, an uploaded file should be replicated to other regions within a couple of seconds. So I think it should be safe to set this to 15 seconds, but check what works best for you.
+      The amount of milliseconds to wait before purging the cache. Unfortunately Bunny doesn't provide an api endpoint yet to check if the replicated storage zones are on the latest version (equal to main storage zone). See for more info: <a href="https://support.bunny.net/hc/en-us/articles/360020526159-Understanding-Geo-Replication">Understanding Geo-Replication</a>. As you can read in the before mentioned link, an uploaded file should be replicated to other regions within a couple of seconds. So I think it should be safe to set this to 15000 milliseconds (15 seconds), but check what works best for you.
     </td>
   </tr>
 </table>
@@ -192,7 +192,7 @@ deploy:
         enable-delete-action: true
         enable-purge-pull-zone: true
         pull-zone-id: "12345"
-        replication-timeout: "15"
+        replication-timeout: "15000"
 ```
 
 ### Purge only
@@ -213,7 +213,7 @@ purge:
         disable-upload: true
         enable-purge-pull-zone: true
         pull-zone-id: "12345"
-        replication-timeout: "15"
+        replication-timeout: "15000"
 ```
 
 ## More detailed information about how this action works

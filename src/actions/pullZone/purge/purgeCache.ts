@@ -12,7 +12,7 @@ interface PurgeCacheProps {
    */
   pullZoneId: string;
   /*
-   * The amount of seconds to wait before purging the cache.
+   * The amount of milliseconds to wait before purging the cache.
    * Unfortunately Bunny doesn't provide an api endpoint yet to check if the replicated storage zones are on the latest version (equal to main storage zone).
    * See for more info: https://support.bunny.net/hc/en-us/articles/360020526159-Understanding-Geo-Replication
    */
@@ -31,9 +31,9 @@ export const purgeCache = async ({
   const unexpectedError = `${whenDidTheErrorOccurred}, an unexpected error occurred`;
   try {
     logInfo(
-      `Waiting ${replicationTimeout} seconds before purging the cache, to make sure that the storage zones has been replicated.`,
+      `Waiting ${replicationTimeout} milliseconds before purging the cache, to make sure that the storage zones has been replicated.`,
     );
-    await setTimeout(replicationTimeout * 1000);
+    await setTimeout(replicationTimeout);
 
     logInfo("Purging the pull zone cache.");
     await client.post(`${pullZoneId}/purgeCache`);

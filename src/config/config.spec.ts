@@ -12,6 +12,7 @@ import {
   InvalidStorageZoneNameError,
 } from "@/errors.js";
 import { join } from "path";
+import fc from "fast-check";
 
 describe("config", () => {
   describe("getFeatureFlags", () => {
@@ -62,12 +63,26 @@ describe("config", () => {
       });
     });
 
-    it("should format replication-timeout to an int", async () => {
-      process.env["INPUT_REPLICATION-TIMEOUT"] = "20.6";
+    it("should format replication-timeout to a number", async () => {
+      await fc.assert(
+        fc.asyncProperty(fc.integer(), async (timeout) => {
+          process.env["INPUT_REPLICATION-TIMEOUT"] = timeout.toString();
 
-      const config = await getPullZoneConfig();
+          const config = await getPullZoneConfig();
 
-      expect(config.replicationTimeout).toBe(20);
+          expect(config.replicationTimeout).toBe(timeout);
+        }),
+      );
+    });
+
+    it("should allow a digit string as a pull zone id", async () => {
+      await fc.assert(
+        fc.asyncProperty(fc.nat(), async (pullZoneID) => {
+          process.env["INPUT_PULL-ZONE-ID"] = pullZoneID.toString();
+
+          await getPullZoneConfig();
+        }),
+      );
     });
 
     describe("Missing required config", () => {
@@ -85,11 +100,34 @@ describe("config", () => {
     });
 
     describe("Invalid replication-timeout", () => {
-      it("should throw when replication-timeout is not a number", async () => {
-        process.env["INPUT_REPLICATION-TIMEOUT"] = "test";
+      it("should throw when replication-timeout is a string which is not an integer", async () => {
+        await fc.assert(
+          fc.asyncProperty(
+            fc.string().filter((s) => isNaN(Number(s))),
+            async (invalidTimeout) => {
+              process.env["INPUT_REPLICATION-TIMEOUT"] = invalidTimeout;
 
-        await expect(() => getPullZoneConfig()).rejects.toThrow(
-          InvalidIntegerError,
+              await expect(() => getPullZoneConfig()).rejects.toThrow(
+                InvalidIntegerError,
+              );
+            },
+          ),
+        );
+      });
+
+      it("should throw when replication-timeout is a number with decimals", async () => {
+        await fc.assert(
+          fc.asyncProperty(
+            fc.double({ noInteger: true }),
+            async (invalidTimeout) => {
+              process.env["INPUT_REPLICATION-TIMEOUT"] =
+                invalidTimeout.toString();
+
+              await expect(() => getPullZoneConfig()).rejects.toThrow(
+                InvalidIntegerError,
+              );
+            },
+          ),
         );
       });
     });
@@ -104,10 +142,25 @@ describe("config", () => {
       });
 
       it("should throw when the pull-zone-id contains decimals", async () => {
-        process.env["INPUT_PULL-ZONE-ID"] = "1234,56";
+        process.env["INPUT_PULL-ZONE-ID"] = "1234.56";
 
         await expect(() => getPullZoneConfig()).rejects.toThrow(
           InvalidDigitStringError,
+        );
+      });
+
+      it("should not allow strings which has any non digit character", async () => {
+        await fc.assert(
+          fc.asyncProperty(
+            fc.stringMatching(/^.*[^\d].*$/), // Generates only strings that has at least a non digit character
+            async (invalidPullZoneID) => {
+              process.env["INPUT_PULL-ZONE-ID"] = invalidPullZoneID;
+
+              await expect(() => getPullZoneConfig()).rejects.toThrow(
+                InvalidDigitStringError,
+              );
+            },
+          ),
         );
       });
     });
@@ -200,12 +253,16 @@ describe("config", () => {
       });
     });
 
-    it("should format a concurrency to an int", async () => {
-      process.env.INPUT_CONCURRENCY = "3.6";
+    it("should format a concurrency number string to an int", async () => {
+      await fc.assert(
+        fc.asyncProperty(fc.integer({ min: 1 }), async (concurrency) => {
+          process.env.INPUT_CONCURRENCY = concurrency.toString();
 
-      const config = await getEdgeStorageConfig();
+          const config = await getEdgeStorageConfig();
 
-      expect(config.concurrency).toBe(3);
+          expect(config.concurrency).toBe(concurrency);
+        }),
+      );
     });
 
     describe("Missing required config", () => {
@@ -228,6 +285,21 @@ describe("config", () => {
       );
     });
 
+    describe("Valid storage endpoint", () => {
+      it("should not throw", async () => {
+        await fc.assert(
+          fc.asyncProperty(
+            fc.webUrl({ validSchemes: ["https"] }),
+            async (webUrl) => {
+              process.env["INPUT_STORAGE-ENDPOINT"] = webUrl;
+
+              await getEdgeStorageConfig();
+            },
+          ),
+        );
+      });
+    });
+
     describe("Invalid storage endpoint", () => {
       it("should throw", async () => {
         process.env["INPUT_STORAGE-ENDPOINT"] = "http://example.com";
@@ -238,30 +310,84 @@ describe("config", () => {
       });
     });
 
+    describe("Valid storage-zone-name", () => {
+      it("should not throw", async () => {
+        await fc.assert(
+          fc.asyncProperty(
+            fc.stringMatching(/^[a-zA-Z0-9-]+$/),
+            async (storageZoneName) => {
+              process.env["INPUT_STORAGE-ZONE-NAME"] = storageZoneName;
+
+              const config = await getEdgeStorageConfig();
+
+              expect(config.storageZoneName).toEqual(storageZoneName);
+            },
+          ),
+        );
+      });
+    });
+
     describe("Invalid storage-zone-name", () => {
-      it("should throw when storage-zone-name contains an slash", async () => {
+      it("should throw when storage-zone-name contains a slash", async () => {
         process.env["INPUT_STORAGE-ZONE-NAME"] = "test/";
 
         await expect(() => getEdgeStorageConfig()).rejects.toThrow(
           InvalidStorageZoneNameError,
         );
       });
+
+      it("should throw when storage-zone-name contains something different than a letter, number or dash", async () => {
+        await fc.assert(
+          fc.asyncProperty(
+            fc.stringMatching(/^.*[^a-zA-Z0-9-]+.*$/),
+            async (storageZoneName) => {
+              process.env["INPUT_STORAGE-ZONE-NAME"] = storageZoneName;
+
+              await expect(() => getEdgeStorageConfig()).rejects.toThrow(
+                InvalidStorageZoneNameError,
+              );
+            },
+          ),
+        );
+      });
     });
 
     describe("Invalid concurrency", () => {
-      it("should throw when concurrency is not a number", async () => {
-        process.env.INPUT_CONCURRENCY = "test";
+      it("should throw when concurrency is a negative integer", async () => {
+        process.env.INPUT_CONCURRENCY = "-1";
 
         await expect(() => getEdgeStorageConfig()).rejects.toThrow(
           InvalidIntegerError,
         );
       });
 
-      it("should throw when concurrency is not a positive integer", async () => {
-        process.env.INPUT_CONCURRENCY = "-1";
+      it("should throw when concurrency is a string which is not an integer", async () => {
+        await fc.assert(
+          fc.asyncProperty(
+            fc.string().filter((s) => isNaN(Number(s))),
+            async (invalidConcurrency) => {
+              process.env.INPUT_CONCURRENCY = invalidConcurrency;
 
-        await expect(() => getEdgeStorageConfig()).rejects.toThrow(
-          InvalidIntegerError,
+              await expect(() => getEdgeStorageConfig()).rejects.toThrow(
+                InvalidIntegerError,
+              );
+            },
+          ),
+        );
+      });
+
+      it("should throw when concurrency is a number with decimals", async () => {
+        await fc.assert(
+          fc.asyncProperty(
+            fc.double({ noInteger: true }),
+            async (invalidConcurrency) => {
+              process.env.INPUT_CONCURRENCY = invalidConcurrency.toString();
+
+              await expect(() => getEdgeStorageConfig()).rejects.toThrow(
+                InvalidIntegerError,
+              );
+            },
+          ),
         );
       });
     });

@@ -49,7 +49,7 @@ describe("main", () => {
     getPullZoneConfigSpy.mockResolvedValueOnce({
       pullZoneClient: vi.fn(),
       pullZoneId: 12345,
-      replicationTimeout: 15,
+      replicationTimeout: 15000,
     });
     fileInfoSpy.mockResolvedValue({
       unknownRemoteFiles: new Set<string>(),

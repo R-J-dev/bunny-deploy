@@ -43,6 +43,10 @@
       "ignoreCves": [
         "CVE-2024-4067"
       ]
+    },
+    "overrides": {
+      "vite@>=5.2.0 <5.2.14": ">=5.2.14",
+      "rollup@>=4.0.0 <4.22.4": ">=4.22.4"
     }
   },
   "devDependencies": {

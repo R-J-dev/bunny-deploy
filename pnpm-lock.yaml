@@ -19,8 +19,8 @@ importers:
         specifier: 14.4.2
         version: 14.4.2
       modern-async:
-        specifier: 2.0.0
-        version: 2.0.0
+        specifier: 2.0.2
+        version: 2.0.2
       p-retry:
         specifier: 6.2.0
         version: 6.2.0
@@ -2118,8 +2118,8 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
-  modern-async@2.0.0:
-    resolution: {integrity: sha512-Ta/oj3nQm2nEBU3VCADoeTEytjTpugrqdPk6qbbM1mJuLLUkm9541oWnszGmJHIOJmRjsPydKUj1AaDm4dlrlw==}
+  modern-async@2.0.2:
+    resolution: {integrity: sha512-50awTzKVPKbVbcKa/P4enLSK/qvGV8kH8OFaKrAdqvzz+P+Y1do0XZWo5BeGHv35d8MTr/uULCmDVCoH/O1BNg==}
 
   ms@2.0.0:
     resolution: {integrity: sha512-Tpp60P6IUJDTuOq/5Z8cdskzJujfwqfOTkrwIwj7IRISpnkJnT6SyJ4PCPnGMoFjC9ddhal5KVIYtAt97ix05A==}
@@ -5263,7 +5263,7 @@ snapshots:
 
   mkdirp@1.0.4: {}
 
-  modern-async@2.0.0:
+  modern-async@2.0.2:
     dependencies:
       core-js-pure: 3.37.1
       nanoassert: 2.0.0

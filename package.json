@@ -60,7 +60,7 @@
     "@types/express": "4.17.21",
     "@types/fs-extra": "11.0.4",
     "@types/node": "20.16.5",
-    "@typescript-eslint/eslint-plugin": "8.5.0",
+    "@typescript-eslint/eslint-plugin": "8.8.1",
     "@typescript-eslint/parser": "8.8.0",
     "@vercel/ncc": "0.38.1",
     "commitlint": "19.4.1",

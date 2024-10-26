@@ -59,7 +59,7 @@
     "fast-check": "3.22.0",
     "fs-extra": "11.2.0",
     "get-port": "7.1.0",
-    "globals": "15.9.0",
+    "globals": "15.11.0",
     "license-checker-rseidelsohn": "4.4.2",
     "nock": "13.5.5",
     "prettier": "3.3.3",

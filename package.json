@@ -52,7 +52,7 @@
     "@typescript-eslint/eslint-plugin": "8.5.0",
     "@typescript-eslint/parser": "8.8.0",
     "@vercel/ncc": "0.38.1",
-    "commitlint": "19.4.1",
+    "commitlint": "19.5.0",
     "eslint": "9.9.1",
     "eslint-config-prettier": "9.1.0",
     "express": "4.21.0",

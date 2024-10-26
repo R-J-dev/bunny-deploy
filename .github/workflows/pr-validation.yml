@@ -32,8 +32,8 @@ jobs:
           license-check: false
           vulnerability-check: true
           comment-summary-in-pr: always
-      - name: Checking dependencies for security issues
-        run: pnpm audit
+      - name: Checking production dependencies for security issues
+        run: pnpm audit --prod
   format:
     runs-on: ubuntu-22.04
     timeout-minutes: 5

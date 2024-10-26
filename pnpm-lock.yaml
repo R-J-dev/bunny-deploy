@@ -4,10 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-overrides:
-  vite@>=5.2.0 <5.2.14: '>=5.2.14'
-  rollup@>=4.0.0 <4.22.4: '>=4.22.4'
-
 importers:
 
   .:
@@ -853,7 +849,7 @@ packages:
     peerDependencies:
       '@vitest/spy': 2.1.2
       msw: ^2.3.5
-      vite: '>=5.2.14'
+      vite: ^5.0.0
     peerDependenciesMeta:
       msw:
         optional: true

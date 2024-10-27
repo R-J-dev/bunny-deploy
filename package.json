@@ -71,7 +71,7 @@
   },
   "dependencies": {
     "@actions/core": "1.11.1",
-    "got": "14.4.2",
+    "got": "14.4.3",
     "modern-async": "2.0.4",
     "p-retry": "6.2.0",
     "zod": "3.23.8"

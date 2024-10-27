@@ -29652,7 +29652,7 @@ module.exports = {
 /***/ ((module, __unused_webpack___webpack_exports__, __nccwpck_require__) => {
 
 __nccwpck_require__.a(module, async (__webpack_handle_async_dependencies__, __webpack_async_result__) => { try {
-/* harmony import */ var _main_js__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(774);
+/* harmony import */ var _main_js__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(4842);
 
 await (0,_main_js__WEBPACK_IMPORTED_MODULE_0__/* .run */ .K)();
 
@@ -29661,7 +29661,7 @@ __webpack_async_result__();
 
 /***/ }),
 
-/***/ 774:
+/***/ 4842:
 /***/ ((__unused_webpack_module, __webpack_exports__, __nccwpck_require__) => {
 
 
@@ -32043,7 +32043,7 @@ async function asyncTimeoutPrecise (fct, amount) {
 
 
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/@sindresorhus+is@7.0.0/node_modules/@sindresorhus/is/distribution/index.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/@sindresorhus+is@7.0.1/node_modules/@sindresorhus/is/distribution/index.js
 const typedArrayTypeNames = [
     'Int8Array',
     'Uint8Array',
@@ -32889,8 +32889,10 @@ function assertArray(value, assertion, message) {
         throw new TypeError(message ?? typeErrorMessage('Array', value));
     }
     if (assertion) {
-        // eslint-disable-next-line unicorn/no-array-for-each, unicorn/no-array-callback-reference
-        value.forEach(assertion);
+        for (const element of value) {
+            // @ts-expect-error: "Assertions require every name in the call target to be declared with an explicit type annotation."
+            assertion(element, message);
+        }
     }
 }
 function assertArrayBuffer(value, message) {
@@ -33343,7 +33345,7 @@ function assertWhitespaceString(value, message) {
 }
 /* harmony default export */ const distribution = (is);
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.2/node_modules/got/dist/source/core/errors.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.3/node_modules/got/dist/source/core/errors.js
 
 // A hacky check to prevent circular references.
 function isRequest(x) {
@@ -39053,7 +39055,7 @@ getContentLength_fn = function() {
 };
 
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.2/node_modules/got/dist/source/core/parse-link-header.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.3/node_modules/got/dist/source/core/parse-link-header.js
 function parseLinkHeader(link) {
     const parsed = [];
     const items = link.split(',');
@@ -39088,7 +39090,7 @@ function parseLinkHeader(link) {
     return parsed;
 }
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.2/node_modules/got/dist/source/core/options.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.3/node_modules/got/dist/source/core/options.js
 
 
 
@@ -40725,6 +40727,8 @@ class Options {
     }
 }
 
+;// CONCATENATED MODULE: external "node:timers/promises"
+const external_node_timers_promises_namespaceObject = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:timers/promises");
 // EXTERNAL MODULE: external "node:events"
 var external_node_events_ = __nccwpck_require__(5673);
 ;// CONCATENATED MODULE: ./node_modules/.pnpm/p-cancelable@4.0.1/node_modules/p-cancelable/index.js
@@ -42122,13 +42126,13 @@ const onResponse = 'onResponse';
 //# sourceMappingURL=index.js.map
 // EXTERNAL MODULE: ./node_modules/.pnpm/decompress-response@6.0.0/node_modules/decompress-response/index.js
 var decompress_response = __nccwpck_require__(7748);
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.2/node_modules/got/dist/source/core/utils/is-form-data.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.3/node_modules/got/dist/source/core/utils/is-form-data.js
 
 function is_form_data_isFormData(body) {
     return distribution.nodeStream(body) && distribution["function"](body.getBoundary);
 }
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.2/node_modules/got/dist/source/core/utils/get-body-size.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.3/node_modules/got/dist/source/core/utils/get-body-size.js
 
 
 
@@ -42152,7 +42156,7 @@ async function getBodySize(body, headers) {
     return undefined;
 }
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.2/node_modules/got/dist/source/core/utils/proxy-events.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.3/node_modules/got/dist/source/core/utils/proxy-events.js
 function proxyEvents(from, to, events) {
     const eventFunctions = {};
     for (const event of events) {
@@ -42171,7 +42175,7 @@ function proxyEvents(from, to, events) {
 
 ;// CONCATENATED MODULE: external "node:net"
 const external_node_net_namespaceObject = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:net");
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.2/node_modules/got/dist/source/core/utils/unhandle.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.3/node_modules/got/dist/source/core/utils/unhandle.js
 // When attaching listeners, it's very easy to forget about them.
 // Especially if you do error handling and set timeouts.
 // So instead of checking if it's proper to throw an error on every timeout ever,
@@ -42193,7 +42197,7 @@ function unhandle() {
     };
 }
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.2/node_modules/got/dist/source/core/timed-out.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.3/node_modules/got/dist/source/core/timed-out.js
 
 
 const reentry = Symbol('reentry');
@@ -42324,7 +42328,7 @@ function timedOut(request, delays, options) {
     return cancelTimeouts;
 }
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.2/node_modules/got/dist/source/core/utils/url-to-options.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.3/node_modules/got/dist/source/core/utils/url-to-options.js
 
 function urlToOptions(url) {
     // Cast to URL
@@ -42348,7 +42352,7 @@ function urlToOptions(url) {
     return options;
 }
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.2/node_modules/got/dist/source/core/utils/weakable-map.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.3/node_modules/got/dist/source/core/utils/weakable-map.js
 class WeakableMap {
     weakMap;
     map;
@@ -42378,7 +42382,7 @@ class WeakableMap {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.2/node_modules/got/dist/source/core/calculate-retry-delay.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.3/node_modules/got/dist/source/core/calculate-retry-delay.js
 const calculateRetryDelay = ({ attemptCount, retryOptions, error, retryAfter, computedValue, }) => {
     if (error.name === 'RetryError') {
         return 1;
@@ -42409,7 +42413,7 @@ const calculateRetryDelay = ({ attemptCount, retryOptions, error, retryAfter, co
 };
 /* harmony default export */ const calculate_retry_delay = (calculateRetryDelay);
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.2/node_modules/got/dist/source/core/response.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.3/node_modules/got/dist/source/core/response.js
 
 const isResponseOk = (response) => {
     const { statusCode } = response;
@@ -42452,19 +42456,19 @@ const parseBody = (response, responseType, parseJson, encoding) => {
     }, response);
 };
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.2/node_modules/got/dist/source/core/utils/is-client-request.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.3/node_modules/got/dist/source/core/utils/is-client-request.js
 function isClientRequest(clientRequest) {
     return clientRequest.writable && !clientRequest.writableEnded;
 }
 /* harmony default export */ const is_client_request = (isClientRequest);
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.2/node_modules/got/dist/source/core/utils/is-unix-socket-url.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.3/node_modules/got/dist/source/core/utils/is-unix-socket-url.js
 // eslint-disable-next-line @typescript-eslint/naming-convention
 function isUnixSocketURL(url) {
     return url.protocol === 'unix:' || url.hostname === 'unix';
 }
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.2/node_modules/got/dist/source/core/index.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.3/node_modules/got/dist/source/core/index.js
 
 
 
@@ -43199,13 +43203,13 @@ class Request extends external_node_stream_.Duplex {
                                 }
                             })();
                         }
-                        else if (event === 'abort') {
+                        else if (event === 'abort' || event === 'destroy') {
                             // The empty catch is needed here in case when
                             // it rejects before it's `await`ed in `_makeRequest`.
                             (async () => {
                                 try {
                                     const request = (await result);
-                                    request.once('abort', handler);
+                                    request.once(event, handler);
                                 }
                                 catch { }
                             })();
@@ -43465,7 +43469,7 @@ class Request extends external_node_stream_.Duplex {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.2/node_modules/got/dist/source/as-promise/types.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.3/node_modules/got/dist/source/as-promise/types.js
 
 /**
 An error to be thrown when the request is aborted with `.cancel()`.
@@ -43484,7 +43488,7 @@ class types_CancelError extends RequestError {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.2/node_modules/got/dist/source/as-promise/index.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.3/node_modules/got/dist/source/as-promise/index.js
 
 
 
@@ -43650,15 +43654,12 @@ function asPromise(firstRequest) {
     return promise;
 }
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.2/node_modules/got/dist/source/create.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.3/node_modules/got/dist/source/create.js
 
 
 
 
-// The `delay` package weighs 10KB (!)
-const delay = async (ms) => new Promise(resolve => {
-    setTimeout(resolve, ms);
-});
+
 const isGotInstance = (value) => distribution["function"](value);
 const aliases = [
     'get',
@@ -43759,7 +43760,7 @@ const create = (defaults) => {
         while (numberOfRequests < pagination.requestLimit) {
             if (numberOfRequests !== 0) {
                 // eslint-disable-next-line no-await-in-loop
-                await delay(pagination.backoff);
+                await (0,external_node_timers_promises_namespaceObject.setTimeout)(pagination.backoff);
             }
             // eslint-disable-next-line no-await-in-loop
             const response = (await got(undefined, undefined, normalizedOptions));
@@ -43835,7 +43836,7 @@ const create = (defaults) => {
 };
 /* harmony default export */ const source_create = (create);
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.2/node_modules/got/dist/source/index.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/got@14.4.3/node_modules/got/dist/source/index.js
 
 
 const defaults = {

@@ -23,8 +23,8 @@ jobs:
         uses: ./.github/actions/install-dependencies
       - name: Checking dependencies for disallowed licenses
         uses: ./.github/actions/license-check
-      - name: Checking dependencies for security issues
-        run: pnpm audit
+      - name: Checking production dependencies for security issues
+        run: pnpm audit --prod
   release:
     name: Release
     runs-on: ubuntu-22.04

@@ -31,8 +31,8 @@ importers:
         specifier: 19.5.0
         version: 19.5.0
       '@commitlint/format':
-        specifier: 19.3.0
-        version: 19.3.0
+        specifier: 19.5.0
+        version: 19.5.0
       '@commitlint/types':
         specifier: 19.5.0
         version: 19.5.0
@@ -165,10 +165,6 @@ packages:
 
   '@commitlint/execute-rule@19.5.0':
     resolution: {integrity: sha512-aqyGgytXhl2ejlk+/rfgtwpPexYyri4t8/n4ku6rRJoRhGZpLFMqrZ+YaubeGysCP6oz4mMA34YSTaSOKEeNrg==}
-    engines: {node: '>=v18'}
-
-  '@commitlint/format@19.3.0':
-    resolution: {integrity: sha512-luguk5/aF68HiF4H23ACAfk8qS8AHxl4LLN5oxPc24H+2+JRPsNr1OS3Gaea0CrH7PKhArBMKBz5RX9sA5NtTg==}
     engines: {node: '>=v18'}
 
   '@commitlint/format@19.5.0':
@@ -3157,11 +3153,6 @@ snapshots:
       lodash.upperfirst: 4.3.1
 
   '@commitlint/execute-rule@19.5.0': {}
-
-  '@commitlint/format@19.3.0':
-    dependencies:
-      '@commitlint/types': 19.5.0
-      chalk: 5.3.0
 
   '@commitlint/format@19.5.0':
     dependencies:

@@ -29652,7 +29652,7 @@ module.exports = {
 /***/ ((module, __unused_webpack___webpack_exports__, __nccwpck_require__) => {
 
 __nccwpck_require__.a(module, async (__webpack_handle_async_dependencies__, __webpack_async_result__) => { try {
-/* harmony import */ var _main_js__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(7635);
+/* harmony import */ var _main_js__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(3326);
 
 await (0,_main_js__WEBPACK_IMPORTED_MODULE_0__/* .run */ .e)();
 
@@ -29661,7 +29661,7 @@ __webpack_async_result__();
 
 /***/ }),
 
-/***/ 7635:
+/***/ 3326:
 /***/ ((__unused_webpack_module, __webpack_exports__, __nccwpck_require__) => {
 
 
@@ -33530,7 +33530,7 @@ function isNetworkError(error) {
 	return errorMessages.has(error.message);
 }
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/p-retry@6.2.0/node_modules/p-retry/index.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/p-retry@6.2.1/node_modules/p-retry/index.js
 
 
 
@@ -33562,12 +33562,10 @@ const decorateErrorWithCounts = (error, attemptNumber, options) => {
 
 async function pRetry(input, options) {
 	return new Promise((resolve, reject) => {
-		options = {
-			onFailedAttempt() {},
-			retries: 10,
-			shouldRetry: () => true,
-			...options,
-		};
+		options = {...options};
+		options.onFailedAttempt ??= () => {};
+		options.shouldRetry ??= () => true;
+		options.retries ??= 10;
 
 		const operation = retry.operation(options);
 

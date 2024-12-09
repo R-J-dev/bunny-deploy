@@ -51,7 +51,7 @@
     "@types/node": "20.16.5",
     "@typescript-eslint/eslint-plugin": "8.17.0",
     "@typescript-eslint/parser": "8.17.0",
-    "@vercel/ncc": "0.38.2",
+    "@vercel/ncc": "0.38.3",
     "commitlint": "19.6.0",
     "conventional-changelog-angular": "8.0.0",
     "eslint": "9.16.0",

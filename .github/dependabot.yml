@@ -2,6 +2,9 @@
 version: 2
 updates:
   - package-ecosystem: "npm" # See documentation for possible values
+    commit-message:
+      prefix: "build(deps)"
+      prefix-development: "build(deps-dev)"
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
@@ -23,6 +26,8 @@ updates:
           - "minor"
           - "patch"
   - package-ecosystem: "github-actions"
+    commit-message:
+      prefix: "ci(deps-dev)"
     directory: "/"
     schedule:
       interval: "weekly"

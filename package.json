@@ -39,7 +39,7 @@
     ".": "./dist/index.js"
   },
   "devDependencies": {
-    "@commitlint/cli": "19.6.0",
+    "@commitlint/cli": "19.6.1",
     "@commitlint/config-angular": "19.6.0",
     "@commitlint/format": "19.5.0",
     "@commitlint/types": "19.5.0",
@@ -52,7 +52,7 @@
     "@typescript-eslint/eslint-plugin": "8.18.2",
     "@typescript-eslint/parser": "8.18.2",
     "@vercel/ncc": "0.38.3",
-    "commitlint": "19.6.0",
+    "commitlint": "19.6.1",
     "conventional-changelog-angular": "8.0.0",
     "eslint": "9.17.0",
     "eslint-config-prettier": "9.1.0",

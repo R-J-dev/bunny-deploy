@@ -8,10 +8,7 @@ In this document you can find some instructions to get started.
 See getting started for more info about each command.
 
 ```bash
-nvm install
-nvm use
-# Will automatically install the configured pnpm version when you run a pnpm command
-corepack enable
+proto install -c local # https://moonrepo.dev/docs/proto/install
 pnpm install
 
 # most important commands:
@@ -23,30 +20,16 @@ pnpm format
 
 ## Getting started
 
-nvm is used in this project to install and use the right node version. \
-If you don't have nvm, see: <https://github.com/nvm-sh/nvm#installing-and-updating>
+proto is used in this project to install and use the right node and pnpm version. \
+If you don't have proto, see: [Proto install docs](https://moonrepo.dev/docs/proto/install).
 
-First we need to install the right node version:
-
-```bash
-nvm install
-```
-
-Then we need to make use of the installed version by running:
+First we need to install the right node and pnpm version:
 
 ```bash
-nvm use
-# Or to set default node version (node version listed in .nvmrc file):
-nvm alias default SPECIFY_NODE_VERSION_HERE
+proto install -c local
 ```
 
 pnpm is used to manage the used packages in this project.
-You can run below corepack command, which will automatically install the configured pnpm version when you run a pnpm command.
-
-```bash
-corepack enable pnpm
-```
-
 To install the required dependencies, run:
 
 ```bash

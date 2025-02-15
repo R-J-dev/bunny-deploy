@@ -3,14 +3,10 @@ description: "Installs dependencies"
 runs:
   using: "composite"
   steps:
-    - name: Install pnpm
-      shell: bash
-      run: corepack enable pnpm && pnpm -v
-    - name: Setup Node.js environment
-      uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # pin@v4.0.2
+    - name: Install required tooling
+      uses: moonrepo/setup-toolchain@c8a71c0e9bfd911b6e1caf456d3a2e3365ec86a4
       with:
-        node-version-file: ".nvmrc"
-        cache: "pnpm"
+        auto-install: true
     - name: Install dependencies
       shell: bash
       run: pnpm install --frozen-lockfile

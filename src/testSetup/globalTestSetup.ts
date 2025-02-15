@@ -1,5 +1,5 @@
 import getPort from "get-port";
-import type { GlobalSetupContext } from "vitest/node";
+import type { TestProject } from "vitest/node";
 import {
   deleteTestUploads,
   isServerUp,
@@ -33,7 +33,7 @@ declare module "vitest" {
 
 let testServer: ReturnType<typeof startTestServer> | undefined = undefined;
 
-export const setup = async ({ provide }: GlobalSetupContext) => {
+export const setup = async ({ provide }: TestProject) => {
   const port = await getPort({ host: "localhost" });
   const testServerUrl = `http://localhost:${port}`;
   provide("testServerUrl", testServerUrl);

@@ -49,8 +49,8 @@
     "@types/express": "5.0.0",
     "@types/fs-extra": "11.0.4",
     "@types/node": "20.17.19",
-    "@typescript-eslint/eslint-plugin": "8.24.0",
-    "@typescript-eslint/parser": "8.24.0",
+    "@typescript-eslint/eslint-plugin": "8.24.1",
+    "@typescript-eslint/parser": "8.24.1",
     "@vercel/ncc": "0.38.3",
     "commitlint": "19.7.1",
     "conventional-changelog-angular": "8.0.0",
@@ -67,7 +67,7 @@
     "semantic-release": "24.2.1",
     "ts-node": "10.9.2",
     "typescript": "5.7.3",
-    "typescript-eslint": "8.24.0",
+    "typescript-eslint": "8.24.1",
     "vitest": "3.0.5"
   },
   "dependencies": {

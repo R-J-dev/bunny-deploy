@@ -29660,7 +29660,7 @@ module.exports = {
 /***/ ((module, __unused_webpack___webpack_exports__, __nccwpck_require__) => {
 
 __nccwpck_require__.a(module, async (__webpack_handle_async_dependencies__, __webpack_async_result__) => { try {
-/* harmony import */ var _main_js__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(5407);
+/* harmony import */ var _main_js__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(2562);
 
 await (0,_main_js__WEBPACK_IMPORTED_MODULE_0__/* .run */ .e)();
 
@@ -29669,7 +29669,7 @@ __webpack_async_result__();
 
 /***/ }),
 
-/***/ 5407:
+/***/ 2562:
 /***/ ((__unused_webpack_module, __webpack_exports__, __nccwpck_require__) => {
 
 
@@ -33756,7 +33756,7 @@ const getPathWithoutLeadingSlash = (path) => {
     return path.startsWith("/") ? path.slice(1) : path;
 };
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@3.24.1/node_modules/zod/lib/index.mjs
+;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@3.24.2/node_modules/zod/lib/index.mjs
 var util;
 (function (util) {
     util.assertEqual = (val) => val;
@@ -37903,7 +37903,23 @@ ZodReadonly.create = (type, params) => {
         ...processCreateParams(params),
     });
 };
-function custom(check, params = {}, 
+////////////////////////////////////////
+////////////////////////////////////////
+//////////                    //////////
+//////////      z.custom      //////////
+//////////                    //////////
+////////////////////////////////////////
+////////////////////////////////////////
+function cleanParams(params, data) {
+    const p = typeof params === "function"
+        ? params(data)
+        : typeof params === "string"
+            ? { message: params }
+            : params;
+    const p2 = typeof p === "string" ? { message: p } : p;
+    return p2;
+}
+function custom(check, _params = {}, 
 /**
  * @deprecated
  *
@@ -37918,16 +37934,23 @@ fatal) {
     if (check)
         return ZodAny.create().superRefine((data, ctx) => {
             var _a, _b;
-            if (!check(data)) {
-                const p = typeof params === "function"
-                    ? params(data)
-                    : typeof params === "string"
-                        ? { message: params }
-                        : params;
-                const _fatal = (_b = (_a = p.fatal) !== null && _a !== void 0 ? _a : fatal) !== null && _b !== void 0 ? _b : true;
-                const p2 = typeof p === "string" ? { message: p } : p;
-                ctx.addIssue({ code: "custom", ...p2, fatal: _fatal });
+            const r = check(data);
+            if (r instanceof Promise) {
+                return r.then((r) => {
+                    var _a, _b;
+                    if (!r) {
+                        const params = cleanParams(_params, data);
+                        const _fatal = (_b = (_a = params.fatal) !== null && _a !== void 0 ? _a : fatal) !== null && _b !== void 0 ? _b : true;
+                        ctx.addIssue({ code: "custom", ...params, fatal: _fatal });
+                    }
+                });
             }
+            if (!r) {
+                const params = cleanParams(_params, data);
+                const _fatal = (_b = (_a = params.fatal) !== null && _a !== void 0 ? _a : fatal) !== null && _b !== void 0 ? _b : true;
+                ctx.addIssue({ code: "custom", ...params, fatal: _fatal });
+            }
+            return;
         });
     return ZodAny.create();
 }

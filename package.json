@@ -63,7 +63,7 @@
     "globals": "16.0.0",
     "license-checker-rseidelsohn": "4.4.2",
     "nock": "14.0.1",
-    "prettier": "3.5.2",
+    "prettier": "3.5.3",
     "semantic-release": "24.2.3",
     "ts-node": "10.9.2",
     "typescript": "5.7.3",

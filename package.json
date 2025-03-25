@@ -46,7 +46,7 @@
     "@eslint/eslintrc": "3.2.0",
     "@eslint/js": "9.20.0",
     "@types/eslint__js": "8.42.3",
-    "@types/express": "5.0.0",
+    "@types/express": "5.0.1",
     "@types/fs-extra": "11.0.4",
     "@types/node": "20.17.19",
     "@typescript-eslint/eslint-plugin": "8.24.1",

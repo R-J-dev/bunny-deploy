@@ -84,8 +84,8 @@ importers:
         specifier: 4.21.2
         version: 4.21.2
       fast-check:
-        specifier: 4.0.0
-        version: 4.0.0
+        specifier: 4.0.1
+        version: 4.0.1
       fs-extra:
         specifier: 11.3.0
         version: 11.3.0
@@ -1344,8 +1344,8 @@ packages:
     resolution: {integrity: sha512-28HqgMZAmih1Czt9ny7qr6ek2qddF4FclbMzwhCREB6OFfH+rXAnuNCwo1/wFvrtbgsQDb4kSbX9de9lFbrXnA==}
     engines: {node: '>= 0.10.0'}
 
-  fast-check@4.0.0:
-    resolution: {integrity: sha512-aXLyLemZ7qhLNn2oq+YpjT2Xed21+i29WGAYuyrGbU4r8oinB3i4XR4e62O3NY6qmm5qHEDoc/7d+gMsri3AfA==}
+  fast-check@4.0.1:
+    resolution: {integrity: sha512-Z91jcH02ySQBQlKrCIs3tKTEHdkzOqQhHW5Mg4aZRo4lbI39a28jrFlik6FaRUNzm823VDDTtAi5AEV6lZZprQ==}
     engines: {node: '>=12.17.0'}
 
   fast-content-type-parse@2.0.1:
@@ -4218,7 +4218,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  fast-check@4.0.0:
+  fast-check@4.0.1:
     dependencies:
       pure-rand: 7.0.1
 

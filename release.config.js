@@ -6,9 +6,8 @@ const config = {
     [
       "@semantic-release/commit-analyzer",
       {
-        preset: "angular",
+        preset: "conventionalcommits",
         releaseRules: [
-          // Default rules
           { breaking: true, release: "major" },
           { revert: true, release: "patch" },
           { type: "feat", release: "minor" },
@@ -19,7 +18,32 @@ const config = {
         ],
       },
     ],
-    "@semantic-release/release-notes-generator",
+    [
+      "@semantic-release/release-notes-generator",
+      {
+        preset: "conventionalcommits",
+        presetConfig: {
+          types: [
+            { type: "build", section: "Build", hidden: true },
+            {
+              type: "build(deps)",
+              section: "Dependency updates",
+              hidden: false,
+            },
+            { type: "chore", section: "Chores", hidden: true },
+            { type: "ci", section: "CI/CD", hidden: true },
+            { type: "docs", section: "Docs", hidden: false },
+            { type: "feat", section: "Features", hidden: false },
+            { type: "fix", section: "Bug Fixes", hidden: false },
+            { type: "perf", section: "Performance", hidden: false },
+            { type: "refactor", section: "Refactor", hidden: true },
+            { type: "revert", section: "Reverts", hidden: false },
+            { type: "style", section: "Code Style", hidden: true },
+            { type: "test", section: "Tests", hidden: true },
+          ],
+        },
+      },
+    ],
     "@semantic-release/github",
   ],
   dryRun: false,

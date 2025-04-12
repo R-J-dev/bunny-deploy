@@ -1,7 +1,7 @@
 import type { UserConfig } from "@commitlint/types";
 
 const Configuration: UserConfig = {
-  extends: ["@commitlint/config-angular"],
+  extends: ["@commitlint/config-conventional"],
   formatter: "@commitlint/format",
   defaultIgnores: true,
 };

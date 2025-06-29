@@ -20,7 +20,7 @@
     "format:fix": "prettier --write .",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "lint:ci": "pnpm lint:check && pnpm format:check",
+    "lint:ci": "pnpm lint && pnpm format",
     "build": "ncc build src/index.ts --license licenses.txt"
   },
   "keywords": [

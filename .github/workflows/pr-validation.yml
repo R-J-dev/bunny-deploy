@@ -25,7 +25,7 @@ jobs:
       - name: Checking dependencies for disallowed licenses
         uses: ./.github/actions/license-check
       - name: Review new dependencies
-        uses: actions/dependency-review-action@3b139cfc5fae8b618d3eae3675e383bb1769c019 # pin@v4.5.0
+        uses: actions/dependency-review-action@da24556b548a50705dd671f47852072ea4c105d9 # pin@v4.7.1
         with:
           fail-on-severity: low
           fail-on-scopes: runtime

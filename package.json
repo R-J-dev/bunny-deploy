@@ -63,7 +63,7 @@
     "license-checker-rseidelsohn": "4.4.2",
     "nock": "14.0.4",
     "prettier": "3.6.2",
-    "semantic-release": "24.2.3",
+    "semantic-release": "24.2.7",
     "ts-node": "10.9.2",
     "typescript": "5.8.3",
     "typescript-eslint": "8.38.0",

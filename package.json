@@ -73,7 +73,7 @@
     "@actions/core": "1.11.1",
     "got": "14.4.6",
     "modern-async": "2.0.4",
-    "p-retry": "6.2.1",
+    "p-retry": "7.0.0",
     "zod": "3.24.2"
   },
   "pnpm": {

@@ -57,7 +57,7 @@
     "eslint-config-prettier": "10.1.8",
     "express": "4.21.2",
     "fast-check": "4.2.0",
-    "fs-extra": "11.3.0",
+    "fs-extra": "11.3.2",
     "get-port": "7.1.0",
     "globals": "16.3.0",
     "license-checker-rseidelsohn": "4.4.2",

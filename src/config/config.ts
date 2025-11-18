@@ -47,6 +47,7 @@ export const getPullZoneConfig = async () => {
   const requestTimeout = await getInputWrapper({
     inputName: "request-timeout",
     inputOptions: { required: false },
+    validator: validatePositiveInteger,
     transformInput: async (input: string) => {
       const value = Number(input);
       if (!value || value < 1) return 5000; // defaulting to 5000ms
@@ -56,6 +57,7 @@ export const getPullZoneConfig = async () => {
   const retryLimit = await getInputWrapper({
     inputName: "retry-limit",
     inputOptions: { required: false },
+    validator: validatePositiveInteger,
     transformInput: async (input: string) => {
       const value = Number(input);
       if (!value || value < 1) return 3; // defaulting to 3 retries

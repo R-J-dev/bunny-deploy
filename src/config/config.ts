@@ -43,9 +43,26 @@ export const getPullZoneConfig = async () => {
     validator: validateDigitString,
     errorLogMessage: "The pull-zone-id should only contain digits.",
   });
+
+  const requestTimeout = await getInputWrapper({
+    inputName: "request-timeout",
+    inputOptions: { required: false },
+    validator: validatePositiveInteger,
+    transformInput: async (input: string) =>
+      input && input.length > 0 ? Number(input) : 5000, // defaulting to 5000ms
+  });
+  const retryLimit = await getInputWrapper({
+    inputName: "retry-limit",
+    inputOptions: { required: false },
+    validator: validatePositiveInteger,
+    transformInput: async (input: string) =>
+      input && input.length > 0 ? Number(input) : 3, // defaulting to 3 retries
+  });
+
   const pullZoneClient = getBunnyClient(
     accessKey,
     "https://api.bunny.net/pullzone/",
+    { requestTimeout, retryLimit },
   );
   const replicationTimeout = await getInputWrapper({
     inputName: "replication-timeout",
@@ -58,6 +75,8 @@ export const getPullZoneConfig = async () => {
     pullZoneId: pullZoneId,
     pullZoneClient,
     replicationTimeout,
+    requestTimeout,
+    retryLimit,
   };
 };
 
@@ -95,18 +114,6 @@ export const getEdgeStorageConfig = async () => {
       inputName: "target-directory",
       transformInput: async (input: string) =>
         removeEndSlash(await removeBeginSlash(input)),
-    }),
-    requestTimeout: await getInputWrapper({
-      inputName: "request-timeout",
-      inputOptions: { required: false },
-      validator: validatePositiveInteger,
-      transformInput: async (input: string) => Number(input),
-    }),
-    retryLimit: await getInputWrapper({
-      inputName: "retry-limit",
-      inputOptions: { required: false },
-      validator: validatePositiveInteger,
-      transformInput: async (input: string) => Number(input),
     }),
   };
 };

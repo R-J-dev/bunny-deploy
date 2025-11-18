@@ -48,15 +48,21 @@ export const getPullZoneConfig = async () => {
     inputName: "request-timeout",
     inputOptions: { required: false },
     validator: validatePositiveInteger,
-    transformInput: async (input: string) =>
-      input && input.length > 0 ? Number(input) : 5000, // defaulting to 5000ms
+    transformInput: async (input: string) => {
+      const value = Number(input);
+      if (!value || value < 1) return 5000; // defaulting to 5000ms
+      return value;
+    },
   });
   const retryLimit = await getInputWrapper({
     inputName: "retry-limit",
     inputOptions: { required: false },
     validator: validatePositiveInteger,
-    transformInput: async (input: string) =>
-      input && input.length > 0 ? Number(input) : 3, // defaulting to 3 retries
+    transformInput: async (input: string) => {
+      const value = Number(input);
+      if (!value || value < 1) return 3; // defaulting to 3 retries
+      return value;
+    },
   });
 
   const pullZoneClient = getBunnyClient(

@@ -33,10 +33,13 @@ export const getBunnyClient = (
     },
     throwHttpErrors: true,
     timeout: {
-      request: opts?.requestTimeout ?? 5000, // 5 seconds
+      request:
+        opts?.requestTimeout && opts.requestTimeout > 0
+          ? opts.requestTimeout
+          : 5000, // 5 seconds
     },
     retry: {
-      limit: opts?.retryLimit ?? 3,
+      limit: opts?.retryLimit && opts.retryLimit > 0 ? opts.retryLimit : 3,
       methods: retryMethods,
       statusCodes: retryStatusCodes,
       errorCodes: retryErrorCodes,

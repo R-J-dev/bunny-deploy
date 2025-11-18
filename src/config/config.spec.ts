@@ -92,6 +92,12 @@ describe("config", () => {
 
       expect(config.retryLimit).toBe(3);
     });
+    it("should handle a blank retry limit as 3", async () => {
+      process.env["INPUT_RETRY-LIMIT"] = "";
+      const config = await getPullZoneConfig();
+
+      expect(config.retryLimit).toBe(3);
+    });
 
     it("should format a retry limit number string to an int", async () => {
       await fc.assert(

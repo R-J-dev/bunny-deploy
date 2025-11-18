@@ -52968,7 +52968,7 @@ const retryErrorCodes = [
 ];
 // NOTE: PUT streams are also being retried, but in a different way. See uploadFile.ts for more info.
 const retryMethods = ["GET", "DELETE"];
-const getBunnyClient = (accessKey, baseUrl) => {
+const getBunnyClient = (accessKey, baseUrl, opts) => {
     if (!accessKey)
         throw new MissingAccessKeyError();
     const options = new Options({
@@ -52978,10 +52978,10 @@ const getBunnyClient = (accessKey, baseUrl) => {
         },
         throwHttpErrors: true,
         timeout: {
-            request: 5000, // 5 seconds
+            request: opts?.requestTimeout ?? 5000, // 5 seconds
         },
         retry: {
-            limit: 3,
+            limit: opts?.retryLimit ?? 3,
             methods: retryMethods,
             statusCodes: retryStatusCodes,
             errorCodes: retryErrorCodes,
@@ -53185,6 +53185,18 @@ const getEdgeStorageConfig = async () => {
         targetDirectory: await getInputWrapper({
             inputName: "target-directory",
             transformInput: async (input) => removeEndSlash(await removeBeginSlash(input)),
+        }),
+        requestTimeout: await getInputWrapper({
+            inputName: "request-timeout",
+            inputOptions: { required: false },
+            validator: validatePositiveInteger,
+            transformInput: async (input) => Number(input),
+        }),
+        retryLimit: await getInputWrapper({
+            inputName: "retry-limit",
+            inputOptions: { required: false },
+            validator: validatePositiveInteger,
+            transformInput: async (input) => Number(input),
         }),
     };
 };

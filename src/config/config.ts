@@ -96,5 +96,17 @@ export const getEdgeStorageConfig = async () => {
       transformInput: async (input: string) =>
         removeEndSlash(await removeBeginSlash(input)),
     }),
+    requestTimeout: await getInputWrapper({
+      inputName: "request-timeout",
+      inputOptions: { required: false },
+      validator: validatePositiveInteger,
+      transformInput: async (input: string) => Number(input),
+    }),
+    retryLimit: await getInputWrapper({
+      inputName: "retry-limit",
+      inputOptions: { required: false },
+      validator: validatePositiveInteger,
+      transformInput: async (input: string) => Number(input),
+    }),
   };
 };

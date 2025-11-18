@@ -174,6 +174,8 @@ describe("config", () => {
       "storage-endpoint": "https://example.com",
       concurrency: "5",
       "directory-to-upload": __dirname,
+      "request-timeout": "10000",
+      "retry-limit": "10",
     };
 
     beforeEach(() => {
@@ -250,6 +252,8 @@ describe("config", () => {
         targetDirectory: "test/target",
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         edgeStorageClient: expect.anything(),
+        requestTimeout: 10000,
+        retryLimit: 10,
       });
     });
 
@@ -261,6 +265,30 @@ describe("config", () => {
           const config = await getEdgeStorageConfig();
 
           expect(config.concurrency).toBe(concurrency);
+        }),
+      );
+    });
+
+    it("should format a retry limit number string to an int", async () => {
+      await fc.assert(
+        fc.asyncProperty(fc.integer({ min: 1 }), async (limit) => {
+          process.env["INPUT_RETRY-LIMIT"] = limit.toString();
+
+          const config = await getEdgeStorageConfig();
+
+          expect(config.retryLimit).toBe(limit);
+        }),
+      );
+    });
+
+    it("should format a request timeout number string to an int", async () => {
+      await fc.assert(
+        fc.asyncProperty(fc.integer({ min: 1 }), async (timeout) => {
+          process.env["INPUT_REQUEST-TIMEOUT"] = timeout.toString();
+
+          const config = await getEdgeStorageConfig();
+
+          expect(config.requestTimeout).toBe(timeout);
         }),
       );
     });

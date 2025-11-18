@@ -19,7 +19,11 @@ export const retryErrorCodes = [
 ];
 // NOTE: PUT streams are also being retried, but in a different way. See uploadFile.ts for more info.
 export const retryMethods: Method[] = ["GET", "DELETE"];
-export const getBunnyClient = (accessKey: string, baseUrl: string) => {
+export const getBunnyClient = (
+  accessKey: string,
+  baseUrl: string,
+  opts?: { requestTimeout?: number; retryLimit?: number },
+) => {
   if (!accessKey) throw new MissingAccessKeyError();
 
   const options = new Options({
@@ -29,10 +33,13 @@ export const getBunnyClient = (accessKey: string, baseUrl: string) => {
     },
     throwHttpErrors: true,
     timeout: {
-      request: 5000, // 5 seconds
+      request:
+        opts?.requestTimeout && opts.requestTimeout > 0
+          ? opts.requestTimeout
+          : 5000, // 5 seconds
     },
     retry: {
-      limit: 3,
+      limit: opts?.retryLimit && opts.retryLimit > 0 ? opts.retryLimit : 3,
       methods: retryMethods,
       statusCodes: retryStatusCodes,
       errorCodes: retryErrorCodes,

@@ -46,6 +46,8 @@ deploy:
         enable-purge-pull-zone: true
         pull-zone-id: "12345"
         replication-timeout: "15000"
+        request-timeout: "5000" # optional, defaults to 5000
+        retry-limit: "3" # optional, defaults to 3
 ```
 
 ## Config

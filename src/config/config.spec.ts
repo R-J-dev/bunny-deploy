@@ -60,6 +60,8 @@ describe("config", () => {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         pullZoneClient: expect.anything(),
         replicationTimeout: 0,
+        requestTimeout: 5000,
+        retryLimit: 3,
       });
     });
 
@@ -81,6 +83,48 @@ describe("config", () => {
           process.env["INPUT_PULL-ZONE-ID"] = pullZoneID.toString();
 
           await getPullZoneConfig();
+        }),
+      );
+    });
+    it("should handle a 0 retry limit as 3", async () => {
+      process.env["INPUT_RETRY-LIMIT"] = "0";
+      const config = await getPullZoneConfig();
+
+      expect(config.retryLimit).toBe(3);
+    });
+    it("should handle a blank retry limit as 3", async () => {
+      process.env["INPUT_RETRY-LIMIT"] = "";
+      const config = await getPullZoneConfig();
+
+      expect(config.retryLimit).toBe(3);
+    });
+
+    it("should format a retry limit number string to an int", async () => {
+      await fc.assert(
+        fc.asyncProperty(fc.integer({ min: 1 }), async (limit) => {
+          process.env["INPUT_RETRY-LIMIT"] = limit.toString();
+
+          const config = await getPullZoneConfig();
+
+          expect(config.retryLimit).toBe(limit);
+        }),
+      );
+    });
+    it("should handle a 0 request timeout as 5000", async () => {
+      process.env["INPUT_REQUEST-TIMEOUT"] = "0";
+      const config = await getPullZoneConfig();
+
+      expect(config.requestTimeout).toBe(5000);
+    });
+
+    it("should format request timeout to a number", async () => {
+      await fc.assert(
+        fc.asyncProperty(fc.integer({ min: 1 }), async (timeout) => {
+          process.env["INPUT_REQUEST-TIMEOUT"] = timeout.toString();
+
+          const config = await getPullZoneConfig();
+
+          expect(config.requestTimeout).toBe(timeout);
         }),
       );
     });
@@ -174,6 +218,8 @@ describe("config", () => {
       "storage-endpoint": "https://example.com",
       concurrency: "5",
       "directory-to-upload": __dirname,
+      "request-timeout": "10000",
+      "retry-limit": "10",
     };
 
     beforeEach(() => {

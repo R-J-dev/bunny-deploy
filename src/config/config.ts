@@ -43,9 +43,32 @@ export const getPullZoneConfig = async () => {
     validator: validateDigitString,
     errorLogMessage: "The pull-zone-id should only contain digits.",
   });
+
+  const requestTimeout = await getInputWrapper({
+    inputName: "request-timeout",
+    inputOptions: { required: false },
+    validator: validatePositiveInteger,
+    transformInput: async (input: string) => {
+      const value = Number(input);
+      if (!value || value < 1) return 5000; // defaulting to 5000ms
+      return value;
+    },
+  });
+  const retryLimit = await getInputWrapper({
+    inputName: "retry-limit",
+    inputOptions: { required: false },
+    validator: validatePositiveInteger,
+    transformInput: async (input: string) => {
+      const value = Number(input);
+      if (!value || value < 1) return 3; // defaulting to 3 retries
+      return value;
+    },
+  });
+
   const pullZoneClient = getBunnyClient(
     accessKey,
     "https://api.bunny.net/pullzone/",
+    { requestTimeout, retryLimit },
   );
   const replicationTimeout = await getInputWrapper({
     inputName: "replication-timeout",
@@ -58,6 +81,8 @@ export const getPullZoneConfig = async () => {
     pullZoneId: pullZoneId,
     pullZoneClient,
     replicationTimeout,
+    requestTimeout,
+    retryLimit,
   };
 };
 

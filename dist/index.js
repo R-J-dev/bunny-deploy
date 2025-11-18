@@ -52968,7 +52968,7 @@ const retryErrorCodes = [
 ];
 // NOTE: PUT streams are also being retried, but in a different way. See uploadFile.ts for more info.
 const retryMethods = ["GET", "DELETE"];
-const getBunnyClient = (accessKey, baseUrl) => {
+const getBunnyClient = (accessKey, baseUrl, opts) => {
     if (!accessKey)
         throw new MissingAccessKeyError();
     const options = new Options({
@@ -52978,10 +52978,12 @@ const getBunnyClient = (accessKey, baseUrl) => {
         },
         throwHttpErrors: true,
         timeout: {
-            request: 5000, // 5 seconds
+            request: opts?.requestTimeout && opts.requestTimeout > 0
+                ? opts.requestTimeout
+                : 5000, // 5 seconds
         },
         retry: {
-            limit: 3,
+            limit: opts?.retryLimit && opts.retryLimit > 0 ? opts.retryLimit : 3,
             methods: retryMethods,
             statusCodes: retryStatusCodes,
             errorCodes: retryErrorCodes,
@@ -53140,7 +53142,29 @@ const getPullZoneConfig = async () => {
         validator: validateDigitString,
         errorLogMessage: "The pull-zone-id should only contain digits.",
     });
-    const pullZoneClient = getBunnyClient(accessKey, "https://api.bunny.net/pullzone/");
+    const requestTimeout = await getInputWrapper({
+        inputName: "request-timeout",
+        inputOptions: { required: false },
+        validator: validatePositiveInteger,
+        transformInput: async (input) => {
+            const value = Number(input);
+            if (!value || value < 1)
+                return 5000; // defaulting to 5000ms
+            return value;
+        },
+    });
+    const retryLimit = await getInputWrapper({
+        inputName: "retry-limit",
+        inputOptions: { required: false },
+        validator: validatePositiveInteger,
+        transformInput: async (input) => {
+            const value = Number(input);
+            if (!value || value < 1)
+                return 3; // defaulting to 3 retries
+            return value;
+        },
+    });
+    const pullZoneClient = getBunnyClient(accessKey, "https://api.bunny.net/pullzone/", { requestTimeout, retryLimit });
     const replicationTimeout = await getInputWrapper({
         inputName: "replication-timeout",
         inputOptions: { required: true },
@@ -53152,6 +53176,8 @@ const getPullZoneConfig = async () => {
         pullZoneId: pullZoneId,
         pullZoneClient,
         replicationTimeout,
+        requestTimeout,
+        retryLimit,
     };
 };
 const getEdgeStorageConfig = async () => {

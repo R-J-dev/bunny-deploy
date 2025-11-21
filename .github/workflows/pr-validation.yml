@@ -110,7 +110,7 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        os: [ubuntu-22.04, ubuntu-24.04, macos-13, macos-14, macos-15]
+        os: [ubuntu-22.04, ubuntu-24.04, macos-14, macos-15]
     concurrency:
       group: e2e-test
       cancel-in-progress: false
@@ -145,7 +145,7 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        os: [windows-2019, windows-2022, windows-2025]
+        os: [windows-2022, windows-2025]
     concurrency:
       group: e2e-test
       cancel-in-progress: false

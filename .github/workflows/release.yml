@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   dependency-check:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
       - name: Checkout
@@ -27,7 +27,7 @@ jobs:
         run: pnpm audit --prod
   release:
     name: Release
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs: [dependency-check]
     permissions:
       contents: write # necessary to publish a GitHub release

@@ -13,7 +13,7 @@ jobs:
   dependency-check:
     permissions:
       pull-requests: write
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
       - name: Checkout
@@ -35,7 +35,7 @@ jobs:
       - name: Checking production dependencies for security issues
         run: pnpm audit --prod
   format:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
       - name: Checkout
@@ -47,7 +47,7 @@ jobs:
       - name: Validate formatting
         run: pnpm format
   lint:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
       - name: Checkout
@@ -59,7 +59,7 @@ jobs:
       - name: Validate linting rules
         run: pnpm lint
   commitlint:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
       - name: Checkout
@@ -72,7 +72,7 @@ jobs:
       - name: Validate PR commits with commitlint
         run: pnpm commitlint --from ${{ github.event.pull_request.head.sha }}~${{ github.event.pull_request.commits }} --to ${{ github.event.pull_request.head.sha }} --verbose
   test:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
       - name: Checkout
@@ -87,7 +87,7 @@ jobs:
     needs: [commitlint, dependency-check, format, lint, test]
     permissions:
       contents: write
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - name: Checkout

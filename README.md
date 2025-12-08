@@ -26,7 +26,7 @@ See for more examples: [Examples](#examples)
 
 ```yaml
 deploy:
-  runs-on: ubuntu-22.04
+  runs-on: ubuntu-24.04
   permissions:
     contents: read
   timeout-minutes: 5 # Depending on the size of your project
@@ -154,7 +154,7 @@ deploy:
 
 ```yaml
 deploy:
-  runs-on: ubuntu-22.04
+  runs-on: ubuntu-24.04
   permissions:
     contents: read
   timeout-minutes: 5 # Depending on the size of your project
@@ -175,7 +175,7 @@ deploy:
 
 ```yaml
 deploy:
-  runs-on: ubuntu-22.04
+  runs-on: ubuntu-24.04
   permissions:
     contents: read
   timeout-minutes: 5 # Depending on the size of your project
@@ -201,7 +201,7 @@ deploy:
 
 ```yaml
 purge:
-  runs-on: ubuntu-22.04
+  runs-on: ubuntu-24.04
   permissions:
     contents: read
   timeout-minutes: 5 # Depending on the size of your project

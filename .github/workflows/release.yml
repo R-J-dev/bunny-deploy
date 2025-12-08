@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   dependency-check:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
       - name: Checkout
@@ -25,10 +25,81 @@ jobs:
         uses: ./.github/actions/license-check
       - name: Checking production dependencies for security issues
         run: pnpm audit --prod
+  e2e-test-unix:
+    strategy:
+      max-parallel: 1
+      matrix:
+        os: [ubuntu-22.04, ubuntu-24.04, macos-14, macos-15]
+    concurrency:
+      group: e2e-test
+      cancel-in-progress: false
+    permissions:
+      contents: write
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # pin@v5.0.0
+      - name: Generate random files to upload
+        run: |
+          set -euo pipefail
+          random_dir=$(openssl rand -base64 32 | tr -dc 'a-zA-Z0-9' | fold -w 10 | head -n 1)
+          mkdir -p ./.github/e2e-test-dir/$random_dir
+          echo "test" > ./.github/e2e-test-dir/$random_dir/file1.txt
+          random_nested_dir=$(openssl rand -base64 32 | tr -dc 'a-zA-Z0-9' | fold -w 10 | head -n 1)
+          mkdir -p ./.github/e2e-test-dir/$random_dir/$random_nested_dir
+          echo "test" > ./.github/e2e-test-dir/$random_dir/$random_nested_dir/file2.txt
+      - name: Deploy to Bunny
+        uses: ./
+        with:
+          storage-zone-password: ${{ secrets.BUNNY_STORAGE_ZONE_PASSWORD }}
+          directory-to-upload: "./.github/e2e-test-dir/"
+          storage-endpoint: "https://storage.bunnycdn.com"
+          storage-zone-name: "r-j-dev-bunny-deploy-test"
+          concurrency: "50"
+          enable-delete-action: true
+          target-directory: "/e2e-test/"
+  e2e-test-windows:
+    strategy:
+      max-parallel: 1
+      matrix:
+        os: [windows-2022, windows-2025]
+    concurrency:
+      group: e2e-test
+      cancel-in-progress: false
+    permissions:
+      contents: write
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # pin@v5.0.0
+      - name: Generate random files to upload
+        run: |
+          # This PowerShell command generates a random string of 10 characters consisting of both uppercase (A-Z) and lowercase (a-z) letters.
+          # It first creates a range of ASCII values for uppercase (65..90) and lowercase (97..122) letters,
+          # combines these ranges, selects 10 random values from this combined range,
+          # and then converts each ASCII value to its corresponding character to form the string.
+          $random_dir = -join ((65..90) + (97..122) | Get-Random -Count 10 | % {[char]$_})
+          New-Item -ItemType Directory -Path ".\.github\e2e-test-dir\$random_dir"
+          "test" | Out-File ".\.github\e2e-test-dir\$random_dir\file1.txt"
+          $random_nested_dir = -join ((65..90) + (97..122) | Get-Random -Count 10 | % {[char]$_})
+          New-Item -ItemType Directory -Path ".\.github\e2e-test-dir\$random_dir\$random_nested_dir"
+          "test" | Out-File ".\.github\e2e-test-dir\$random_dir\$random_nested_dir\file2.txt"
+      - name: Deploy to Bunny
+        uses: ./
+        with:
+          storage-zone-password: ${{ secrets.BUNNY_STORAGE_ZONE_PASSWORD }}
+          directory-to-upload: "./.github/e2e-test-dir/"
+          storage-endpoint: "https://storage.bunnycdn.com"
+          storage-zone-name: "r-j-dev-bunny-deploy-test"
+          concurrency: "50"
+          enable-delete-action: true
+          target-directory: "/e2e-test/"
   release:
     name: Release
-    runs-on: ubuntu-22.04
-    needs: [dependency-check]
+    runs-on: ubuntu-24.04
+    needs: [dependency-check, e2e-test-unix, e2e-test-windows]
     permissions:
       contents: write # necessary to publish a GitHub release
       issues: write # necessary to comment on released issues

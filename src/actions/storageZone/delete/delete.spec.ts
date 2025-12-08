@@ -19,7 +19,7 @@ describe("deleteFiles", () => {
 
   beforeAll(() => {
     const testServerUrl = inject("testServerUrl");
-    bunnyClient = getBunnyClient("test", testServerUrl);
+    bunnyClient = getBunnyClient("test", testServerUrl, {});
   });
 
   beforeEach(() => {

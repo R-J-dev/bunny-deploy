@@ -17,9 +17,17 @@ export const retryErrorCodes = [
   "ENETUNREACH",
   "EAI_AGAIN",
 ];
+export interface ClientOptions {
+  requestTimeout?: number;
+  retryLimit?: number;
+}
 // NOTE: PUT streams are also being retried, but in a different way. See uploadFile.ts for more info.
 export const retryMethods: Method[] = ["GET", "DELETE"];
-export const getBunnyClient = (accessKey: string, baseUrl: string) => {
+export const getBunnyClient = (
+  accessKey: string,
+  baseUrl: string,
+  { requestTimeout = 5000, retryLimit = 3 }: ClientOptions,
+) => {
   if (!accessKey) throw new MissingAccessKeyError();
 
   const options = new Options({
@@ -29,10 +37,10 @@ export const getBunnyClient = (accessKey: string, baseUrl: string) => {
     },
     throwHttpErrors: true,
     timeout: {
-      request: 5000, // 5 seconds
+      request: requestTimeout, // 5 seconds
     },
     retry: {
-      limit: 3,
+      limit: retryLimit,
       methods: retryMethods,
       statusCodes: retryStatusCodes,
       errorCodes: retryErrorCodes,

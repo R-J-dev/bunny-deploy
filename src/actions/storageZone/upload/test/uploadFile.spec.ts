@@ -22,7 +22,7 @@ describe("uploadFile", () => {
 
   beforeAll(() => {
     const storageZoneEndpoint = inject("testServerUrl");
-    client = getBunnyClient("test", storageZoneEndpoint);
+    client = getBunnyClient("test", storageZoneEndpoint, {});
     retryLimit = client.defaults.options.retry.limit ?? 0;
     if (!retryLimit) throw new Error("Invalid retry limit");
   });

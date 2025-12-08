@@ -60,6 +60,12 @@ inputs:
       For example this action can upload files using concurrency, but it depends on the GitHub runner and the API limit how much concurrent requests are possible.
       At Bunny the limit for concurrent uploads per storage zone seems to be 50.
       See for more info: https://docs.bunny.net/reference/edge-storage-api-limits."
+  request-timeout:
+    required: false
+    description: "The time it takes for a request to be considered as timed out, in milliseconds. Defaults to 5000 milliseconds (5 seconds)."
+  retry-limit:
+    required: false
+    description: "The maximum number of attempts made when a request fails. Defaults to 3."
   enable-delete-action:
     required: false
     default: false

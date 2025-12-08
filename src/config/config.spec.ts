@@ -46,6 +46,8 @@ describe("config", () => {
       "access-key": "test-access-key",
       "pull-zone-id": "12345",
       "replication-timeout": "0",
+      "request-timeout": "5000",
+      "retry-limit": "3",
     };
     beforeEach(() => {
       Object.entries(testConfig).forEach(([key, value]) => {
@@ -60,6 +62,8 @@ describe("config", () => {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         pullZoneClient: expect.anything(),
         replicationTimeout: 0,
+        requestTimeout: 5000,
+        retryLimit: 3,
       });
     });
 
@@ -81,6 +85,42 @@ describe("config", () => {
           process.env["INPUT_PULL-ZONE-ID"] = pullZoneID.toString();
 
           await getPullZoneConfig();
+        }),
+      );
+    });
+    it("should handle a blank retry limit as undefined", async () => {
+      process.env["INPUT_RETRY-LIMIT"] = "";
+      const config = await getPullZoneConfig();
+
+      expect(config.retryLimit).toBeUndefined();
+    });
+
+    it("should format a retry limit number string to an int", async () => {
+      await fc.assert(
+        fc.asyncProperty(fc.integer({ min: 1 }), async (limit) => {
+          process.env["INPUT_RETRY-LIMIT"] = limit.toString();
+
+          const config = await getPullZoneConfig();
+
+          expect(config.retryLimit).toBe(limit);
+        }),
+      );
+    });
+    it("should treat no request timeout as undefined", async () => {
+      process.env["INPUT_REQUEST-TIMEOUT"] = "";
+      const config = await getPullZoneConfig();
+
+      expect(config.requestTimeout).toBeUndefined();
+    });
+
+    it("should format request timeout to a number", async () => {
+      await fc.assert(
+        fc.asyncProperty(fc.integer({ min: 1 }), async (timeout) => {
+          process.env["INPUT_REQUEST-TIMEOUT"] = timeout.toString();
+
+          const config = await getPullZoneConfig();
+
+          expect(config.requestTimeout).toBe(timeout);
         }),
       );
     });
@@ -174,6 +214,8 @@ describe("config", () => {
       "storage-endpoint": "https://example.com",
       concurrency: "5",
       "directory-to-upload": __dirname,
+      "request-timeout": "10000",
+      "retry-limit": "10",
     };
 
     beforeEach(() => {

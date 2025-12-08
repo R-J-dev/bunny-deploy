@@ -7,7 +7,7 @@ describe("purgeCache", () => {
   let client: Got;
   beforeAll(() => {
     const storageZoneEndpoint = inject("testServerUrl");
-    client = getBunnyClient("test", storageZoneEndpoint);
+    client = getBunnyClient("test", storageZoneEndpoint, {});
   });
   it("should throw when an Error occurs", async () => {
     const postSpy = vi.spyOn(client, "post");

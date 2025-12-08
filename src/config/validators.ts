@@ -46,6 +46,15 @@ export const validatePositiveInteger = async (int: number) => {
     });
   }
 };
+export const validateOptionalPositiveInteger = async (
+  int: number | undefined,
+) => {
+  if (int !== undefined && !(Number.isInteger(int) && int > 0)) {
+    throw new InvalidIntegerError({
+      message: `Expected a positive integer, but received: ${int}`,
+    });
+  }
+};
 
 /**
  * Checks if a given path is a directory

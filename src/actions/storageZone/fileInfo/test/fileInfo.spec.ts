@@ -114,7 +114,7 @@ describe("getFileInfo", () => {
 
   beforeAll(() => {
     const storageZoneEndpoint = inject("testServerUrl");
-    bunnyClient = getBunnyClient("test", storageZoneEndpoint);
+    bunnyClient = getBunnyClient("test", storageZoneEndpoint, {});
   });
 
   beforeEach(() => {

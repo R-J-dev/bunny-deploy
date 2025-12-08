@@ -52968,7 +52968,7 @@ const retryErrorCodes = [
 ];
 // NOTE: PUT streams are also being retried, but in a different way. See uploadFile.ts for more info.
 const retryMethods = ["GET", "DELETE"];
-const getBunnyClient = (accessKey, baseUrl) => {
+const getBunnyClient = (accessKey, baseUrl, { requestTimeout = 5000, retryLimit = 3 }) => {
     if (!accessKey)
         throw new MissingAccessKeyError();
     const options = new Options({
@@ -52978,10 +52978,10 @@ const getBunnyClient = (accessKey, baseUrl) => {
         },
         throwHttpErrors: true,
         timeout: {
-            request: 5000, // 5 seconds
+            request: requestTimeout, // 5 seconds
         },
         retry: {
-            limit: 3,
+            limit: retryLimit,
             methods: retryMethods,
             statusCodes: retryStatusCodes,
             errorCodes: retryErrorCodes,
@@ -53026,6 +53026,13 @@ const validateInteger = async (int) => {
 };
 const validatePositiveInteger = async (int) => {
     if (!(Number.isInteger(int) && int > 0)) {
+        throw new InvalidIntegerError({
+            message: `Expected a positive integer, but received: ${int}`,
+        });
+    }
+};
+const validateOptionalPositiveInteger = async (int) => {
+    if (int !== undefined && !(Number.isInteger(int) && int > 0)) {
         throw new InvalidIntegerError({
             message: `Expected a positive integer, but received: ${int}`,
         });
@@ -53140,7 +53147,19 @@ const getPullZoneConfig = async () => {
         validator: validateDigitString,
         errorLogMessage: "The pull-zone-id should only contain digits.",
     });
-    const pullZoneClient = getBunnyClient(accessKey, "https://api.bunny.net/pullzone/");
+    const requestTimeout = await getInputWrapper({
+        inputName: "request-timeout",
+        inputOptions: { required: false },
+        validator: validateOptionalPositiveInteger,
+        transformInput: async (input) => input.length > 0 ? Number(input) : undefined,
+    });
+    const retryLimit = await getInputWrapper({
+        inputName: "retry-limit",
+        inputOptions: { required: false },
+        validator: validateOptionalPositiveInteger,
+        transformInput: async (input) => input.length > 0 ? Number(input) : undefined,
+    });
+    const pullZoneClient = getBunnyClient(accessKey, "https://api.bunny.net/pullzone/", { requestTimeout, retryLimit });
     const replicationTimeout = await getInputWrapper({
         inputName: "replication-timeout",
         inputOptions: { required: true },
@@ -53152,6 +53171,8 @@ const getPullZoneConfig = async () => {
         pullZoneId: pullZoneId,
         pullZoneClient,
         replicationTimeout,
+        requestTimeout,
+        retryLimit,
     };
 };
 const getEdgeStorageConfig = async () => {
@@ -53161,6 +53182,18 @@ const getEdgeStorageConfig = async () => {
         inputName: "storage-endpoint",
         inputOptions: { required: true },
         validator: (url) => validateUrl(url, "https:"),
+    });
+    const requestTimeout = await getInputWrapper({
+        inputName: "request-timeout",
+        inputOptions: { required: false },
+        validator: validateOptionalPositiveInteger,
+        transformInput: async (input) => input.length > 0 ? Number(input) : undefined,
+    });
+    const retryLimit = await getInputWrapper({
+        inputName: "retry-limit",
+        inputOptions: { required: false },
+        validator: validateOptionalPositiveInteger,
+        transformInput: async (input) => input.length > 0 ? Number(input) : undefined,
     });
     return {
         concurrency: await getInputWrapper({
@@ -53176,7 +53209,10 @@ const getEdgeStorageConfig = async () => {
             validator: validateDirectory,
             errorLogMessage: "The directory-to-upload path isn't a valid path to an existing directory or doesn't have read access.",
         }),
-        edgeStorageClient: getBunnyClient(storageZonePassword, storageEndpoint),
+        edgeStorageClient: getBunnyClient(storageZonePassword, storageEndpoint, {
+            requestTimeout,
+            retryLimit,
+        }),
         storageZoneName: await getInputWrapper({
             inputName: "storage-zone-name",
             inputOptions: { required: true },

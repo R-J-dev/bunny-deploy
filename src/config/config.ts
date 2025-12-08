@@ -9,6 +9,7 @@ import {
   validatePositiveInteger,
   validateUrl,
   validateStorageZoneName,
+  validateOptionalPositiveInteger,
 } from "@/config/validators.js";
 import { getInputWrapper } from "@/config/inputWrapper.js";
 import {
@@ -43,9 +44,26 @@ export const getPullZoneConfig = async () => {
     validator: validateDigitString,
     errorLogMessage: "The pull-zone-id should only contain digits.",
   });
+
+  const requestTimeout = await getInputWrapper({
+    inputName: "request-timeout",
+    inputOptions: { required: false },
+    validator: validateOptionalPositiveInteger,
+    transformInput: async (input: string) =>
+      input.length > 0 ? Number(input) : undefined,
+  });
+  const retryLimit = await getInputWrapper({
+    inputName: "retry-limit",
+    inputOptions: { required: false },
+    validator: validateOptionalPositiveInteger,
+    transformInput: async (input: string) =>
+      input.length > 0 ? Number(input) : undefined,
+  });
+
   const pullZoneClient = getBunnyClient(
     accessKey,
     "https://api.bunny.net/pullzone/",
+    { requestTimeout, retryLimit },
   );
   const replicationTimeout = await getInputWrapper({
     inputName: "replication-timeout",
@@ -58,6 +76,8 @@ export const getPullZoneConfig = async () => {
     pullZoneId: pullZoneId,
     pullZoneClient,
     replicationTimeout,
+    requestTimeout,
+    retryLimit,
   };
 };
 
@@ -70,6 +90,20 @@ export const getEdgeStorageConfig = async () => {
     validator: (url: string) => validateUrl(url, "https:"),
   });
 
+  const requestTimeout = await getInputWrapper({
+    inputName: "request-timeout",
+    inputOptions: { required: false },
+    validator: validateOptionalPositiveInteger,
+    transformInput: async (input: string) =>
+      input.length > 0 ? Number(input) : undefined,
+  });
+  const retryLimit = await getInputWrapper({
+    inputName: "retry-limit",
+    inputOptions: { required: false },
+    validator: validateOptionalPositiveInteger,
+    transformInput: async (input: string) =>
+      input.length > 0 ? Number(input) : undefined,
+  });
   return {
     concurrency: await getInputWrapper({
       inputName: "concurrency",
@@ -85,7 +119,10 @@ export const getEdgeStorageConfig = async () => {
       errorLogMessage:
         "The directory-to-upload path isn't a valid path to an existing directory or doesn't have read access.",
     }),
-    edgeStorageClient: getBunnyClient(storageZonePassword, storageEndpoint),
+    edgeStorageClient: getBunnyClient(storageZonePassword, storageEndpoint, {
+      requestTimeout,
+      retryLimit,
+    }),
     storageZoneName: await getInputWrapper({
       inputName: "storage-zone-name",
       inputOptions: { required: true },

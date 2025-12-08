@@ -35,7 +35,7 @@ describe("getBunnyClient", () => {
   };
 
   beforeAll(() => {
-    client = getBunnyClient("test", baseUrl);
+    client = getBunnyClient("test", baseUrl, {});
 
     [...retryMethods, ...methodsNotToRetry].forEach((method) =>
       nock(baseUrl)
@@ -54,6 +54,36 @@ describe("getBunnyClient", () => {
   afterEach(() => {
     retryCalls = 0;
     vi.restoreAllMocks();
+  });
+
+  it("No request timeout provided is treated as 5000ms", () => {
+    const c = getBunnyClient("test", baseUrl, {});
+    expect(c.defaults.options.timeout.request).toBe(5000);
+  });
+
+  it("No retry limit provided is treated as 3", () => {
+    const c = getBunnyClient("test", baseUrl, {});
+    expect(c.defaults.options.retry.limit).toBe(3);
+  });
+
+  it("Undefined request timeout provided is treated as 5000ms", () => {
+    const c = getBunnyClient("test", baseUrl, { requestTimeout: undefined });
+    expect(c.defaults.options.timeout.request).toBe(5000);
+  });
+
+  it("Undefined retry limit provided is treated as 3", () => {
+    const c = getBunnyClient("test", baseUrl, { retryLimit: undefined });
+    expect(c.defaults.options.retry.limit).toBe(3);
+  });
+
+  it("Can create a client with an arbitrary request timeout", () => {
+    const c = getBunnyClient("test", baseUrl, { requestTimeout: 10000 });
+    expect(c.defaults.options.timeout.request).toBe(10000);
+  });
+
+  it("Can create a client with an arbitrary retry limit", () => {
+    const c = getBunnyClient("test", baseUrl, { retryLimit: 5 });
+    expect(c.defaults.options.retry.limit).toBe(5);
   });
 
   describe.each(eachMethodParams)("%s requests", (method) => {
@@ -101,7 +131,9 @@ describe("getBunnyClient", () => {
 
   describe("when accessKey is missing", () => {
     it("should throw a MissingAccessKeyError", () => {
-      expect(() => getBunnyClient("", baseUrl)).toThrow(MissingAccessKeyError);
+      expect(() => getBunnyClient("", baseUrl, {})).toThrow(
+        MissingAccessKeyError,
+      );
     });
   });
 });

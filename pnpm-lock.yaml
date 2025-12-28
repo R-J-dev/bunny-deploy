@@ -26,8 +26,8 @@ importers:
         specifier: 6.2.1
         version: 6.2.1
       zod:
-        specifier: 3.24.2
-        version: 3.24.2
+        specifier: 4.2.1
+        version: 4.2.1
     devDependencies:
       '@commitlint/cli':
         specifier: 20.2.0
@@ -3026,8 +3026,8 @@ packages:
     resolution: {integrity: sha512-GQHQqAopRhwU8Kt1DDM8NjibDXHC8eoh1erhGAJPEyveY9qqVeXvVikNKrDz69sHowPMorbPUrH/mx8c50eiBQ==}
     engines: {node: '>=18'}
 
-  zod@3.24.2:
-    resolution: {integrity: sha512-lY7CDW43ECgW9u1TcT3IoXHflywfVqDYze4waEz812jR/bZ8FHDsl7pFQoSZTz5N+2NqRXs8GBwnAwo3ZNxqhQ==}
+  zod@4.2.1:
+    resolution: {integrity: sha512-0wZ1IRqGGhMP76gLqz8EyfBXKk0J2qo2+H3fi4mcUP/KtTocoX08nmIAHl1Z2kJIZbZee8KOpBCSNPRgauucjw==}
 
 snapshots:
 
@@ -5854,4 +5854,4 @@ snapshots:
 
   yoctocolors@2.1.1: {}
 
-  zod@3.24.2: {}
+  zod@4.2.1: {}

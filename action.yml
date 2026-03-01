@@ -87,5 +87,5 @@ inputs:
       you might choose to temporary disable the type validation.
       In the mean time a new PR can be created to fix this."
 runs:
-  using: node20
+  using: node24
   main: dist/index.js

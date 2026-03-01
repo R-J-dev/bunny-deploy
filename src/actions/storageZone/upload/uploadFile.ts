@@ -67,9 +67,9 @@ export const uploadFile = async (
       async () => retryableUploadFile(client, uploadPath, filePath),
       {
         retries: client.defaults.options.retry.limit,
-        onFailedAttempt: (error) => {
+        onFailedAttempt: ({ error, attemptNumber }) => {
           logNotice(
-            `Retrying after error ${error.name}, retry #: ${error.attemptNumber}`,
+            `Retrying after error ${error.name}, retry #: ${attemptNumber}`,
           );
         },
       },

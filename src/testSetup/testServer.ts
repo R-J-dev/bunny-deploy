@@ -27,8 +27,8 @@ export const startTestServer = (port: number) => {
     res.status(200).send("ok");
   });
 
-  app.put("/test/upload-with-stream/**", (req, res) => {
-    const pathParam = `/${Object.values(req.params)[0]}`;
+  app.put("/test/upload-with-stream/*path", (req, res) => {
+    const pathParam = `/${req.params.path.join("/")}`;
     const testFilePath = path.join(__dirname, pathParam);
 
     // The try/catch is necessary to prevent race conditions when multiple processes try to create the same dir.
@@ -58,7 +58,7 @@ export const startTestServer = (port: number) => {
     res.status(status).send("mock upload response");
   });
 
-  app.get("*", (_req, res) => {
+  app.get("/{*any}", (_req, res) => {
     res.status(404).send("404");
   });
 

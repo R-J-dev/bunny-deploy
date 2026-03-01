@@ -1,4 +1,5 @@
 node_modules
 .vscode
+.idea
 src/testSetup/result/**
 private-notes.txt

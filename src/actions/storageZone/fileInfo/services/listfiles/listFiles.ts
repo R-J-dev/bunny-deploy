@@ -31,7 +31,7 @@ export interface ListFiles {
   /**
    * Disables runtime response type validation, which is enabled by default.
    */
-  disableTypeValidation: boolean;
+  disableTypeValidation?: boolean;
 }
 
 export const listFilesRequestOptions: OptionsInit = {

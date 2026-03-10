@@ -39,10 +39,10 @@
     ".": "./dist/index.js"
   },
   "devDependencies": {
-    "@commitlint/cli": "20.4.2",
-    "@commitlint/config-angular": "20.4.2",
-    "@commitlint/format": "20.4.0",
-    "@commitlint/types": "20.4.0",
+    "@commitlint/cli": "20.4.3",
+    "@commitlint/config-angular": "20.4.3",
+    "@commitlint/format": "20.4.3",
+    "@commitlint/types": "20.4.3",
     "@eslint/eslintrc": "3.3.4",
     "@eslint/js": "10.0.1",
     "@types/express": "5.0.6",
@@ -51,7 +51,7 @@
     "@typescript-eslint/eslint-plugin": "8.56.1",
     "@typescript-eslint/parser": "8.56.1",
     "@vercel/ncc": "0.38.4",
-    "commitlint": "20.4.2",
+    "commitlint": "20.4.3",
     "conventional-changelog-angular": "8.1.0",
     "eslint": "10.0.2",
     "eslint-config-prettier": "10.1.8",

@@ -84,7 +84,7 @@ jobs:
       - name: Test actions
         run: pnpm test:ci
   build:
-    needs: [commitlint, dependency-check, format, lint, test]
+    needs: [commitlint, format, lint, test]
     permissions:
       contents: write
     runs-on: ubuntu-24.04

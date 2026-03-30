@@ -31148,7 +31148,7 @@ module.exports = {
 /***/ ((module, __unused_webpack___webpack_exports__, __nccwpck_require__) => {
 
 __nccwpck_require__.a(module, async (__webpack_handle_async_dependencies__, __webpack_async_result__) => { try {
-/* harmony import */ var _main_js__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(6136);
+/* harmony import */ var _main_js__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(5577);
 
 await (0,_main_js__WEBPACK_IMPORTED_MODULE_0__/* .run */ .e)();
 
@@ -31157,7 +31157,7 @@ __webpack_async_result__();
 
 /***/ }),
 
-/***/ 6136:
+/***/ 5577:
 /***/ ((__unused_webpack_module, __webpack_exports__, __nccwpck_require__) => {
 
 
@@ -38329,7 +38329,7 @@ function isNetworkError(error) {
 	return errorMessages.has(message);
 }
 
-;// CONCATENATED MODULE: ./node_modules/.pnpm/p-retry@7.1.1/node_modules/p-retry/index.js
+;// CONCATENATED MODULE: ./node_modules/.pnpm/p-retry@8.0.0/node_modules/p-retry/index.js
 
 
 function validateRetries(retries) {
@@ -38361,6 +38361,16 @@ function validateNumberOption(name, value, {min = 0, allowInfinity = false} = {}
 
 	if (value < min) {
 		throw new TypeError(`Expected \`${name}\` to be \u2265 ${min}.`);
+	}
+}
+
+function validateFunctionOption(name, value) {
+	if (value === undefined) {
+		return;
+	}
+
+	if (typeof value !== 'function') {
+		throw new TypeError(`Expected \`${name}\` to be a function.`);
 	}
 }
 
@@ -38399,6 +38409,31 @@ function calculateRemainingTime(start, max) {
 	return max - (performance.now() - start);
 }
 
+async function delayForRetry(delay, options) {
+	if (delay <= 0) {
+		return;
+	}
+
+	await new Promise((resolve, reject) => {
+		const onAbort = () => {
+			clearTimeout(timeoutToken);
+			options.signal?.removeEventListener('abort', onAbort);
+			reject(options.signal.reason);
+		};
+
+		const timeoutToken = setTimeout(() => {
+			options.signal?.removeEventListener('abort', onAbort);
+			resolve();
+		}, delay);
+
+		if (options.unref) {
+			timeoutToken.unref?.();
+		}
+
+		options.signal?.addEventListener('abort', onAbort, {once: true});
+	});
+}
+
 async function onAttemptFailure({error, attemptNumber, retriesConsumed, startTime, options}) {
 	const normalizedError = error instanceof Error
 		? error
@@ -38413,12 +38448,39 @@ async function onAttemptFailure({error, attemptNumber, retriesConsumed, startTim
 		: options.retries;
 
 	const maxRetryTime = options.maxRetryTime ?? Number.POSITIVE_INFINITY;
+	const delayTime = calculateDelay(retriesConsumed, options);
+	const remainingTimeBeforeCallbacks = calculateRemainingTime(startTime, maxRetryTime);
 
+	if (remainingTimeBeforeCallbacks <= 0) {
+		const context = Object.freeze({
+			error: normalizedError,
+			attemptNumber,
+			retriesLeft,
+			retriesConsumed,
+			retryDelay: 0,
+		});
+
+		await options.onFailedAttempt(context);
+
+		throw normalizedError;
+	}
+
+	const consumeRetryContext = Object.freeze({
+		error: normalizedError,
+		attemptNumber,
+		retriesLeft,
+		retriesConsumed,
+		retryDelay: retriesLeft > 0 ? delayTime : 0,
+	});
+
+	const consumeRetry = await options.shouldConsumeRetry(consumeRetryContext);
+	const effectiveDelay = consumeRetry && retriesLeft > 0 ? delayTime : 0;
 	const context = Object.freeze({
 		error: normalizedError,
 		attemptNumber,
 		retriesLeft,
 		retriesConsumed,
+		retryDelay: effectiveDelay,
 	});
 
 	await options.onFailedAttempt(context);
@@ -38427,8 +38489,6 @@ async function onAttemptFailure({error, attemptNumber, retriesConsumed, startTim
 		throw normalizedError;
 	}
 
-	const consumeRetry = await options.shouldConsumeRetry(context);
-
 	const remainingTime = calculateRemainingTime(startTime, maxRetryTime);
 
 	if (remainingTime <= 0 || retriesLeft <= 0) {
@@ -38436,15 +38496,16 @@ async function onAttemptFailure({error, attemptNumber, retriesConsumed, startTim
 	}
 
 	if (normalizedError instanceof TypeError && !isNetworkError(normalizedError)) {
-		if (consumeRetry) {
-			throw normalizedError;
-		}
-
-		options.signal?.throwIfAborted();
-		return false;
+		throw normalizedError;
 	}
 
 	if (!await options.shouldRetry(context)) {
+		throw normalizedError;
+	}
+
+	const remainingTimeAfterShouldRetry = calculateRemainingTime(startTime, maxRetryTime);
+
+	if (remainingTimeAfterShouldRetry <= 0) {
 		throw normalizedError;
 	}
 
@@ -38453,31 +38514,11 @@ async function onAttemptFailure({error, attemptNumber, retriesConsumed, startTim
 		return false;
 	}
 
-	const delayTime = calculateDelay(retriesConsumed, options);
-	const finalDelay = Math.min(delayTime, remainingTime);
+	const finalDelay = Math.min(effectiveDelay, remainingTimeAfterShouldRetry);
 
 	options.signal?.throwIfAborted();
 
-	if (finalDelay > 0) {
-		await new Promise((resolve, reject) => {
-			const onAbort = () => {
-				clearTimeout(timeoutToken);
-				options.signal?.removeEventListener('abort', onAbort);
-				reject(options.signal.reason);
-			};
-
-			const timeoutToken = setTimeout(() => {
-				options.signal?.removeEventListener('abort', onAbort);
-				resolve();
-			}, finalDelay);
-
-			if (options.unref) {
-				timeoutToken.unref?.();
-			}
-
-			options.signal?.addEventListener('abort', onAbort, {once: true});
-		});
-	}
+	await delayForRetry(finalDelay, options);
 
 	options.signal?.throwIfAborted();
 
@@ -38504,6 +38545,9 @@ async function pRetry(input, options = {}) {
 	options.shouldConsumeRetry ??= () => true;
 
 	// Validate numeric options and normalize edge cases
+	validateFunctionOption('onFailedAttempt', options.onFailedAttempt);
+	validateFunctionOption('shouldRetry', options.shouldRetry);
+	validateFunctionOption('shouldConsumeRetry', options.shouldConsumeRetry);
 	validateNumberOption('factor', options.factor, {min: 0, allowInfinity: false});
 	validateNumberOption('minTimeout', options.minTimeout, {min: 0, allowInfinity: false});
 	validateNumberOption('maxTimeout', options.maxTimeout, {min: 0, allowInfinity: true});

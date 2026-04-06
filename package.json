@@ -61,7 +61,7 @@
     "get-port": "7.2.0",
     "globals": "17.4.0",
     "license-checker-rseidelsohn": "4.4.2",
-    "nock": "14.0.11",
+    "nock": "14.0.12",
     "prettier": "3.8.1",
     "semantic-release": "25.0.3",
     "ts-node": "10.9.2",
